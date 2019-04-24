@@ -1,5 +1,5 @@
 # Ignore secrets file. IMPORTANT- NEVER UPLOAD PRIVATE KEY TO GITHUB
-SECRETS_FILE
+secret.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
