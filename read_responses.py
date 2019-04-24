@@ -29,20 +29,25 @@ data = pd.DataFrame(sheet.get_all_records())
 # Rename the columns to make it easier to manipulate
 # The data comes in through a dictionary so we can not assume order stays the
 # same so must name each column
-# column_names = {'Timestamp': 'timestamp',
-#                 'What version of python would you like to see used for the examples on the site?': 'version',
-#                 'How useful is the content on practical business python?': 'useful',
-#                 'What suggestions do you have for future content?': 'suggestions',
-#                 'How frequently do you use the following tools? [Python]': 'freq-py',
-#                 'How frequently do you use the following tools? [SQL]': 'freq-sql',
-#                 'How frequently do you use the following tools? [R]': 'freq-r',
-#                 'How frequently do you use the following tools? [Javascript]': 'freq-js',
-#                 'How frequently do you use the following tools? [VBA]': 'freq-vba',
-#                 'How frequently do you use the following tools? [Ruby]': 'freq-ruby',
-#                 'Which OS do you use most frequently?': 'os',
-#                 'Which python distribution do you primarily use?': 'distro',
-#                 'How would you like to be notified about new articles on this site?': 'notify'
-#                 }
-# data.rename(columns=column_names, inplace=True)
-# data.timestamp = pd.to_datetime(data.timestamp)
+column_names = {'Timestamp': 'timestamp',
+                'Email Address': 'email',
+                'Are you a driver or a rider?': 't_type',
+                'DRIVER ONLY: Where will you be departing/ picking up?': 't_driver_departure',
+                'DRIVER ONLY: How many riders can you take?': 't_driver_num_riders',
+                'RIDER ONLY: Where will you be departing from?': 't_rider_departure',
+                'What time will you be departing? ': 't_departure_time',
+                'If you are a driver and entered an alternate time, please enter the exact time you will be departing': 't_alt_time',
+                'Are you a driver or a rider?' : 'th_type',
+                'DRIVER ONLY: Where will you be departing/ picking up?' : 'th_driver_departure',
+                'DRIVER ONLY: How many riders can you take? ': 'th_driver_num_riders',
+                'RIDER ONLY: Where will you be departing from?' : 'th_rider_departure',
+                'What time will you be departing? ':'th_departure_time',
+                'If you are a driver and entered an alternate time, please enter the exact time you will be departing': 'th_alt_time',
+                'Are you a driver or a rider?': 's_type',
+                'DRIVER ONLY: Where will you be departing/ picking up?': 's_driver_departure',
+                'DRIVER ONLY: How many riders can you take? ': 's_driver_num_riders',
+                'RIDER ONLY: Where will you be departing from?' : 's_rider_departure'
+                }
+data.rename(columns=column_names, inplace=True)
+data.timestamp = pd.to_datetime(data.timestamp)
 print(data.head())
