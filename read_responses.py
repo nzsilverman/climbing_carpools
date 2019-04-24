@@ -28,7 +28,13 @@ cols = ['timestamp', 'email', 't_type', 't_driver_departure', 't_driver_num_ride
         't_departure_time', 't_alt_time', 'th_type', 'th_driver_departure', 'th_driver_num_riders', \
         'th_rider_departure', 'th_departure_time', 'th_alt_time', 's_type', 's_driver_departure', \
         's_driver_num_riders', 's_rider_departure']
-data = sheet.get_all_records()
+# data = sheet.get_all_records()
+data = sheet.get_all_values() # Reads in as a list of lists, doesn't combine dict entries
+
+for item in data:
+    print(item)
+    print('Len: {}'.format(len(item)))
+    print('\n')
 
 # Get due paying members list
 dues_sheet = gc.open(DUES_SHEET).sheet1.get_all_records()
