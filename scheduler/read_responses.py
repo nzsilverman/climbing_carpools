@@ -3,48 +3,56 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
 
-def generate_response_lists():
-    """Return lists of drivers and riders from google form."""
+from classes.Loc import Loc
+from classes.Dept_Time import Dept_Time
+from classes.Driver import Driver
+from classes.Rider import Rider
 
+def get_responses_from_spreadsheet(spreadsheet_name, dues_sheet_name):
+    """ Returns a tuple of spreadsheet data as a 2D list and the dues sheet. """
+
+    # Use Google Developer API to read spreadsheet
+    # Based on docs here - http://gspread.readthedocs.org/en/latest/oauth2.html
     SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     SECRETS_FILE = "secret.json"
-    SPREADSHEET = "Carpool Scheduling Template (Responses)"
-    DUES_SHEET = "Due Paying Members"
-    # Based on docs here - http://gspread.readthedocs.org/en/latest/oauth2.html
+    SPREADSHEET = spreadsheet_name 
+    DUES_SHEET = dues_sheet_name 
     # Load in the secret JSON key (must be a service account)
     json_key = json.load(open(SECRETS_FILE))
     # Authenticate using the signed key
-    # credentials = SignedJwtAssertionCredentials(json_key['client_email'],
-    #                                             json_key['private_key'], SCOPE)
     credentials = ServiceAccountCredentials.from_json_keyfile_name('secret.json', SCOPE)
 
     gc = gspread.authorize(credentials)
+
+    # Debugging printing of all available google sheets
     # print("The following sheets are available")
     # for sheet in gc.openall():
     #     print("{} - {}".format(sheet.title, sheet.id))
+
     # Open up the workbook based on the spreadsheet name
     spreadsheet = gc.open(SPREADSHEET)
+
     # Get the first sheet
     sheet = spreadsheet.sheet1
+
     # Extract all data into a dataframe
-
-
-    # data = sheet.get_all_records() # old version, uses a dict
     data = sheet.get_all_values() # Reads in as a list of lists, doesn't combine dict entries
-
-
-    # print data in sheet
-    # for item in data:
-    #     print(item)
-    #     print('Len: {}'.format(len(item)))
-    #     print('\n')
-
+    
     # Get due paying members list
     dues_sheet = gc.open(DUES_SHEET).sheet1.get_all_records()
-    # uniquenames of people who have paid dues
+    # Put uniquenames of people who have paid dues into a list
     dues_list = []
     for entry in dues_sheet:
         dues_list.append(entry["Uniquename"])
+
+    return (data, dues_list)
+
+def create_lists(sheet_name, dues_sheet_name):
+    
+    # Get Data and Dues List
+    responses = get_responses_from_spreadsheet(sheet_name, dues_sheet_name)
+    data = responses[0]
+    dues_list = responses[1]
 
     # Declaration of lists that will be populated
     tues_drivers = []
@@ -56,19 +64,60 @@ def generate_response_lists():
 
     # Read every row of input data. Row 0 is the titles
     for row in data[1:]:
+        # Timestamp is the 0th element in the row
         email = row[1]
         name = row[2]
 
-        # Create tuesday dict
-        tues = {}
-        tues['email'] = email
-        tues['name'] = name
-        tues['type'] = row[3]
-        tues['driver_departure'] = row[4]
-        tues['driver_num_riders'] = row[5]
-        tues['rider_departure'] = row[6]
-        tues['departure_time'] = row[7]
-        tues['alt_time'] = row[8]
+        # Splice array, entries [3,9) are for tuesday
+        tues_array = row[3:9]
+        
+        # Format of Data for Tuesday and Thursday
+        # [0] type
+        # [1] driver_departure
+        # [2] driver_num_riders
+        # [3] rider_departure
+        # [4] departure_time
+        # [5] alt_time
+
+        # Create Tuesday Entry
+        member_type = tues_array[0]
+        if member_type == "Driver":
+            # Driver Type
+
+            # TODO FINISH THIS
+
+            tues_driver = get_driver(tues_array)
+        elif member_type == "Rider":
+            # Rider Type
+
+
+        driver_departure =      row[4]
+        driver_num_riders =     row[5]
+        rider_departure =       row[6]
+        dept_time =             row[7]
+        alt_time =              row[8]
+         
+        if driver_departure == "Exclusively departing from North campus":
+            # Only North
+            loc = Loc.NORTH
+        elif driver_departure == "Leaving from North and going to Central to pickup riders":
+            # Both
+            loc = Loc.NORTH_AND_CENTRAL
+        elif driver.departure == "Exclusively departing from Central campus":
+            # Only central
+            loc = Loc.CENTRAL 
+
+        if dept_time == "7:30 pm":
+            time = Dept_Time.AT_730
+        elif dept_time == "Alternate Time: Between 6 - 7:30 pm (You will be included in the 7:30 pickup lottery as well if you're a rider)":
+            time = Dept_Time.BEFORE_730
+        elif dept_time == "Alternate Time: After 7:30 pm":
+            time = Dept_Time.AFTER_730
+        
+        # if member_type == "Driver":
+            # Driver
+        # elif member_type == "Rider":
+            # Rider
 
         # Create thursday dict
         thurs = {}
@@ -144,21 +193,19 @@ def generate_response_lists():
                 if uniquename in dues_list:
                     sun_riders.append(sun)
     return (tues_drivers, tues_riders, thurs_drivers, thurs_riders, sun_drivers, sun_riders)
-    # Debug printing
-    # print("tues_drivers")
-    # print(tues_drivers)
-    #
-    # print("tues_riders")
-    # print(tues_riders)
-    #
-    # print("thurs_drivers")
-    # print(thurs_drivers)
-    #
-    # print("thurs_riders")
-    # print(thurs_riders)
 
-    # print("sun_drivers")
-    # print(sun_drivers)
-    #
-    # print("sun_riders")
-    # print(sun_riders)
+def parse_dept_time(dept_time):
+    """ Returns an enum for the departure times for tuesday and thursday. """
+    if dept_time == "7:30 pm":
+        return Dept_Time.AT_730
+    elif dept_time == "Alternate Time: Between 6 - 7:30 pm (You will be included in the 7:30 pickup lottery as well if you're a rider)":
+        return Dept_Time.BEFORE_730
+    elif dept_time == "Alternate Time: After 7:30 pm":
+        return Dept_Time.AFTER_730
+
+def get_driver(array):
+    """ Returns a Driver object. """
+    #TODO FINISH THIS
+    location = parse_location(array[1])
+    dept_time = parse_dept_time(array[4])
+

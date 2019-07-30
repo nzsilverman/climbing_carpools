@@ -1,3 +1,6 @@
+# Ignore .swp files from vim 
+*.swp
+
 # Ignore secrets file. IMPORTANT- NEVER UPLOAD PRIVATE KEY TO GITHUB
 secret.json
 
