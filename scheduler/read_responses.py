@@ -122,20 +122,22 @@ def validate_driver(array, driver):
     
     # Check to make sure dept_time is filled out, num riders filled out, and
     # location filled out
-    # import pdb; pdb.set_trace()
     if driver.dept_time and driver.num_riders and driver.loc:
         # Validate dept time is 730 or alt provided
-        if driver.dept_time != Dept_Time.AT_730:
+        if driver.dept_time != Dept_Time.AT_730 and driver.dept_time != Dept_Time.AT_10_AM:
             # make sure alt provided
             if driver.alt_time:
                 # Checks passed, append and return 
                 array.append(driver)
         else:
-            # Driver dept time is 730, add them
+            # Driver dept time is a standard time, add them
             array.append(driver)
     else:
         # Checks failed, do not append
         print("Validate driver failed for the following driver: " + driver.name)
+        print("Dept time: " + str(driver.dept_time))
+        print("Num Riders: " + str(driver.num_riders))
+        print("Loc: " + str(driver.loc))
 
 def validate_rider(array, rider, dues_list):
     """ Validate a rider has necesary info, return array with rider if 
@@ -191,7 +193,10 @@ def get_tues_thurs_driver(array, email, name):
     # [5] alt_time
 
     location = parse_driver_location(array[1])
-    num_riders = int(array[2])
+    if array[2]:
+        num_riders = int(array[2])
+    else:
+        num_riders = 0
     dept_time = parse_dept_time(array[4])
     alt_time = array[5]
 
@@ -219,8 +224,11 @@ def get_sunday_driver(array, email, name):
     # [2] driver num riders
     # [3] rider departure
     location = parse_driver_location(array[1])
-    num_riders = int(array[2])
-    dept_time = Dept_Time.AT_10_AM
+    if array[2]:
+        num_riders = int(array[2])
+    else:
+        num_riders = 0
+    dept_time= Dept_Time.AT_10_AM
 
     # Return a Driver for 10 am, no alternate time
     return Driver(email, name, location, num_riders, dept_time, 0)  
