@@ -48,6 +48,9 @@ def get_responses_from_spreadsheet(spreadsheet_name, dues_sheet_name):
     return (data, dues_list)
 
 def create_lists(sheet_name, dues_sheet_name):
+    """ Parse data and return tuple in the form:
+    (tues_drivers list, tues riders list, thurs drivers list, thurs riders list,
+    sun drivers list, sun riders list) ."""
     
     # Get Data and Dues List
     responses = get_responses_from_spreadsheet(sheet_name, dues_sheet_name)
@@ -71,128 +74,84 @@ def create_lists(sheet_name, dues_sheet_name):
         # Splice array, entries [3,9) are for tuesday
         tues_array = row[3:9]
         
-        # Format of Data for Tuesday and Thursday
-        # [0] type
-        # [1] driver_departure
-        # [2] driver_num_riders
-        # [3] rider_departure
-        # [4] departure_time
-        # [5] alt_time
 
         # Create Tuesday Entry
         member_type = tues_array[0]
         if member_type == "Driver":
             # Driver Type
-
-            # TODO FINISH THIS
-
-            tues_driver = get_driver(tues_array)
+            driver = get_tues_thurs_driver(tues_array, email, name)
+            validate_driver(tues_drivers, driver)
         elif member_type == "Rider":
             # Rider Type
-
-
-        driver_departure =      row[4]
-        driver_num_riders =     row[5]
-        rider_departure =       row[6]
-        dept_time =             row[7]
-        alt_time =              row[8]
-         
-        if driver_departure == "Exclusively departing from North campus":
-            # Only North
-            loc = Loc.NORTH
-        elif driver_departure == "Leaving from North and going to Central to pickup riders":
-            # Both
-            loc = Loc.NORTH_AND_CENTRAL
-        elif driver.departure == "Exclusively departing from Central campus":
-            # Only central
-            loc = Loc.CENTRAL 
-
-        if dept_time == "7:30 pm":
-            time = Dept_Time.AT_730
-        elif dept_time == "Alternate Time: Between 6 - 7:30 pm (You will be included in the 7:30 pickup lottery as well if you're a rider)":
-            time = Dept_Time.BEFORE_730
-        elif dept_time == "Alternate Time: After 7:30 pm":
-            time = Dept_Time.AFTER_730
+            rider = get_tues_thurs_rider(tues_array, email, name)
+            validate_rider(tues_riders, rider, dues_list)
         
-        # if member_type == "Driver":
-            # Driver
-        # elif member_type == "Rider":
-            # Rider
+        # Thursday array is entries [9, 15)
+        thurs_array = row[9:15]
 
-        # Create thursday dict
-        thurs = {}
-        thurs['email'] = email
-        thurs['name'] = name
-        thurs['type'] = row[9]
-        thurs['driver_departure'] = row[10]
-        thurs['driver_num_riders'] = row[11]
-        thurs['rider_departure'] = row[12]
-        thurs['departure_time'] = row[13]
-        thurs['alt_time'] = row[14]
+        # Create Thursday Entry
+        member_type = thurs_array[0]
+        if member_type == "Driver":
+            # Driver Type
+            driver = get_tues_thurs_driver(thurs_array, email, name)
+            validate_driver(thurs_drivers, driver);
+        elif member_type == "Rider":
+            # Rider Type
+            rider = get_tues_thurs_rider(thurs_array, email, name)
+            validate_rider(thurs_riders, rider, dues_list)
 
-        # Create sunday dict
-        sun = {}
-        sun['email'] = email
-        sun['name'] = name
-        sun['type'] = row[15]
-        sun['driver_departure'] = row[16]
-        sun['driver_num_riders'] = row[17]
-        sun['rider_departure'] = row[18]
+        # Create sunday entry
+        # Splice array from 15th element to the end
+        sunday_array = row[15:] 
 
-        # Validate tuesday has all necesary fields and if they are a rider, they
-        # have paid dues
-        # import pdb; pdb.set_trace()
-        if tues['type'] == 'Driver':
-            # check appropriate fields are non empty
-            if tues['driver_departure'] and tues['driver_num_riders'] and tues['departure_time']:
-                # check departure time is 7:30 or alternate time provided
-                if tues['departure_time'] != '7:30 pm':
-                    if tues['alt_time']:
-                        tues_drivers.append(tues)
-                else:
-                    tues_drivers.append(tues)
-        elif tues['type'] == 'Rider':
-            # Rider case
-            uniquename = tues['email'].split('@')[0].strip()
-            if tues['rider_departure'] and tues['departure_time']:
-                # Make sure they have paid dues
-                if uniquename in dues_list:
-                    tues_riders.append(tues)
-
-        # Validate thursday has all necesary fields and if they are a rider, they
-        # have paid dues
-        if thurs['type'] == 'Driver':
-            # check appropriate fields are non empty
-            if thurs['driver_departure'] and thurs['driver_num_riders'] and thurs['departure_time']:
-                # check departure time is 7:30 or alternate time provided
-                if thurs['departure_time'] != '7:30 pm':
-                    if thurs['alt_time']:
-                        thurs_drivers.append(thurs)
-                else:
-                    thurs_drivers.append(thurs)
-        elif thurs['type'] == 'Rider':
-            # Rider case
-            uniquename = thurs['email'].split('@')[0].strip()
-            if thurs['rider_departure'] and thurs['departure_time']:
-                # Make sure they have paid dues
-                if uniquename in dues_list:
-                    thurs_riders.append(thurs)
-
-
-        # Validate sunday has all necesary fields and if they are a rider, they
-        # have paid dues
-        if sun['type'] == 'Driver':
-            # check appropriate fields are non empty
-            if sun['driver_departure'] and sun['driver_num_riders']:
-                sun_drivers.append(sun)
-        elif sun['type'] == 'Rider':
-            # Rider case
-            uniquename = sun['email'].split('@')[0].strip()
-            if sun['rider_departure']:
-                # Make sure they have paid dues
-                if uniquename in dues_list:
-                    sun_riders.append(sun)
+        member_type = sunday_array[0]
+        if member_type == "Driver":
+            # Driver Type
+            driver = get_sunday_driver(sunday_array, email, name)
+            validate_driver(sun_drivers, driver)
+        elif member_type == "Rider":
+            # Rider Type
+            rider = get_sunday_rider(sunday_array, email, name)
+            validate_rider(sun_riders, driver, dues_list)
     return (tues_drivers, tues_riders, thurs_drivers, thurs_riders, sun_drivers, sun_riders)
+
+def validate_driver(array, driver):
+    """ Validates driver has necesary info needed.
+    Returns an array, either with the driver appended if valid
+    or without the driver if not valid. """
+    
+    # Check to make sure dept_time is filled out, num riders filled out, and
+    # location filled out
+    # import pdb; pdb.set_trace()
+    if driver.dept_time and driver.num_riders and driver.loc:
+        # Validate dept time is 730 or alt provided
+        if driver.dept_time != Dept_Time.AT_730:
+            # make sure alt provided
+            if driver.alt_time:
+                # Checks passed, append and return 
+                array.append(driver)
+        else:
+            # Driver dept time is 730, add them
+            array.append(driver)
+    else:
+        # Checks failed, do not append
+        print("Validate driver failed for the following driver: " + driver.name)
+
+def validate_rider(array, rider, dues_list):
+    """ Validate a rider has necesary info, return array with rider if 
+    valid and without rider if invalid. """
+    # import pdb; pdb.set_trace()
+    uniquename = rider.email.split('@')[0].strip()
+    # Make sure there is a ride departure location and time
+    if rider.loc and rider.dept_time:
+        # Make sure they paid dues
+        if uniquename in dues_list:
+            array.append(rider)
+        else:
+            print("Validate rider failed for " + rider.name + " since they did not pay dues")
+    else:
+        # If checks failed, list is unmodified
+        print("validate rider failed for the following rider: " + rider.name)
 
 def parse_dept_time(dept_time):
     """ Returns an enum for the departure times for tuesday and thursday. """
@@ -203,9 +162,77 @@ def parse_dept_time(dept_time):
     elif dept_time == "Alternate Time: After 7:30 pm":
         return Dept_Time.AFTER_730
 
-def get_driver(array):
+def parse_driver_location(dept_loc):
+    """ Returns an enum for the location. """
+    if dept_loc == "Exclusively departing from North campus":
+        return Loc.NORTH 
+    elif dept_loc == "Leaving from North and going to Central to pickup riders":
+        return Loc.NORTH_AND_CENTRAL 
+    elif dept_loc == "Exclusively departing from Central campus":
+        return Loc.CENTRAL 
+
+def parse_rider_location(dept_loc):
+    """ Returns an enum for the location the rider will depart from. """
+    if dept_loc == "Exclusively North campus":
+        return Loc.NORTH 
+    elif dept_loc == "Preferably North campus, but would go to Central if that was my only ride":
+        return Loc.NORTH_AND_CENTRAL
+    elif dept_loc == "Exclusively Central campus":
+        return Loc.CENTRAL
+
+def get_tues_thurs_driver(array, email, name):
     """ Returns a Driver object. """
-    #TODO FINISH THIS
-    location = parse_location(array[1])
+    # Format of Data for Tuesday and Thursday
+    # [0] type
+    # [1] driver_departure
+    # [2] driver_num_riders
+    # [3] rider_departure
+    # [4] departure_time
+    # [5] alt_time
+
+    location = parse_driver_location(array[1])
+    num_riders = int(array[2])
+    dept_time = parse_dept_time(array[4])
+    alt_time = array[5]
+
+    return Driver(email, name, location, num_riders, dept_time, alt_time)
+
+def get_tues_thurs_rider(array, email, name):
+    """ Returns a Rider object. """
+    # Format of Data for Tuesday and Thursday
+    # [0] type
+    # [1] driver_departure
+    # [2] driver_num_riders
+    # [3] rider_departure
+    # [4] departure_time
+    # [5] alt_time
+
+    location = parse_rider_location(array[3])
     dept_time = parse_dept_time(array[4])
 
+    return Rider(email, name, location, dept_time) 
+
+def get_sunday_driver(array, email, name):
+    # Array has the form
+    # [0] type
+    # [1] driver departure
+    # [2] driver num riders
+    # [3] rider departure
+    location = parse_driver_location(array[1])
+    num_riders = int(array[2])
+    dept_time = Dept_Time.AT_10_AM
+
+    # Return a Driver for 10 am, no alternate time
+    return Driver(email, name, location, num_riders, dept_time, 0)  
+
+def get_sunday_rider(array, email, name):
+    # Array has the form
+    # [0] type
+    # [1] driver departure
+    # [2] driver num riders
+    # [3] rider departure
+    location = parse_rider_location(array[3])
+    dept_time = Dept_Time.AT_10_AM
+
+    # Return a Rider for 10 am, no alternate time
+    return Rider(email, name, location, dept_time)  
