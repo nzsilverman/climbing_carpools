@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """ Climbing Carpool generator. """
 from read_responses import *
+from generate_rides import *
 
 def main():
     # Sheet name: Carpool Scheduling Template (Responses)
@@ -33,6 +34,11 @@ def main():
 
     print("sun_riders")
     print(sun_riders)
+
+    print("Calling generate rides for tuesday")
+    rides = generate_rides(tues_riders, tues_drivers)
+    print("\n\n\n")
+    print(rides)
 
 if __name__ == "__main__":
     # pylint: disable=no-value-for-parameter
