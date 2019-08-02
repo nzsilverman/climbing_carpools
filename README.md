@@ -17,6 +17,8 @@ Contributions are welcome. Anyone who wants to help improve this project should 
 
 For any contribution questions, please email Nathan Silverman at nzsilver@umich.edu
 
+To be added as a collaborator on the project, talk with Nathan Silverman.
+
 # Development Notes
 This program is designed to facilitate carpools for the University of Michigan Climbing Club. This program gets information from a google spreadsheet that collects data about when club members want to drive to the gym, and matches riders with the best drivers in a fair manner. The algorithm for choosing a rider is based on selecting a random rider, and then finding the best driver that has seats left in their vehicle.The best driver is defined as a driver that wants to leave at a similar time and similar location.
 
