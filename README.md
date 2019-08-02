@@ -13,7 +13,7 @@ Running the program will pull results from the spreadsheet results file that is 
 Running the program requires a secrets.json file that is the key to a service account for the google developer console project. To get this setup, access needs to be granted by a system admin. Contact Nathan Silverman (nzsilver@umich.edu) for this.
 
 # Contribution Guidelines
-Contributions are welcome. Anyone who wants to help improve this project should contribute! To get started, look in the github issues for ideas of what to help with. Please comment on an issue if you are working on it, and assign yourself to it. When it is ready for production, make a pull request.
+Contributions are welcome. Anyone who wants to help improve this project should contribute! To get started, look in the github issues for ideas of what to help with. Please open an issue if you are working on it, and assign yourself to it. Then fork the repo, and make changes on a branch. When the changes are good, you can make a pull request and it can be approved to merge back into the main project. 
 
 For any contribution questions, please email Nathan Silverman at nzsilver@umich.edu
 
