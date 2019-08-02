@@ -1,5 +1,10 @@
 # University of Michigan Climbing Club Carpool Scheduling Software
 Initially Written by Nathan Silverman (nzsilver@umich.edu) in Summer 2019.
+# Installing the program
+To install the program, type the following command in the top level directory where the `setup.py` file is:
+
+`pip install -e .`
+
 # Running the program
 To run the program, clone the git repository and run the python package `scheduler` by typing `python3 scheduler` into the terminal.
 
