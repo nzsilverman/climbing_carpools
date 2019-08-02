@@ -38,8 +38,8 @@ def find_best_match(matched, rider):
                         driver.loc == Loc.CENTRAL):
                             # Compatbile with location
                             compatible_drivers.append(driver)
-    print("Comp drivers: ")
-    print(compatible_drivers)
+    # print("Comp drivers: ")
+    # print(compatible_drivers)
 
     if not compatible_drivers:
         # No compatible drivers, so return
@@ -68,12 +68,12 @@ def generate_rides(riders, drivers):
     ''' Generates rides. '''
     seats_remaining = get_total_seats(drivers)
     num_riders = len(riders)
-    print(seats_remaining)
-    print("num riders: " + str(num_riders))
+    # print(seats_remaining)
+    # print("num riders: " + str(num_riders))
 
     matched = seed_matched_dict(drivers)
-    print("Matched dict to start")
-    print(matched)
+    # print("Matched dict to start")
+    # print(matched)
 
     while seats_remaining and num_riders > 0:
         # Match a rider with the best possible driver
@@ -81,7 +81,7 @@ def generate_rides(riders, drivers):
         # Shuffle riders list and pick a random rider
         random.shuffle(riders)
         chosen_rider = riders.pop()
-        print("Chosen Rider " + str(chosen_rider.name))
+        # print("Chosen Rider " + str(chosen_rider.name))
         num_riders = num_riders - 1
         
         best_driver = find_best_match(matched, chosen_rider)
@@ -91,7 +91,7 @@ def generate_rides(riders, drivers):
             matched[best_driver]["seats_left"] = \
                     matched[best_driver]["seats_left"] - 1
             seats_remaining = seats_remaining - 1
-            print(chosen_rider.name +" matched with " + best_driver.name)
+            # print(chosen_rider.name +" matched with " + best_driver.name)
 
     return matched
 

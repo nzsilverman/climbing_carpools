@@ -112,7 +112,7 @@ def create_lists(sheet_name, dues_sheet_name):
         elif member_type == "Rider":
             # Rider Type
             rider = get_sunday_rider(sunday_array, email, name)
-            validate_rider(sun_riders, driver, dues_list)
+            validate_rider(sun_riders, rider, dues_list)
     return (tues_drivers, tues_riders, thurs_drivers, thurs_riders, sun_drivers, sun_riders)
 
 def validate_driver(array, driver):
@@ -132,12 +132,12 @@ def validate_driver(array, driver):
         else:
             # Driver dept time is a standard time, add them
             array.append(driver)
-    else:
+    # else:
         # Checks failed, do not append
-        print("Validate driver failed for the following driver: " + driver.name)
-        print("Dept time: " + str(driver.dept_time))
-        print("Num Riders: " + str(driver.num_riders))
-        print("Loc: " + str(driver.loc))
+        # print("Validate driver failed for the following driver: " + driver.name)
+        # print("Dept time: " + str(driver.dept_time))
+        # print("Num Riders: " + str(driver.num_riders))
+        # print("Loc: " + str(driver.loc))
 
 def validate_rider(array, rider, dues_list):
     """ Validate a rider has necesary info, return array with rider if 
@@ -149,11 +149,11 @@ def validate_rider(array, rider, dues_list):
         # Make sure they paid dues
         if uniquename in dues_list:
             array.append(rider)
-        else:
-            print("Validate rider failed for " + rider.name + " since they did not pay dues")
-    else:
+        # else:
+            # print("Validate rider failed for " + rider.name + " since they did not pay dues")
+    # else:
         # If checks failed, list is unmodified
-        print("validate rider failed for the following rider: " + rider.name)
+        # print("validate rider failed for the following rider: " + rider.name)
 
 def parse_dept_time(dept_time):
     """ Returns an enum for the departure times for tuesday and thursday. """
