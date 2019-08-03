@@ -13,6 +13,10 @@ setup(
     name='scheduler',
     version='0.1.0',
     packages=['scheduler'],
+    install_requires=[
+    	'gspread',
+    	'oauth2client',
+    ],
     include_package_data=True,
     entry_points={
         'console_scripts': [
