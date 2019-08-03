@@ -13,11 +13,14 @@ Running the program will pull results from the spreadsheet results file that is 
 Running the program requires a secrets.json file that is the key to a service account for the google developer console project. To get this setup, access needs to be granted by a system admin. Contact Nathan Silverman (nzsilver@umich.edu) for this.
 
 # Contribution Guidelines
-Contributions are welcome. Anyone who wants to help improve this project should contribute! To get started, look in the github issues for ideas of what to help with. Please open an issue if you are working on it, and assign yourself to it. Then fork the repo, and make changes on a branch. When the changes are good, you can make a pull request and it can be approved to merge back into the main project. 
+Contributions are welcome. Anyone who wants to help improve this project should contribute! To get started, look in the github issues for ideas of what to help with. Please open an issue if you are working on it, and assign yourself to it. Then fork the repo, and make changes on a branch. When the changes are good, you can make a pull request and it can be approved to merge back into the main project.
 
 For any contribution questions, please email Nathan Silverman at nzsilver@umich.edu
 
 To be added as a collaborator on the project, talk with Nathan Silverman.
+
+## Slack Channel
+The following slack channel, accessible [here](https://join.slack.com/t/umichclimbingclub/shared_invite/enQtNzE0NjQzMTU3MzAwLWYwZGVjMmZlOGQzNzA2ZThmMGQ4ZTc4MzM3NGExODU5MWY1MjllMTljNTQ3MzViYzE3NmNiNzFiZWEyYjUyYjg) to anyone witha umich email address is the prefered method of communication for this project. This should be used along with the github issues. 
 
 # Development Notes
 This program is designed to facilitate carpools for the University of Michigan Climbing Club. This program gets information from a google spreadsheet that collects data about when club members want to drive to the gym, and matches riders with the best drivers in a fair manner. The algorithm for choosing a rider is based on selecting a random rider, and then finding the best driver that has seats left in their vehicle.The best driver is defined as a driver that wants to leave at a similar time and similar location.
