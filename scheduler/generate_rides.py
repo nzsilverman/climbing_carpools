@@ -31,9 +31,9 @@ def find_best_match(matched, rider):
             if rider.dept_time == driver.dept_time or \
                 (rider.dept_time == Dept_Time.BEFORE_730 and
                     driver.dept_time == Dept_Time.AT_730) and \
-                    driver.loc == rider.loc or \
+                    (driver.loc == rider.loc or \
                     (rider.loc == Loc.NORTH_AND_CENTRAL and
-                        driver.loc == Loc.CENTRAL):
+                        driver.loc == Loc.CENTRAL)):
                     # Compatbile with location
                     compatible_drivers.append(driver)
     # print("Comp drivers: ")
