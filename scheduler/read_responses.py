@@ -41,11 +41,12 @@ def get_responses_from_spreadsheet(spreadsheet_name, dues_sheet_name):
     # Get due paying members list
     dues_sheet = gc.open(DUES_SHEET).sheet1.get_all_records()
     # Put uniquenames of people who have paid dues into a list
-    dues_list = []
+    dues_list = set()
     for entry in dues_sheet:
-        dues_list.append(entry["Uniquename"])
+        dues_list.add(entry["Uniquename"])
 
     return (data, dues_list)
+
 
 def create_lists(sheet_name, dues_sheet_name):
     """ Parse data and return tuple in the form:
