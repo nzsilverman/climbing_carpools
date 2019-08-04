@@ -12,6 +12,7 @@ def get_total_seats(drivers):
 def seed_matched_dict(drivers):
     """ Returns a dict of drivers and information about
     how many seats they have remaining and who is in the car. """
+    matched = dict()
     for driver in drivers:
         matched[driver] = {}
         matched[driver]["seats_left"] = driver.num_riders
