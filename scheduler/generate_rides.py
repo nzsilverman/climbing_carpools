@@ -42,6 +42,9 @@ def find_best_match(matched, rider):
     if not compatible_drivers:
         # No compatible drivers, so return
         return
+    
+    # Shuffle compatible drivers list, to randomize where riders get put
+    random.shuffle(compatible_drivers)
     best_driver = compatible_drivers[0]
 
     # Seletcting the best match looks in compatible drivers,
@@ -90,5 +93,10 @@ def generate_rides(riders, drivers):
                 matched[best_driver]["seats_left"] - 1
             seats_remaining -= 1
             # print(chosen_rider.name +" matched with " + best_driver.name)
+
+    if len(riders) > 0:
+        print("\nNot all riders were given a seat. The following riders were not matched:")
+        for rider in riders:
+            print(rider.name)
 
     return matched

@@ -7,8 +7,8 @@ from print_responses import *
 def main():
     # Sheet name: Carpool Scheduling Template (Responses)
     # Dues sheet name: Due Paying Members
-    sheet_name = "Carpool Scheduling Template (Responses)"
-    dues_sheet_name = "Due Paying Members"
+    sheet_name = "Responses 9-9-19"
+    dues_sheet_name = "MCC Dues Paying Members 2019-2020"
 
     form_responses = create_lists(sheet_name, dues_sheet_name)
     tues_drivers = form_responses[0]
@@ -37,16 +37,15 @@ def main():
     # print(sun_riders)
 
     tues_rides = generate_rides(tues_riders, tues_drivers)
-    thurs_rides = generate_rides(thurs_riders, thurs_drivers)
-    sun_rides = generate_rides(sun_riders, sun_drivers)
-
-    print("Tuesday Rides: \n")
+    print("\n\nTuesday Rides: \n")
     print_matched_debug(tues_rides)
 
-    print("Thursday Rides: \n")
+    thurs_rides = generate_rides(thurs_riders, thurs_drivers)
+    print("\n\nThursday Rides: \n")
     print_matched_debug(thurs_rides)
 
-    print("Sunday Rides: \n")
+    sun_rides = generate_rides(sun_riders, sun_drivers)
+    print("\n\nSunday Rides: \n")
     print_matched_debug(sun_rides)
 
 if __name__ == "__main__":

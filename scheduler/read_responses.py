@@ -40,10 +40,10 @@ def get_responses_from_spreadsheet(spreadsheet_name, dues_sheet_name):
     
     # Get due paying members list
     dues_sheet = gc.open(DUES_SHEET).sheet1.get_all_records()
-    # Put uniquenames of people who have paid dues into a list
+    # Put uniqnames of people who have paid dues into a list
     dues_list = set()
     for entry in dues_sheet:
-        dues_list.add(entry["Uniquename"])
+        dues_list.add(entry["Uniqname"])
 
     return (data, dues_list)
 
@@ -144,14 +144,14 @@ def validate_rider(array, rider, dues_list):
     """ Validate a rider has necesary info, return array with rider if 
     valid and without rider if invalid. """
     # import pdb; pdb.set_trace()
-    uniquename = rider.email.split('@')[0].strip()
+    uniqname = rider.email.split('@')[0].strip()
     # Make sure there is a ride departure location and time
     if rider.loc and rider.dept_time:
         # Make sure they paid dues
-        if uniquename in dues_list:
+        if uniqname in dues_list:
             array.append(rider)
-        # else:
-            # print("Validate rider failed for " + rider.name + " since they did not pay dues")
+        else:
+            print("Validate rider failed for " + rider.name + ", " + uniqname + "@umich.edu" + " since they did not pay dues")
     # else:
         # If checks failed, list is unmodified
         # print("validate rider failed for the following rider: " + rider.name)
