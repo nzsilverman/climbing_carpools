@@ -43,7 +43,7 @@ def get_responses_from_spreadsheet(spreadsheet_name, dues_sheet_name):
     # Put uniqnames of people who have paid dues into a list
     dues_list = set()
     for entry in dues_sheet:
-        dues_list.add(entry["Uniqname"])
+        dues_list.add(entry["Uniqname"].strip())
 
     return (data, dues_list)
 
