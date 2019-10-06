@@ -9,7 +9,18 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
 
-def write_to_gsheet(matched_dict, spreadsheet_name):
+def populate_values_array(matched_dict, values):
+    for driver in matched_dict:
+        array = ["Driver Name:", str(driver.name), "Phone: ", str(driver.phone), "Loc: ", str(driver.loc), "Empty Seats: ", int(matched_dict[driver]["seats_left"])]
+        values.append(array)
+        for rider in matched_dict[driver]["riders"]:
+            array = ["Rider Name:", str(rider.name), "Phone: ", str(rider.phone)] 
+            values.append(array)
+
+        # Append empty to write an empty row in between drivers
+        values.append([])
+
+def write_to_gsheet(matched_tues, matched_thurs, matched_sun, spreadsheet_name):
     """ print the matched dict with all info, for the debug. It has the format:
     {Driver: {'seats_left': #, 'riders': [Rider, ..., Rider]}, ...} """
     
@@ -27,15 +38,41 @@ def write_to_gsheet(matched_dict, spreadsheet_name):
     # Get the first sheet
     sheet = spreadsheet.sheet1
 
-    values = []
-    for driver in matched_dict:
-        array = ["Driver Name:", str(driver.name), "Phone: ", str(driver.phone), "Loc: ", str(driver.loc), "Empty Seats: ", int(matched_dict[driver]["seats_left"])]
-        values.append(array)
-        for rider in matched_dict[driver]["riders"]:
-            array = ["Rider Name:", str(rider.name), "Phone: ", str(rider.phone)] 
-            values.append(array)
+    values_tues = []
+    populate_values_array(matched_tues, values_tues)
 
+    values_thurs = []
+    populate_values_array(matched_thurs, values_thurs)
+
+    values_sun = []
+    populate_values_array(matched_sun, values_sun)
+
+    # index starts at 1
     index = 1
-    for row in values:
+
+    row = ["Tuesday Rides"]
+    sheet.insert_row(row, index)
+    index += 1
+
+    # Loop through all tuesday values
+    for row in values_tues:
+        sheet.insert_row(row, index)
+        index += 1
+
+    row = ["Thursday Rides"]
+    sheet.insert_row(row, index)
+    index += 1
+
+    # Loop through all tuesday values
+    for row in values_thurs:
+        sheet.insert_row(row, index)
+        index += 1
+
+    row = ["Sunday Rides"]
+    sheet.insert_row(row, index)
+    index += 1
+
+    # Loop through all tuesday values
+    for row in values_sun:
         sheet.insert_row(row, index)
         index += 1
