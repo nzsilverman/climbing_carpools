@@ -17,13 +17,13 @@ def print_matched_debug(matched):
 
     for driver in matched:
         driver_email_list.append(driver.email)
-        print("Driver: {}\tDept. Time: {}\tAlt Time: {}\t Dept. Location: {}\t Open Spots: {}"\
-                .format(driver.name, driver.dept_time, driver.alt_time, driver.loc, matched[driver]["seats_left"]))
+        print("Driver: {}\tPhone: {}\tDept. Time: {}\tAlt Time: {}\t Dept. Location: {}\t Open Spots: {}"\
+                .format(driver.name, driver.phone, driver.dept_time, driver.alt_time, driver.loc, matched[driver]["seats_left"]))
         rider_num = 1
         for rider in matched[driver]["riders"]:
             rider_email_list.append(rider.email)
             # print("Rider {} Name: {}\t Email: {}".format(rider.name, rider.email))
-            print("Rider {} Name: {}\t Email: {}\t Loc: {}\tDept. Time:{}".format(rider_num, rider.name, rider.email, rider.loc, rider.dept_time))
+            print("Rider {} Name: {}\tPhone: {}\t Email: {}\t Loc: {}\tDept. Time:{}".format(rider_num, rider.name, rider.phone, rider.email, rider.loc, rider.dept_time))
             rider_num = rider_num + 1
 
         print("\n\n")

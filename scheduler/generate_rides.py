@@ -21,19 +21,33 @@ def seed_matched_dict(drivers):
     return matched
 
 
+def check_compatible_loc(rider, driver):
+    """ Checks if rider and driver have compatible location settings. """
+    if rider.loc == driver.loc:
+        return True
+    elif rider.loc == Loc.NORTH_AND_CENTRAL:
+        return True
+    else:
+        return False
+
+def loc_time_compatible(rider, driver):
+    """ Checks if a rider departure time and location are compatible."""
+    if rider.dept_time == driver.dept_time:
+        # Want to leave at the same time
+        return check_compatible_loc(rider, driver)
+    elif rider.dept_time == Dept_Time.BEFORE_730:
+        if driver.loc == Dept_Time.AT_730: # Before case already checked
+            return check_compatible_loc(rider, driver)
+    else:
+        return False
+
 def find_best_match(matched, rider):
     """ Find the best match for the rider. """
     compatible_drivers = []
     for driver in matched:
         # import pdb; pdb.set_trace()
         if matched[driver]["seats_left"]:
-            # check depart time and location to see if driver is compatible
-            if rider.dept_time == driver.dept_time or \
-                (rider.dept_time == Dept_Time.BEFORE_730 and
-                    driver.dept_time == Dept_Time.AT_730) and \
-                    (driver.loc == rider.loc or \
-                    (rider.loc == Loc.NORTH_AND_CENTRAL and
-                        driver.loc == Loc.CENTRAL)):
+            if loc_time_compatible(rider, driver):
                     # Compatbile with location
                     compatible_drivers.append(driver)
     # print("Comp drivers: ")
@@ -66,11 +80,11 @@ def find_best_match(matched, rider):
     return best_driver
 
 
-def generate_rides(riders, drivers):
+def generate_rides(riders_in, drivers):
     ''' Generates rides. '''
+    riders = riders_in
     seats_remaining = get_total_seats(drivers)
-    # print(seats_remaining)
-    # print("num riders: " + str(num_riders))
+    print(seats_remaining)
 
     matched = seed_matched_dict(drivers)
     # print("Matched dict to start")
@@ -79,11 +93,10 @@ def generate_rides(riders, drivers):
     # Randomize order of riders
     random.shuffle(riders)
 
-    while seats_remaining and len(riders) > 0:
+    while (seats_remaining > 0 and len(riders) > 0):
         # Match a rider with the best possible driver
         # Pick a random rider
         chosen_rider = riders.pop()
-        # print("Chosen Rider " + str(chosen_rider.name))
 
         best_driver = find_best_match(matched, chosen_rider)
         if best_driver:
@@ -91,12 +104,12 @@ def generate_rides(riders, drivers):
             matched[best_driver]["riders"].append(chosen_rider)
             matched[best_driver]["seats_left"] = \
                 matched[best_driver]["seats_left"] - 1
-            seats_remaining -= 1
+            seats_remaining = seats_remaining - 1
             # print(chosen_rider.name +" matched with " + best_driver.name)
 
     if len(riders) > 0:
         print("\nNot all riders were given a seat. The following riders were not matched:")
         for rider in riders:
-            print(rider.name)
+            print("Name: {}\tLocation:{}\tTime{}".format(rider.name, rider.loc, rider.dept_time))
 
     return matched
