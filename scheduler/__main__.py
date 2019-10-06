@@ -3,6 +3,7 @@
 from read_responses import *
 from generate_rides import *
 from print_responses import *
+from write_to_sheet import *
 
 def main():
     # Sheet name: Carpool Scheduling Template (Responses)
@@ -37,16 +38,17 @@ def main():
     # print(sun_riders)
 
     tues_rides = generate_rides(tues_riders, tues_drivers)
-    print("\n\nTuesday Rides: \n")
-    print_matched_debug(tues_rides)
+    write_to_gsheet(tues_rides, "Practice Sheet for Writing from Python")
+    # print("\n\nTuesday Rides: \n")
+    # print_matched_debug(tues_rides)
 
-    thurs_rides = generate_rides(thurs_riders, thurs_drivers)
-    print("\n\nThursday Rides: \n")
-    print_matched_debug(thurs_rides)
+    # thurs_rides = generate_rides(thurs_riders, thurs_drivers)
+    # print("\n\nThursday Rides: \n")
+    # print_matched_debug(thurs_rides)
 
-    sun_rides = generate_rides(sun_riders, sun_drivers)
-    print("\n\nSunday Rides: \n")
-    print_matched_debug(sun_rides)
+    # sun_rides = generate_rides(sun_riders, sun_drivers)
+    # print("\n\nSunday Rides: \n")
+    # print_matched_debug(sun_rides)
 
 if __name__ == "__main__":
     # pylint: disable=no-value-for-parameter
