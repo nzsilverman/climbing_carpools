@@ -9,6 +9,7 @@ def main():
     # Sheet name: Carpool Scheduling Template (Responses)
     # Dues sheet name: Due Paying Members
     sheet_name = "Responses 9-28-19"
+    output_sheet_name =  "Practice Sheet for Writing from Python"
     dues_sheet_name = "MCC Dues Paying Members 2019-2020"
 
     form_responses = create_lists(sheet_name, dues_sheet_name)
@@ -48,7 +49,7 @@ def main():
     sun_rides = generate_rides(sun_riders, sun_drivers)
     print("\n\nSunday Rides: \n")
     print_matched_debug(sun_rides)
-    write_to_gsheet(tues_rides, thurs_rides, sun_rides, "Practice Sheet for Writing from Python")
+    write_to_gsheet(tues_rides, thurs_rides, sun_rides, output_sheet_name)
 
 if __name__ == "__main__":
     # pylint: disable=no-value-for-parameter
