@@ -8,10 +8,11 @@ from classes.Rider import Rider
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
+import time
 
 def populate_values_array(matched_dict, values):
     for driver in matched_dict:
-        array = ["Driver Name:", str(driver.name), "Phone: ", str(driver.phone), "Loc: ", str(driver.loc), "Empty Seats: ", int(matched_dict[driver]["seats_left"])]
+        array = ["Driver Name:", str(driver.name), "Phone: ", str(driver.phone), "Loc: ", str(driver.loc), "Empty Seats: ", int(matched_dict[driver]["seats_left"]), "Time: ", str(driver.dept_time), "Alt time (if not 7:30): ", str(driver.alt_time)]
         values.append(array)
         for rider in matched_dict[driver]["riders"]:
             array = ["Rider Name:", str(rider.name), "Phone: ", str(rider.phone)] 
@@ -57,22 +58,27 @@ def write_to_gsheet(matched_tues, matched_thurs, matched_sun, spreadsheet_name):
     # Loop through all tuesday values
     for row in values_tues:
         sheet.insert_row(row, index)
+        time.sleep(.3)
         index += 1
 
     row = ["Thursday Rides"]
     sheet.insert_row(row, index)
+    time.sleep(.3)
     index += 1
 
-    # Loop through all tuesday values
+    # Loop through all thursday values
     for row in values_thurs:
         sheet.insert_row(row, index)
+        time.sleep(.3)
         index += 1
 
     row = ["Sunday Rides"]
     sheet.insert_row(row, index)
+    time.sleep(.3)
     index += 1
 
-    # Loop through all tuesday values
+    # Loop through all sunday values
     for row in values_sun:
         sheet.insert_row(row, index)
+        time.sleep(.3)
         index += 1
