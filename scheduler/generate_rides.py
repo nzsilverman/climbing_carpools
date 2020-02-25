@@ -25,7 +25,7 @@ def check_compatible_loc(rider, driver):
     """ Checks if rider and driver have compatible location settings. """
     if rider.loc == driver.loc:
         return True
-    elif rider.loc == Loc.NORTH_AND_CENTRAL:
+    elif rider.loc == Loc.NORTH_AND_CENTRAL or driver.loc == Loc.NORTH_AND_CENTRAL:
         return True
     else:
         return False

@@ -12,12 +12,40 @@ import time
 
 def populate_values_array(matched_dict, values):
     for driver in matched_dict:
-        array = ["Driver Name:", str(driver.name), "Phone: ", str(driver.phone), "Loc: ", str(driver.loc), "Empty Seats: ", int(matched_dict[driver]["seats_left"]), "Time: ", str(driver.dept_time), "Alt time (if not 7:30): ", str(driver.alt_time)]
+        array = []
+        array.append("Driver Name: ")
+        array.append(str(driver.name))
+        array.append("Phone:")
+        array.append(str(driver.phone))
+        array.append("Location")
+        if driver.loc == Loc.NORTH:
+            array.append("Pierpoint")
+        elif driver.loc == Loc.CENTRAL:
+            array.append("Cube")
+        elif driver.loc == Loc.NORTH_AND_CENTRAL:
+            array.append("North and Central, rider please specify")
+
+        array.append("Time:")
+        if driver.dept_time == Dept_Time.AT_730:
+            array.append("7:30")
+        elif driver.dept_time == Dept_Time.AT_10_AM:
+            array.append("10 AM")
+        else:
+            array.append(str(driver.alt_time))
+        empty_seats = matched_dict[driver]["seats_left"]
+        
+        #array = ["Driver Name:", str(driver.name), "Phone: ", str(driver.phone), "Loc: ", str(driver.loc), "Empty Seats: ", int(matched_dict[driver]["seats_left"]), "Time: ", str(driver.dept_time), "Alt time (if not 7:30): ", str(driver.alt_time)]
         values.append(array)
         for rider in matched_dict[driver]["riders"]:
             array = ["Rider Name:", str(rider.name), "Phone: ", str(rider.phone)] 
             values.append(array)
 
+
+        # Populate empty seats with a blank in spreadsheet
+        for i in range(empty_seats):
+            array = ["Rider Name:", "", "Phone: ", ""] 
+            values.append(array)
+            
         # Append empty to write an empty row in between drivers
         values.append([])
 
@@ -58,27 +86,27 @@ def write_to_gsheet(matched_tues, matched_thurs, matched_sun, spreadsheet_name):
     # Loop through all tuesday values
     for row in values_tues:
         sheet.insert_row(row, index)
-        time.sleep(.3)
+        time.sleep(4)
         index += 1
 
     row = ["Thursday Rides"]
     sheet.insert_row(row, index)
-    time.sleep(.3)
+    time.sleep(45)
     index += 1
 
     # Loop through all thursday values
     for row in values_thurs:
         sheet.insert_row(row, index)
-        time.sleep(.3)
+        time.sleep(4)
         index += 1
 
     row = ["Sunday Rides"]
     sheet.insert_row(row, index)
-    time.sleep(.3)
+    time.sleep(45)
     index += 1
 
     # Loop through all sunday values
     for row in values_sun:
         sheet.insert_row(row, index)
-        time.sleep(.3)
+        time.sleep(4)
         index += 1
