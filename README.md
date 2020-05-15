@@ -19,8 +19,10 @@ For any contribution questions, please email Nathan Silverman at nzsilver@umich.
 
 To be added as a collaborator on the project, talk with Nathan Silverman.
 
-## Slack Channel
-The following slack channel, accessible [here](https://join.slack.com/t/umichclimbingclub/shared_invite/enQtNzE0NjQzMTU3MzAwLWYwZGVjMmZlOGQzNzA2ZThmMGQ4ZTc4MzM3NGExODU5MWY1MjllMTljNTQ3MzViYzE3NmNiNzFiZWEyYjUyYjg) to anyone witha umich email address is the prefered method of communication for this project. This should be used along with the github issues. 
+## Discord Channel
+A discord channel can be joined with the code: 7q8C9NF
+
+This should be used for all communication about the project, along with github issues. 
 
 # Development Notes
 This program is designed to facilitate carpools for the University of Michigan Climbing Club. This program gets information from a google spreadsheet that collects data about when club members want to drive to the gym, and matches riders with the best drivers in a fair manner. The algorithm for choosing a rider is based on selecting a random rider, and then finding the best driver that has seats left in their vehicle.The best driver is defined as a driver that wants to leave at a similar time and similar location.
