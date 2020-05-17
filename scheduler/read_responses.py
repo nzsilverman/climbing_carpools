@@ -40,10 +40,10 @@ def get_responses_from_spreadsheet(spreadsheet_name, dues_sheet_name):
     
     # Get due paying members list
     dues_sheet = gc.open(DUES_SHEET).sheet1.get_all_records()
-    # Put uniquenames of people who have paid dues into a list
+    # Put uniqnames of people who have paid dues into a list
     dues_list = set()
     for entry in dues_sheet:
-        dues_list.add(entry["Uniquename"])
+        dues_list.add(entry["Uniqname"].strip())
 
     return (data, dues_list)
 
@@ -71,48 +71,49 @@ def create_lists(sheet_name, dues_sheet_name):
         # Timestamp is the 0th element in the row
         email = row[1]
         name = row[2]
+        phone = row[3]
 
-        # Splice array, entries [3,9) are for tuesday
-        tues_array = row[3:9]
+        # Splice array, entries [4,10) are for tuesday
+        tues_array = row[4:10]
         
 
         # Create Tuesday Entry
         member_type = tues_array[0]
         if member_type == "Driver":
             # Driver Type
-            driver = get_tues_thurs_driver(tues_array, email, name)
+            driver = get_tues_thurs_driver(tues_array, email, name, phone)
             validate_driver(tues_drivers, driver)
         elif member_type == "Rider":
             # Rider Type
-            rider = get_tues_thurs_rider(tues_array, email, name)
+            rider = get_tues_thurs_rider(tues_array, email, name, phone)
             validate_rider(tues_riders, rider, dues_list)
         
-        # Thursday array is entries [9, 15)
-        thurs_array = row[9:15]
+        # Thursday array is entries [10, 16)
+        thurs_array = row[10:16]
 
         # Create Thursday Entry
         member_type = thurs_array[0]
         if member_type == "Driver":
             # Driver Type
-            driver = get_tues_thurs_driver(thurs_array, email, name)
+            driver = get_tues_thurs_driver(thurs_array, email, name, phone)
             validate_driver(thurs_drivers, driver);
         elif member_type == "Rider":
             # Rider Type
-            rider = get_tues_thurs_rider(thurs_array, email, name)
+            rider = get_tues_thurs_rider(thurs_array, email, name, phone)
             validate_rider(thurs_riders, rider, dues_list)
 
         # Create sunday entry
         # Splice array from 15th element to the end
-        sunday_array = row[15:] 
+        sunday_array = row[16:] 
 
         member_type = sunday_array[0]
         if member_type == "Driver":
             # Driver Type
-            driver = get_sunday_driver(sunday_array, email, name)
+            driver = get_sunday_driver(sunday_array, email, name, phone)
             validate_driver(sun_drivers, driver)
         elif member_type == "Rider":
             # Rider Type
-            rider = get_sunday_rider(sunday_array, email, name)
+            rider = get_sunday_rider(sunday_array, email, name, phone)
             validate_rider(sun_riders, rider, dues_list)
     return (tues_drivers, tues_riders, thurs_drivers, thurs_riders, sun_drivers, sun_riders)
 
@@ -144,14 +145,14 @@ def validate_rider(array, rider, dues_list):
     """ Validate a rider has necesary info, return array with rider if 
     valid and without rider if invalid. """
     # import pdb; pdb.set_trace()
-    uniquename = rider.email.split('@')[0].strip()
+    uniqname = rider.email.split('@')[0].strip()
     # Make sure there is a ride departure location and time
     if rider.loc and rider.dept_time:
         # Make sure they paid dues
-        if uniquename in dues_list:
+        if uniqname in dues_list:
             array.append(rider)
-        # else:
-            # print("Validate rider failed for " + rider.name + " since they did not pay dues")
+        else:
+            print("Validate rider failed for " + rider.name + ", " + uniqname + "@umich.edu" + " since they did not pay dues")
     # else:
         # If checks failed, list is unmodified
         # print("validate rider failed for the following rider: " + rider.name)
@@ -183,7 +184,7 @@ def parse_rider_location(dept_loc):
     elif dept_loc == "Exclusively Central campus":
         return Loc.CENTRAL
 
-def get_tues_thurs_driver(array, email, name):
+def get_tues_thurs_driver(array, email, name, phone):
     """ Returns a Driver object. """
     # Format of Data for Tuesday and Thursday
     # [0] type
@@ -201,9 +202,9 @@ def get_tues_thurs_driver(array, email, name):
     dept_time = parse_dept_time(array[4])
     alt_time = array[5]
 
-    return Driver(email, name, location, num_riders, dept_time, alt_time)
+    return Driver(email, name, location, num_riders, dept_time, alt_time, phone)
 
-def get_tues_thurs_rider(array, email, name):
+def get_tues_thurs_rider(array, email, name, phone):
     """ Returns a Rider object. """
     # Format of Data for Tuesday and Thursday
     # [0] type
@@ -216,9 +217,9 @@ def get_tues_thurs_rider(array, email, name):
     location = parse_rider_location(array[3])
     dept_time = parse_dept_time(array[4])
 
-    return Rider(email, name, location, dept_time) 
+    return Rider(email, name, location, dept_time, phone) 
 
-def get_sunday_driver(array, email, name):
+def get_sunday_driver(array, email, name, phone):
     # Array has the form
     # [0] type
     # [1] driver departure
@@ -232,9 +233,9 @@ def get_sunday_driver(array, email, name):
     dept_time= Dept_Time.AT_10_AM
 
     # Return a Driver for 10 am, no alternate time
-    return Driver(email, name, location, num_riders, dept_time, 0)  
+    return Driver(email, name, location, num_riders, dept_time, 0, phone)  
 
-def get_sunday_rider(array, email, name):
+def get_sunday_rider(array, email, name, phone):
     # Array has the form
     # [0] type
     # [1] driver departure
@@ -244,4 +245,4 @@ def get_sunday_rider(array, email, name):
     dept_time = Dept_Time.AT_10_AM
 
     # Return a Rider for 10 am, no alternate time
-    return Rider(email, name, location, dept_time)  
+    return Rider(email, name, location, dept_time, phone)  
