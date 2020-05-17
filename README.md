@@ -1,5 +1,6 @@
 # University of Michigan Climbing Club Carpool Scheduling Software
 Initially Written by Nathan Silverman (nzsilver@umich.edu) in Summer 2019.
+Version 2.0 is under development currently
 # Installing the program
 To install the program, type the following command in the top level directory where the `setup.py` file is:
 
