@@ -8,8 +8,8 @@ from write_to_sheet import *
 def main():
     # Sheet name: Carpool Scheduling Template (Responses)
     # Dues sheet name: Due Paying Members
-    sheet_name = "Responses 2-23-20"
-    output_sheet_name =  "MCC Carpools 2-23-20"
+    sheet_name = "Responses 3-8-20"
+    output_sheet_name =  "MCC Carpools 3-8-20"
     dues_sheet_name = "MCC Dues Paying Members 2019-2020"
 
     form_responses = create_lists(sheet_name, dues_sheet_name)
