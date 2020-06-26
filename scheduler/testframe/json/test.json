@@ -5,14 +5,18 @@
         "phone": 269876325,
         "is_dues_paying": true,
         "is_driver": false,
-        "locations": [
-            "CENTRAL"
-        ],
-        "departure_times": [
-            6, 7, 8
-        ],
         "days": [
-            "TUESDAY"
+            {
+                "day": "TUESDAY",
+                "departure_times": [
+                    6,
+                    7,
+                    8
+                ],
+                "locations": [
+                    "CENTRAL"
+                ]
+            }
         ]
     },
     {
@@ -21,14 +25,16 @@
         "phone": 234576325,
         "is_dues_paying": true,
         "is_driver": false,
-        "locations": [
-            "CENTRAL"
-        ],
-        "departure_times": [
-            6
-        ],
         "days": [
-            "TUESDAY"
+            {
+                "day": "TUESDAY",
+                "departure_times": [
+                    6
+                ],
+                "locations": [
+                    "CENTRAL"
+                ]
+            }
         ]
     },
     {
@@ -37,14 +43,16 @@
         "phone": 1234567890,
         "is_dues_paying": true,
         "is_driver": false,
-        "locations": [
-            "NORTH"
-        ],
-        "departure_times": [
-            10
-        ],
         "days": [
-            "TUESDAY"
+            {
+                "day": "TUESDAY",
+                "departure_times": [
+                    8
+                ],
+                "locations": [
+                    "NORTH"
+                ]
+            }
         ]
     },
     {
@@ -53,14 +61,16 @@
         "phone": 9876543201,
         "is_dues_paying": true,
         "is_driver": true,
-        "locations": [
-            "CENTRAL"
-        ],
-        "departure_times": [
-            8
-        ],
         "days": [
-            "TUESDAY"
+            {
+                "day": "TUESDAY",
+                "departure_times": [
+                    8
+                ],
+                "locations": [
+                    "NORTH"
+                ]
+            }
         ],
         "seats": 4
     }

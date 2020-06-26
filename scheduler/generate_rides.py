@@ -11,32 +11,52 @@ from scheduler.classes.MeetingLocation import MeetingLocation
 logger = logging.getLogger(__name__)
 
 
-def get_total_seats(drivers):
+def check_in_days(member, day):
+    for d in member["days"]:
+        if d["day"] == day:
+            return True
+
+    return False
+
+
+def get_total_seats(drivers, day):
     """
     Returns the number of available seats for passengers.
     """
-    return sum([driver["seats"] for driver in drivers])
+    sum = 0
+
+    for driver in drivers:
+        if check_in_days(driver, day):
+            sum += driver["seats"]
+
+    return sum
 
 
-def are_location_compatible(rider, driver):
+def get_day_info_from_member(member, day, key):
+    for d in member["days"]:
+        if d["day"] == day:
+            return d[key]
+
+
+def are_location_compatible(rider, driver, day):
     """
     Checks if rider and driver have compatible location settings.
     """
 
-    for location in rider["locations"]:
-        if location in driver["locations"]:
+    for location in get_day_info_from_member(rider, day, "locations"):
+        if location in get_day_info_from_member(driver, day, "locations"):
             logger.debug("location match %s and %s", rider["name"], driver["name"])
             return True
 
     return False
 
 
-def time_compatibility(rider, driver):
+def time_compatibility(rider, driver, day):
     """
     Checks time compatibility. Finds driver and rider with closest departure time
     """
-    rider_times = rider["departure_times"]
-    driver_times = driver["departure_times"]
+    rider_times = get_day_info_from_member(rider, day, "departure_times")
+    driver_times = get_day_info_from_member(driver, day, "departure_times")
 
     rider_times.sort()
     driver_times.sort()
@@ -59,15 +79,15 @@ def time_compatibility(rider, driver):
     return result
 
 
-def find_best_match(drivers, rider):
+def find_best_match(drivers, rider, day):
     """
     Find the best match for the rider. Criterion for best match is
     defined as 1) a matching location and 2) the closest available time.
     """
     compatible_drivers = []
     for driver in drivers:
-        if driver["seats"] and are_location_compatible(rider, driver):
-            compatible_drivers.append([driver, time_compatibility(rider, driver)])
+        if driver["seats"] and are_location_compatible(rider, driver, day):
+            compatible_drivers.append([driver, time_compatibility(rider, driver, day)])
 
     if not compatible_drivers:
         logger.warn("no compatible drivers for %s", rider["name"])
@@ -81,28 +101,52 @@ def generate_rides(riders, drivers):
     Matches riders with drivers.
     """
 
-    seats_remaining = get_total_seats(drivers)
-    logger.info("%i seats available", seats_remaining)
+    days = [
+        "MONDAY",
+        "TUESDAY",
+        "WEDNESDAY",
+        "THURSDAY",
+        "FRIDAY",
+        "SATURDAY",
+        "SUNDAY",
+    ]
 
-    random.shuffle(riders)
+    for day in days:
+        # cars for the given day
+        cars = []
 
-    cars = []
+        # shuffle the riders for every day
+        random.shuffle(riders)
 
-    while seats_remaining > 0 and len(riders) > 0:
-        chosen_rider = riders.pop()
+        seats_remaining = get_total_seats(drivers, day)
+        logger.info("%i seats available", seats_remaining)
 
-        best_driver = find_best_match(drivers, chosen_rider)
-        driver_has_car = False
+        days_riders = riders
 
-        if best_driver:
-            for car in cars:
-                if car.driver == best_driver:
-                    car.riders.append(chosen_rider)
-                    driver_has_car = True
+        while seats_remaining > 0 and len(days_riders) > 0:
 
-            if not driver_has_car:
-                new_car = Car(best_driver)
-                new_car.riders.append(chosen_rider)
-                cars.append(new_car)
+            chosen_rider = days_riders.pop()
+            # don't match rider if not riding current day
+            if not check_in_days(chosen_rider, day):
+                print(chosen_rider["name"], "not riding", day)
+                continue
 
-    return cars
+            best_driver = find_best_match(drivers, chosen_rider, day)
+
+            driver_has_car = False
+
+            if best_driver:
+
+                # add rider to selected driver's car
+                for car in cars:
+                    if car.driver == best_driver:
+                        car.riders.append(chosen_rider)
+                        driver_has_car = True
+
+                # give driver a car if they don't already have one
+                if not driver_has_car:
+                    new_car = Car(best_driver)
+                    new_car.riders.append(chosen_rider)
+                    cars.append(new_car)
+
+        yield cars
