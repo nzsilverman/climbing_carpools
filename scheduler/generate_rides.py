@@ -12,6 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 def check_in_days(member, day):
+    """
+    Checks if member is signed up for the given day
+    """
     for d in member["days"]:
         if d["day"] == day:
             return True
@@ -23,19 +26,19 @@ def get_total_seats(drivers, day):
     """
     Returns the number of available seats for passengers.
     """
-    sum = 0
-
-    for driver in drivers:
-        if check_in_days(driver, day):
-            sum += driver["seats"]
-
-    return sum
+    return sum([driver["seats"] for driver in drivers if check_in_days(driver, day)])
 
 
 def get_day_info_from_member(member, day, key):
+    """
+    Gets info associated with the key on the given day from the provided member
+    """
     for d in member["days"]:
         if d["day"] == day:
             return d[key]
+
+    logger.error("%s not found for %s in %s", key, day, member)
+    return []
 
 
 def are_location_compatible(rider, driver, day):
@@ -55,25 +58,26 @@ def time_compatibility(rider, driver, day):
     """
     Checks time compatibility. Finds driver and rider with closest departure time
     """
+
     rider_times = get_day_info_from_member(rider, day, "departure_times")
     driver_times = get_day_info_from_member(driver, day, "departure_times")
 
     rider_times.sort()
+
+    # there should only be one time here
     driver_times.sort()
+    if (len(driver_times) != 1):
+        logger.error("driver has multiple departure times for %s", day)
+        exit(2)
+
+    driver_time = driver_times[0]
 
     result = sys.maxsize
-    r = 0
-    d = 0
 
-    while r < len(rider_times) and d < len(driver_times):
-        diff = abs(rider_times[r] - driver_times[d])
-        if diff < result:
-            result = diff
-
-        if rider_times[r] < driver_times[d]:
-            r += 1
-        else:
-            d += 1
+    # finds minimum difference between rider departure times and driver time
+    for time in rider_times:
+        if abs(time - driver_time) < result:
+            result = abs(time - driver_time)
 
     logger.debug("min time difference: %i", result)
     return result
@@ -85,6 +89,8 @@ def find_best_match(drivers, rider, day):
     defined as 1) a matching location and 2) the closest available time.
     """
     compatible_drivers = []
+
+    # finds all compatible drivers
     for driver in drivers:
         if driver["seats"] and are_location_compatible(rider, driver, day):
             compatible_drivers.append([driver, time_compatibility(rider, driver, day)])
@@ -93,6 +99,7 @@ def find_best_match(drivers, rider, day):
         logger.warn("no compatible drivers for %s", rider["name"])
         return
 
+    # return driver that best matches the time
     return sorted(compatible_drivers, key=lambda lst: lst[1])[0][0]
 
 
