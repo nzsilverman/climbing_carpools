@@ -1,7 +1,3 @@
-"""
-Backend tests
-"""
-
 from unittest import TestCase
 from nose2.tools import params
 
@@ -13,6 +9,9 @@ test_path_prefix = "scheduler/testframe/json/"
 
 
 class JsonBackendTest(TestCase):
+    """
+    Test JSON backend
+    """
 
     backend_test_data = [
         (test_path_prefix + "simple_test.json", 2, 0, ["Roberts", "Suzy"], []),

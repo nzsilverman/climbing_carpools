@@ -1,7 +1,3 @@
-"""
-Util tests
-"""
-
 from unittest import TestCase
 from nose2.tools import params
 
@@ -11,6 +7,10 @@ from util import sort_by_name
 
 
 class UtilTest(TestCase):
+    """
+    Tests for util functions
+    """
+
     get_drivers_test_data = [
         (
             [

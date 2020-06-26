@@ -21,6 +21,9 @@ def filter_dues_payers(riders):
 
 
 def get_drivers(members):
+    """
+    Gets drivers from the list of members
+    """
     drivers = []
 
     for member in members:
@@ -31,6 +34,9 @@ def get_drivers(members):
 
 
 def get_riders(members):
+    """
+    Gets riders from the list of members
+    """
     riders = []
 
     for member in members:

@@ -1,7 +1,3 @@
-"""
-Generate Rides tests
-"""
-
 from unittest import TestCase
 from nose2.tools import params
 
@@ -11,6 +7,9 @@ import scheduler.generate_rides as generate_rides
 
 
 class GenerateRidesTest(TestCase):
+    """
+    Tests Ride Generation
+    """
 
     get_total_seats_test_data = [
         ([{"seats": 4}, {"seats": 3}, {"seats": 2}, {"seats": 1}], 10),
