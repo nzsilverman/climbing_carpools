@@ -5,8 +5,8 @@ import random
 import logging
 import sys
 
-from classes.Car import Car
-from classes.MeetingLocation import MeetingLocation
+from scheduler.classes.Car import Car
+from scheduler.classes.MeetingLocation import MeetingLocation
 
 logger = logging.getLogger(__name__)
 
