@@ -5,6 +5,7 @@ from scheduler.util import *
 
 logger = logging.getLogger(__name__)
 
+
 def members_from_json(filename):
     """
     Gets members from a JSON file.

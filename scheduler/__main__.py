@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 DUES_PAYERS_SHEET_NAME = ""
 RESPONSES_SHEET_NAME = ""
 
+
 def get_members():
     """
     Gets members. Abstraction for any backends (JSON, google forms).
@@ -21,6 +22,7 @@ def get_members():
 
     logger.info("getting members from google sheet")
     return members_from_sheet(DUES_PAYERS_SHEET_NAME, RESPONSES_SHEET_NAME)
+
 
 def main():
     riders, drivers = get_members()

@@ -3,6 +3,7 @@ import json
 
 logger = logging.getLogger(__name__)
 
+
 def filter_dues_payers(riders):
     """
     Returns list of riders that are dues paying.

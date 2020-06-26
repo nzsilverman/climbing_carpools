@@ -10,6 +10,7 @@ from classes.MeetingLocation import MeetingLocation
 
 logger = logging.getLogger(__name__)
 
+
 def get_total_seats(drivers):
     """
     Returns the number of available seats for passengers.
@@ -29,6 +30,7 @@ def are_location_compatible(rider, driver):
 
     return False
 
+
 def time_compatibility(rider, driver):
     """
     Checks time compatibility. Finds driver and rider with closest departure time
@@ -43,11 +45,11 @@ def time_compatibility(rider, driver):
     r = 0
     d = 0
 
-    while (r < len(rider_times) and d < len(driver_times)):
+    while r < len(rider_times) and d < len(driver_times):
         diff = abs(rider_times[r] - driver_times[d])
-        if (diff < result):
+        if diff < result:
             result = diff
-        
+
         if rider_times[r] < driver_times[d]:
             r += 1
         else:
@@ -55,6 +57,7 @@ def time_compatibility(rider, driver):
 
     logger.debug("min time difference: %i", result)
     return result
+
 
 def find_best_match(drivers, rider):
     """
@@ -69,7 +72,6 @@ def find_best_match(drivers, rider):
     if not compatible_drivers:
         logger.warn("no compatible drivers for %s", rider["name"])
         return
-    
 
     return sorted(compatible_drivers, key=lambda lst: lst[1])[0][0]
 
@@ -86,7 +88,7 @@ def generate_rides(riders, drivers):
 
     cars = []
 
-    while (seats_remaining > 0 and len(riders) > 0):
+    while seats_remaining > 0 and len(riders) > 0:
         chosen_rider = riders.pop()
 
         best_driver = find_best_match(drivers, chosen_rider)
@@ -97,7 +99,7 @@ def generate_rides(riders, drivers):
                 if car.driver == best_driver:
                     car.riders.append(chosen_rider)
                     driver_has_car = True
-            
+
             if not driver_has_car:
                 new_car = Car(best_driver)
                 new_car.riders.append(chosen_rider)
