@@ -1,0 +1,37 @@
+[
+    {
+        "name": "Roberts",
+        "email": "rkalnins@umich.edu",
+        "phone": 269876325,
+        "is_dues_paying": true,
+        "is_driver": false,        
+        "locations": [
+            "CENTRAL"
+        ],
+        "departure_times": [
+            6,
+            7,
+            8
+        ],
+        "days": [
+            "TUESDAY"
+        ]
+    },
+    {
+        "name": "Suzy",
+        "email": "s@umich.edu",
+        "phone": 9876543201,
+        "is_dues_paying": true,
+        "is_driver": false,        
+        "locations": [
+            "CENTRAL"
+        ],
+        "departure_times": [
+            8
+        ],
+        "days": [
+            "TUESDAY"
+        ],
+        "seats": 4
+    }
+    ]

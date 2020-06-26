@@ -1,0 +1,67 @@
+[
+    {
+        "name": "Roberts",
+        "email": "rkalnins@umich.edu",
+        "phone": 269876325,
+        "is_dues_paying": true,
+        "is_driver": false,
+        "locations": [
+            "CENTRAL"
+        ],
+        "departure_times": [
+            6, 7, 8
+        ],
+        "days": [
+            "TUESDAY"
+        ]
+    },
+    {
+        "name": "Jon",
+        "email": "jon@umich.edu",
+        "phone": 234576325,
+        "is_dues_paying": true,
+        "is_driver": false,
+        "locations": [
+            "CENTRAL"
+        ],
+        "departure_times": [
+            6
+        ],
+        "days": [
+            "TUESDAY"
+        ]
+    },
+    {
+        "name": "Bob",
+        "email": "bob@umich.edu",
+        "phone": 1234567890,
+        "is_dues_paying": true,
+        "is_driver": false,
+        "locations": [
+            "NORTH"
+        ],
+        "departure_times": [
+            10
+        ],
+        "days": [
+            "TUESDAY"
+        ]
+    },
+    {
+        "name": "Suzy",
+        "email": "s@umich.edu",
+        "phone": 9876543201,
+        "is_dues_paying": true,
+        "is_driver": true,
+        "locations": [
+            "CENTRAL"
+        ],
+        "departure_times": [
+            8
+        ],
+        "days": [
+            "TUESDAY"
+        ],
+        "seats": 4
+    }
+]
