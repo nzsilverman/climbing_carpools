@@ -155,7 +155,7 @@ def generate_rides(riders, drivers, days_enabled):
                 if not driver_has_car:
                     new_car = Car(best_driver)
                     new_car.riders.append(chosen_rider)
-                    car.seats -= 1
+                    new_car.seats -= 1
                     cars.append(new_car)
 
         yield (day, cars)

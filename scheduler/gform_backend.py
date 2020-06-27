@@ -9,8 +9,9 @@ logger = logging.getLogger(__name__)
 NAME_COLUMN = 2
 EMAIL_COLUMN = 1
 PHONE_COLUMN = 3
-SEATS_COLUMN = 5
-DAYS_INFO_START_COLUMN = 6
+SEATS_COLUMN = 6
+CAR_DESCRIPTION_COLUMN = 5
+DAYS_INFO_START_COLUMN = 7
 
 OUTPUT_TESTING_FOLDER_ID = "1j1w_0k5bIgqxJfmQmxbZZoGr66fJT4Y4"
 
@@ -95,6 +96,7 @@ def get_drivers(days_enabled, responses):
                 "name": row[NAME_COLUMN],
                 "email": row[EMAIL_COLUMN],
                 "phone": row[PHONE_COLUMN],
+                "car_type": row[CAR_DESCRIPTION_COLUMN],
                 "seats": int(row[SEATS_COLUMN]),
                 "is_dues_paying": True,
                 "is_driver": True,
@@ -197,6 +199,9 @@ def write_schedule(schedule, spreadsheet):
             ws = ws_new
 
         car_output = []
+        member = dict()
+
+
         
         
 
