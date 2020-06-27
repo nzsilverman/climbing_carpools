@@ -3,6 +3,10 @@ import gspread
 import pandas as pd
 import json
 from classes.AuthorizedClient import AuthorizedClient
+from classes.WSCell import WSCell
+from classes.WSRange import WSRange
+import util
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -186,9 +190,29 @@ def list_spreadsheets():
     for s in client.openall():
         print(s.title, s.id)
 
+
+def unpack_locations(member, day):
+    locations = util.get_day_info_from_member(member, day, "locations")
+    location_str = ""
+
+    for l in locations:
+        location_str = location_str + l + " "
+
+    return location_str
+
+
+def unpack_time(driver, day):
+    time = util.get_day_info_from_member(driver, day, "departure_times")
+
+    # there should only be one time for the driver
+    return "{0:02.0f}:{1:02.0f}".format(*divmod(time[0] * 60, 60))
+
+
 def write_schedule(schedule, spreadsheet):
+
     for (i, day) in zip(range(0, len(schedule)), schedule):
         print(day[0])
+
         ws = spreadsheet.get_worksheet(i)
 
         if not ws:
@@ -198,13 +222,41 @@ def write_schedule(schedule, spreadsheet):
             spreadsheet.del_worksheet(ws)
             ws = ws_new
 
-        car_output = []
-        member = dict()
+        day_output = []
 
+        start_row_index = 1
+        start_col_index = 1
+        car_start = WSCell(start_row_index, start_col_index)
 
-        
-        
+        end_col_index = 5
 
+        for car in day[1]:
+            end_row_index = car.driver["seats"] + 1
+
+            car_end = WSCell(end_row_index, end_col_index)
+
+            car_output = {
+                "range": WSRange(car_start, car_end).getA1(),
+                "values": [
+                    ["", "Name", "Phone Number", "Departure Time", "Locations"],
+                    [
+                        "Driver",
+                        car.driver["name"],
+                        car.driver["phone"],
+                        unpack_time(car.driver, day[0]),
+                        unpack_locations(car.driver, day[0]),
+                    ],
+                ],
+            }
+
+            for r in car.riders:
+                car_output["values"].append(
+                    ["Rider", r["name"], r["phone"], "", unpack_locations(r, day[0])]
+                )
+
+            day_output.append(car_output)
+            
+        ws.batch_update(day_output)
 
 
 def write_to_sheet(schedule, spreadsheet_name):
@@ -213,4 +265,3 @@ def write_to_sheet(schedule, spreadsheet_name):
     spreadsheet = create_spreadsheet(spreadsheet_name, OUTPUT_TESTING_FOLDER_ID, client)
 
     write_schedule(schedule, spreadsheet)
-    

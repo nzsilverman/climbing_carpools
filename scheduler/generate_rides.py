@@ -7,6 +7,7 @@ import sys
 
 from scheduler.classes.Car import Car
 from scheduler.classes.MeetingLocation import MeetingLocation
+from util import get_day_info_from_member
 
 logger = logging.getLogger(__name__)
 
@@ -27,18 +28,6 @@ def get_total_seats(drivers, day):
     Returns the number of available seats for passengers.
     """
     return sum([driver["seats"] for driver in drivers if check_in_days(driver, day)])
-
-
-def get_day_info_from_member(member, day, key):
-    """
-    Gets info associated with the key on the given day from the provided member
-    """
-    for d in member["days"]:
-        if d["day"] == day:
-            return d[key]
-
-    logger.error("%s not found for %s in %s", key, day, member)
-    return []
 
 
 def are_location_compatible(rider, driver, day):
@@ -158,4 +147,4 @@ def generate_rides(riders, drivers, days_enabled):
                     new_car.seats -= 1
                     cars.append(new_car)
 
-        yield (day, cars)
+        yield [day, cars]

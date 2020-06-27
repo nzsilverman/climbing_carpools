@@ -9,15 +9,15 @@ class WSCell:
         while id > 0:
             id, remainder = divmod(id - 1, 26)
             column_name = chr(65 + remainder) + column_name
-        
+
         return column_name
 
     def getA1(self):
-        return self.__get_column(self.col) + str(self.row) 
+        return self.__get_column(self.col) + str(self.row)
 
     def get(self):
         return self.row, self.col
-    
+
     def inc_row(self, increment):
         self.row += increment
 
