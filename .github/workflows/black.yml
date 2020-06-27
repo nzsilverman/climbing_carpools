@@ -3,9 +3,9 @@ name: Lint
 on: [push, pull_request]
 
 jobs:
-  lint:
+  Lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - uses: psf/black@stable
+      - uses: lgeiger/black-action@v1.0.1
+      - name: Black Python Formatter
+        uses: lgeiger/black-action@v1.0.1
