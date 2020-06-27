@@ -11,7 +11,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="scheduler",
-    version="0.1.0",
+    version="20.0.0-alpha",
     packages=find_packages(),
     install_requires=["gspread", "oauth2client",],
     include_package_data=True,
