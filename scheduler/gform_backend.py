@@ -324,7 +324,7 @@ def write_schedule(schedule, spreadsheet, folder_id):
         car_start = WSCell(start_row_index, start_col_index)
 
         end_row_index = 0
-        end_col_index = 5
+        end_col_index = 6
         car_end = WSCell(end_row_index, end_col_index)
 
         # add each car in the current day to the day's output list
@@ -353,10 +353,11 @@ def write_schedule(schedule, spreadsheet, folder_id):
             car_output = {
                 "range": wsrangeA1,
                 "values": [
-                    ["", "Name", "Phone Number", "Departure Time", "Locations"],
+                    ["", "Name", "Car type", "Phone Number", "Departure Time", "Locations"],
                     [
                         "Driver",
                         car.driver["name"],
+                        car.driver["car_type"],
                         car.driver["phone"],
                         unpack_time(car.driver, day[0]),
                         unpack_locations(car.driver, day[0]),
@@ -367,7 +368,7 @@ def write_schedule(schedule, spreadsheet, folder_id):
             # add rider info
             for r in car.riders:
                 car_output["values"].append(
-                    ["Rider", r["name"], r["phone"], "", unpack_locations(r, day[0])]
+                    ["Rider", r["name"], "", r["phone"], "", unpack_locations(r, day[0])]
                 )
 
             day_output.append(car_output)
