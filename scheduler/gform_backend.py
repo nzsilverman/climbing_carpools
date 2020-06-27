@@ -31,9 +31,11 @@ and create a new one. Then reset these values
 EMAIL_COLUMN = 1
 NAME_COLUMN = 2
 PHONE_COLUMN = 3
-CAR_DESCRIPTION_COLUMN = 5
-SEATS_COLUMN = 6
-DAYS_INFO_START_COLUMN = 7
+CAR_DESCRIPTION_COLUMN = 6
+SEATS_COLUMN = 7
+IS_RIDER_COLUMN = 4
+IS_DRIVER_COLUMN = 5
+DAYS_INFO_START_COLUMN = 8
 
 
 """
@@ -81,6 +83,7 @@ def parse_times(time):
     """
 
     time = time.split(":")
+    print(time)
     return float(time[0]) + (float(time[1]) / 60)
 
 
@@ -93,7 +96,7 @@ def get_riders(responses, days_enabled, dues_payers):
     riders = []
 
     for row in responses[1:]:
-        if row[4] == "Rider":
+        if row[IS_RIDER_COLUMN] == "Yes":
 
             # create rider dictionary
             rider = {
@@ -149,7 +152,7 @@ def get_drivers(days_enabled, responses):
     drivers = []
 
     for row in responses[1:]:
-        if row[4] == "Driver":
+        if row[IS_DRIVER_COLUMN] == "Yes":
 
             # create driver dictionary
             driver = {
