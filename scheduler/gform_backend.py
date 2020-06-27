@@ -6,22 +6,26 @@ import json
 
 logger = logging.getLogger(__name__)
 
+
 def get_dues_payers(dues_sheet):
     payers = set()
     for entry in dues_sheet.get_all_records():
         payers.add(entry["Uniqname"].strip())
-    
+
     return payers
 
+
 def validate_dues_payers(email, dues_payers):
-    uniqname = email.split('@')[0].strip()
+    uniqname = email.split("@")[0].strip()
     return uniqname in dues_payers
+
 
 def parse_location(location):
     if location == "North Campus (Pierpont Commons)":
         return "NORTH"
     elif location == "Central Campus (The Cube)":
         return "CENTRAL"
+
 
 def parse_times(time):
     time = time.split(":")
@@ -39,13 +43,16 @@ def get_riders(responses, days_enabled, dues_payers):
                 "phone": row[3],
                 "is_dues_paying": validate_dues_payers(row[2], dues_payers),
                 "is_driver": False,
-                "days": []
+                "days": [],
             }
 
             # assume each day has a locations column and a departure times column
 
             rider_days_start = 6
-            for (i, d) in zip(range(rider_days_start, rider_days_start + len(days_enabled)), days_enabled):
+            for (i, d) in zip(
+                range(rider_days_start, rider_days_start + len(days_enabled)),
+                days_enabled,
+            ):
                 day = dict()
 
                 # if climbing this day
@@ -70,7 +77,7 @@ def get_riders(responses, days_enabled, dues_payers):
 
     return riders
 
-        
+
 def get_drivers(days_enabled, responses):
     drivers = []
 
@@ -83,13 +90,16 @@ def get_drivers(days_enabled, responses):
                 "seats": int(row[5]),
                 "is_dues_paying": True,
                 "is_driver": True,
-                "days": []
+                "days": [],
             }
 
             # assume each day has a locations column and a departure times column
 
             driver_days_start = 6 + 2 * len(days_enabled)
-            for (i, d) in zip(range(driver_days_start, driver_days_start + len(days_enabled)), days_enabled):
+            for (i, d) in zip(
+                range(driver_days_start, driver_days_start + len(days_enabled)),
+                days_enabled,
+            ):
                 day = dict()
 
                 # if driving this day
@@ -103,7 +113,9 @@ def get_drivers(days_enabled, responses):
                         day["locations"].append(parse_location(l.strip()))
 
                     # driver only has one departure time
-                    day["departure_times"] = [parse_times(row[i + len(days_enabled)].split(",")[0])]
+                    day["departure_times"] = [
+                        parse_times(row[i + len(days_enabled)].split(",")[0])
+                    ]
 
                     driver["days"].append(day)
 
@@ -111,18 +123,22 @@ def get_drivers(days_enabled, responses):
 
     return drivers
 
+
 def members_from_sheet(dues_payers, responses, days_enabled):
     """
     Gets all club members who submitted a response using the form.
     """
 
-    SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    SCOPE = [
+        "https://spreadsheets.google.com/feeds",
+        "https://www.googleapis.com/auth/drive",
+    ]
     SECRETS_FILE = "secret.json"
 
     # json_key = json.load(open(SECRETS_FILE))
 
     credentials = ServiceAccountCredentials.from_json_keyfile_name(SECRETS_FILE, SCOPE)
-    
+
     gc = gspread.authorize(credentials)
 
     for sheet in gc.openall():
@@ -136,4 +152,4 @@ def members_from_sheet(dues_payers, responses, days_enabled):
     riders = get_riders(all_responses, days_enabled, get_dues_payers(dues_payers_sheet))
     drivers = get_drivers(days_enabled, all_responses)
 
-    return riders, drivers 
+    return riders, drivers

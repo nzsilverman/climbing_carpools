@@ -16,7 +16,6 @@ SPREADSHEET = "Carpool Form v20.0.0 (Responses)"
 DAYS_ENABLED = ["TUESDAY", "THURSDAY", "SUNDAY"]
 
 
-
 def get_members():
     """
     Gets members. Abstraction for any backends (JSON, google forms).

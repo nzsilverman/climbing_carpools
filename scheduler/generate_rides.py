@@ -98,7 +98,6 @@ def find_best_match(rider, drivers, day):
     # this algorithm is a good choice if we truly want to give everyone an ~equal~ chance
     # in getting a car but we disregard how well they fit in it relative to others.
 
-
     compatible_drivers = []
 
     # finds all compatible drivers
@@ -118,7 +117,6 @@ def generate_rides(riders, drivers, days_enabled):
     """
     Matches riders with drivers.
     """
-
 
     for day in days_enabled:
         # cars for the given day
