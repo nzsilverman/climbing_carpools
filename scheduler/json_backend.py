@@ -1,3 +1,10 @@
+"""
+Backend for reading data from JSON.
+
+Primarily for debugging and testing
+
+"""
+
 import json
 import logging
 
@@ -10,6 +17,7 @@ def members_from_json(filename):
     """
     Gets members from a JSON file.
     """
+
     with open(filename) as f:
         members = json.load(f)
 

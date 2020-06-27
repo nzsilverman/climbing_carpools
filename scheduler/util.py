@@ -1,3 +1,7 @@
+"""
+A collection of utilties needed by several modules
+"""
+
 import logging
 import json
 
@@ -8,6 +12,7 @@ def filter_dues_payers(riders):
     """
     Returns list of riders that are dues paying.
     """
+
     dues_payers = []
 
     for rider in riders:
@@ -24,6 +29,7 @@ def get_drivers(members):
     """
     Gets drivers from the list of members
     """
+
     drivers = []
 
     for member in members:
@@ -37,6 +43,7 @@ def get_riders(members):
     """
     Gets riders from the list of members
     """
+
     riders = []
 
     for member in members:
@@ -50,6 +57,7 @@ def get_day_info_from_member(member, day, key):
     """
     Gets info associated with the key on the given day from the provided member
     """
+
     for d in member["days"]:
         if d["day"] == day:
             return d[key]

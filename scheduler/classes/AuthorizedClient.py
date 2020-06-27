@@ -7,6 +7,10 @@ class AuthorizedClient:
 
     @staticmethod
     def __authorize():
+        """
+        Authorizes this client
+        """
+
         SCOPE = [
             "https://spreadsheets.google.com/feeds",
             "https://www.googleapis.com/auth/drive",
@@ -28,6 +32,10 @@ class AuthorizedClient:
 
     @staticmethod
     def get_instance():
+        """
+        Get instance of this client
+        """
+
         if AuthorizedClient.__instance == None:
             AuthorizedClient()
         return AuthorizedClient.__instance

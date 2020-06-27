@@ -8,7 +8,7 @@ import sys
 from gform_backend import (
     members_from_sheet,
     write_to_sheet,
-    clear_testing_output,
+    delete_spreadsheet,
     list_spreadsheets,
 )
 from json_backend import members_from_json
@@ -17,10 +17,14 @@ from generate_rides import generate_rides
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 logger = logging.getLogger(__name__)
 
+"""
+Spreadsheet and output configuration
+"""
 DUES_SHEET = "dues-testing-v20.0.0"
 SPREADSHEET = "Carpool Form v20.0.0 (Responses)"
 OUTPUT_SPREADSHEET = "Carpool test output 1"
 DAYS_ENABLED = ["TUESDAY", "THURSDAY", "SUNDAY"]
+OUTPUT_FOLDER_ID = "1j1w_0k5bIgqxJfmQmxbZZoGr66fJT4Y4"
 
 
 def get_members():
@@ -38,8 +42,9 @@ def main():
     # convert generator to list for debugging
     schedule = list(generate_rides(riders, drivers, DAYS_ENABLED))
 
-    write_to_sheet(schedule, OUTPUT_SPREADSHEET)
+    write_to_sheet(schedule, OUTPUT_SPREADSHEET, OUTPUT_FOLDER_ID)
 
+    print("Summary:")
     for day in schedule:
         for car in day[1]:
             print("day:", day[0])
@@ -50,7 +55,10 @@ def main():
 
 
 def clean_drive(sheets):
-    clear_testing_output(sheets)
+    """
+    Deletes spreadsheets matching the provided names
+    """
+    delete_spreadsheet(sheets)
     logger.info("Done deleteing sheets")
 
 

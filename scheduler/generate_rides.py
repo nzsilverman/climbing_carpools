@@ -11,10 +11,12 @@ from util import get_day_info_from_member
 
 logger = logging.getLogger(__name__)
 
+
 def check_in_days(member, day):
     """
     Checks if member is signed up for the given day
     """
+
     for d in member["days"]:
         if d["day"] == day:
             return True
@@ -26,6 +28,7 @@ def get_total_seats(drivers, day):
     """
     Returns the number of available seats for passengers.
     """
+
     return sum([driver["seats"] for driver in drivers if check_in_days(driver, day)])
 
 
@@ -106,19 +109,15 @@ def find_best_match(rider, drivers, day):
     # return driver that best matches the time and the update driver list
     return best_match, drivers
 
+
 def generate_rides(riders, drivers, days_enabled):
     """
     Matches riders with drivers.
     """
 
-    
-
     for day in days_enabled:
         # cars for the given day
         cars = []
-
-        print("DAY", day)
-
 
         for d in drivers:
             d["seats_remaining"] = d["seats"]
@@ -136,7 +135,7 @@ def generate_rides(riders, drivers, days_enabled):
             chosen_rider = days_riders.pop()
             # don't match rider if not riding current day
             if not check_in_days(chosen_rider, day):
-                print(chosen_rider["name"], "not riding", day)
+                logger.debug("%s not riding %s", chosen_rider["name"], day)
                 continue
 
             best_driver, drivers = find_best_match(chosen_rider, drivers, day)

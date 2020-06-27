@@ -6,6 +6,9 @@ from scheduler.classes.WSRange import WSRange
 
 
 class WSRangeTest(TestCase):
+    """
+    Tests WSRange
+    """
 
     ws_range_basic = [
         (4, 4, 4, 6, "D4:F4"),
@@ -24,6 +27,9 @@ class WSRangeTest(TestCase):
 
 
 class WSCellTest(TestCase):
+    """
+    Tests WSCell
+    """
 
     ws_basic_test = [(2, 3, 2, 3), (1, 2, 1, 2)]
 

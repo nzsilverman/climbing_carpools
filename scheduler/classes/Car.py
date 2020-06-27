@@ -1,6 +1,6 @@
 class Car:
     """
-    Car.
+    Car
     """
 
     def __init__(self, driver):
