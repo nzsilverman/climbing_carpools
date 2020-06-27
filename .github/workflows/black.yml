@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   Lint:
-    runs-on: ubuntu-linux
+    runs-on: ubuntu-latest
     steps:
     - name: Black Python Formatter
     - uses: lgeiger/black-action@v1.0.1
