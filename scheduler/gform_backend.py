@@ -12,6 +12,8 @@ PHONE_COLUMN = 3
 SEATS_COLUMN = 5
 DAYS_INFO_START_COLUMN = 6
 
+OUTPUT_TESTING_FOLDER_ID = "1j1w_0k5bIgqxJfmQmxbZZoGr66fJT4Y4"
+
 
 def get_dues_payers(dues_sheet):
     payers = set()
@@ -129,6 +131,7 @@ def get_drivers(days_enabled, responses):
 
     return drivers
 
+
 def members_from_sheet(dues_payers, responses, days_enabled):
     """
     Gets all club members who submitted a response using the form.
@@ -148,3 +151,43 @@ def members_from_sheet(dues_payers, responses, days_enabled):
     drivers = get_drivers(days_enabled, all_responses)
 
     return riders, drivers
+
+
+def clear_testing_output(names):
+    for n in names:
+        n.strip()
+
+    client = AuthorizedClient.get_instance().client
+    for s in client.openall():
+        if s.title in names:
+            client.del_spreadsheet(s.id)
+
+
+def create_spreadsheet(name, location, client):
+
+    if not client.openall(name):
+        logger.info("Creating sheet")
+        spreadsheet = client.create(name, folder_id=location)
+    else:
+        logger.info("Sheet exists")
+        spreadsheet = client.open(name)
+
+    spreadsheet.share(
+        "rkalnins@umich.edu", notify=False, perm_type="user", role="writer"
+    )
+
+    return spreadsheet
+
+
+def list_spreadsheets():
+    client = AuthorizedClient.get_instance().client
+
+    for s in client.openall():
+        print(s.title, s.id)
+
+
+def write_to_sheet(schedule, spreadsheet_name):
+    client = AuthorizedClient.get_instance().client
+
+    spreadsheet = create_spreadsheet(spreadsheet_name, OUTPUT_TESTING_FOLDER_ID, client)
+    sheet = spreadsheet.sheet1

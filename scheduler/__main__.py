@@ -3,8 +3,14 @@
 
 import logging
 import os
+import sys
 
-from gform_backend import members_from_sheet
+from gform_backend import (
+    members_from_sheet,
+    write_to_sheet,
+    clear_testing_output,
+    list_spreadsheets,
+)
 from json_backend import members_from_json
 from generate_rides import generate_rides
 
@@ -13,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 DUES_SHEET = "dues-testing-v20.0.0"
 SPREADSHEET = "Carpool Form v20.0.0 (Responses)"
+OUTPUT_SPREADSHEET = "Carpool test output 1"
 DAYS_ENABLED = ["TUESDAY", "THURSDAY", "SUNDAY"]
 
 
@@ -28,16 +35,10 @@ def get_members():
 def main():
     riders, drivers = get_members()
 
-    print("riders:")
-    for r in riders:
-        print(r)
-
-    print("drivers")
-    for d in drivers:
-        print(d)
-
     # convert generator to list for debugging
     schedule = list(generate_rides(riders, drivers, DAYS_ENABLED))
+
+    write_to_sheet(schedule, OUTPUT_SPREADSHEET)
 
     for day in schedule:
         for car in day:
@@ -45,6 +46,17 @@ def main():
             print(car.riders)
 
 
+def clean_drive(sheets):
+    clear_testing_output(sheets)
+    logger.info("Done deleteing sheets")
+
+
 if __name__ == "__main__":
     # pylint: disable=no-value-for-parameter
-    main()
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "clean" or sys.argv[1] == "c":
+            clean_drive(sys.argv[2:])
+        elif sys.argv[1] == "list" or sys.argv[1] == "l":
+            list_spreadsheets()
+    else:
+        main()

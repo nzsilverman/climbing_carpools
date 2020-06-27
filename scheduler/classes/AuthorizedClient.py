@@ -1,6 +1,7 @@
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 
+
 class AuthorizedClient:
     __instance = None
 
@@ -12,17 +13,17 @@ class AuthorizedClient:
         ]
         SECRETS_FILE = "secret.json"
 
-        # json_key = json.load(open(SECRETS_FILE))
+        credentials = ServiceAccountCredentials.from_json_keyfile_name(
+            SECRETS_FILE, SCOPE
+        )
 
-        credentials = ServiceAccountCredentials.from_json_keyfile_name(SECRETS_FILE, SCOPE)
+        return gspread.authorize(credentials), credentials
 
-        return gspread.authorize(credentials)
-    
     def __init__(self):
         if AuthorizedClient.__instance != None:
             raise Exception("Singleton error")
         else:
-            self.client = AuthorizedClient.__authorize()
+            self.client, self.credentials = AuthorizedClient.__authorize()
             AuthorizedClient.__instance = self
 
     @staticmethod
@@ -30,4 +31,3 @@ class AuthorizedClient:
         if AuthorizedClient.__instance == None:
             AuthorizedClient()
         return AuthorizedClient.__instance
-
