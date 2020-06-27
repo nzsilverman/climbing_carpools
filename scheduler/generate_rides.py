@@ -114,22 +114,13 @@ def find_best_match(rider, drivers, day):
     return sorted(compatible_drivers, key=lambda lst: lst[1])[0][0]
 
 
-def generate_rides(riders, drivers):
+def generate_rides(riders, drivers, days_enabled):
     """
     Matches riders with drivers.
     """
 
-    days = [
-        "MONDAY",
-        "TUESDAY",
-        "WEDNESDAY",
-        "THURSDAY",
-        "FRIDAY",
-        "SATURDAY",
-        "SUNDAY",
-    ]
 
-    for day in days:
+    for day in days_enabled:
         # cars for the given day
         cars = []
 

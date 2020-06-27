@@ -11,8 +11,10 @@ from generate_rides import generate_rides
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 logger = logging.getLogger(__name__)
 
-DUES_PAYERS_SHEET_NAME = ""
-RESPONSES_SHEET_NAME = ""
+DUES_SHEET = "dues-testing-v20.0.0"
+SPREADSHEET = "Carpool Form v20.0.0 (Responses)"
+DAYS_ENABLED = ["TUESDAY", "THURSDAY", "SUNDAY"]
+
 
 
 def get_members():
@@ -21,15 +23,22 @@ def get_members():
     Currently JSON only used in tests
     """
 
-    # return members_from_sheet(DUES_PAYERS_SHEET_NAME, RESPONSES_SHEET_NAME)
-    return members_from_json("scheduler/testframe/json/test.json")
+    return members_from_sheet(DUES_SHEET, SPREADSHEET, DAYS_ENABLED)
 
 
 def main():
     riders, drivers = get_members()
 
+    print("riders:")
+    for r in riders:
+        print(r)
+
+    print("drivers")
+    for d in drivers:
+        print(d)
+
     # convert generator to list for debugging
-    schedule = list(generate_rides(riders, drivers))
+    schedule = list(generate_rides(riders, drivers, DAYS_ENABLED))
 
     for day in schedule:
         for car in day:
