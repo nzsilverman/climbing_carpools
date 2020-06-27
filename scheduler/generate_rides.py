@@ -111,9 +111,14 @@ def generate_rides(riders, drivers, days_enabled):
     Matches riders with drivers.
     """
 
+    
+
     for day in days_enabled:
         # cars for the given day
         cars = []
+
+        print("DAY", day)
+
 
         for d in drivers:
             d["seats_remaining"] = d["seats"]
@@ -124,7 +129,7 @@ def generate_rides(riders, drivers, days_enabled):
         seats_remaining = get_total_seats(drivers, day)
         logger.info("%i seats available", seats_remaining)
 
-        days_riders = riders
+        days_riders = riders.copy()
 
         while seats_remaining > 0 and len(days_riders) > 0:
 
