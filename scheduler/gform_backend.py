@@ -196,6 +196,10 @@ def write_schedule(schedule, spreadsheet):
             spreadsheet.del_worksheet(ws)
             ws = ws_new
 
+        car_output = []
+        
+        
+
 
 
 def write_to_sheet(schedule, spreadsheet_name):
