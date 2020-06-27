@@ -47,7 +47,10 @@ class GenerateRidesTest(TestCase):
     are_location_compatible_test_data = [
         (
             {"name": "a", "days": [{"day": "MONDAY", "locations": ["NORTH"]}]},
-            {"name": "b", "days": [{"day": "MONDAY", "locations": ["NORTH", "CENTRAL"]}]},
+            {
+                "name": "b",
+                "days": [{"day": "MONDAY", "locations": ["NORTH", "CENTRAL"]}],
+            },
             "MONDAY",
             True,
         ),
@@ -70,20 +73,83 @@ class GenerateRidesTest(TestCase):
             {"days": [{"day": "MONDAY", "departure_times": [1, 2, 3, 4]}]},
             {"days": [{"day": "MONDAY", "departure_times": [4]}]},
             "MONDAY",
-            0
+            0,
         ),
         (
             {"days": [{"day": "TUESDAY", "departure_times": [1, 2, 3, 4]}]},
             {"days": [{"day": "TUESDAY", "departure_times": [8]}]},
             "TUESDAY",
-            4
+            4,
         ),
         (
             {"days": [{"day": "MONDAY", "departure_times": [1.5, 2, 3, 4]}]},
             {"days": [{"day": "MONDAY", "departure_times": [0]}]},
             "MONDAY",
-            1.5
-        )
+            1.5,
+        ),
+    ]
+
+    find_best_match_test_data = [
+        (
+            {
+                "name": "r",
+                "days": [
+                    {
+                        "day": "MONDAY",
+                        "locations": ["NORTH"],
+                        "departure_times": [1, 2, 3],
+                    }
+                ],
+            },
+            [
+                {
+                    "name": "a",
+                    "seats": 3,
+                    "days": [
+                        {
+                            "day": "MONDAY",
+                            "locations": ["CENTRAL", "NORTH"],
+                            "departure_times": [0],
+                        }
+                    ],
+                },
+                {
+                    "name": "b",
+                    "seats": 0,
+                    "days": [
+                        {
+                            "day": "MONDAY",
+                            "locations": ["CENTRAL", "NORTH"],
+                            "departure_times": [0],
+                        }
+                    ],
+                },
+                {
+                    "name": "c",
+                    "seats": 4,
+                    "days": [
+                        {
+                            "day": "MONDAY",
+                            "locations": ["NORTH"],
+                            "departure_times": [8],
+                        }
+                    ],
+                },
+                {
+                    "name": "d",
+                    "seats": 4,
+                    "days": [
+                        {
+                            "day": "TUESDAY",
+                            "locations": ["CENTRAL"],
+                            "departure_times": [2],
+                        }
+                    ],
+                },
+            ],
+            "MONDAY",
+            "a",
+        ),
     ]
 
     @params(check_in_days_test_data[0], check_in_days_test_data[1])
@@ -113,9 +179,13 @@ class GenerateRidesTest(TestCase):
     @params(
         time_compatibility_test_data[0],
         time_compatibility_test_data[1],
-        time_compatibility_test_data[2]
+        time_compatibility_test_data[2],
     )
     def test_time_compatibility(self, rider, driver, day, check):
         result = generate_rides.time_compatibility(rider, driver, day)
         self.assertEqual(result, check)
-    
+
+    @params(find_best_match_test_data[0])
+    def test_find_best_match(self, rider, drivers, day, check):
+        result = generate_rides.find_best_match(rider, drivers, day)
+        self.assertEqual(result["name"], check)

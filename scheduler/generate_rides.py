@@ -83,7 +83,7 @@ def time_compatibility(rider, driver, day):
     return result
 
 
-def find_best_match(drivers, rider, day):
+def find_best_match(rider, drivers, day):
     """
     Find the best match for the rider. Criterion for best match is
     defined as 1) a matching location and 2) the closest available time.
@@ -138,7 +138,7 @@ def generate_rides(riders, drivers):
                 print(chosen_rider["name"], "not riding", day)
                 continue
 
-            best_driver = find_best_match(drivers, chosen_rider, day)
+            best_driver = find_best_match(chosen_rider, drivers, day)
 
             driver_has_car = False
 
