@@ -66,7 +66,7 @@ def time_compatibility(rider, driver, day):
 
     # there should only be one time here
     driver_times.sort()
-    if (len(driver_times) != 1):
+    if len(driver_times) != 1:
         logger.error("driver has multiple departure times for %s", day)
         exit(2)
 
