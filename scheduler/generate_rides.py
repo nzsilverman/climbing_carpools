@@ -85,9 +85,20 @@ def time_compatibility(rider, driver, day):
 
 def find_best_match(rider, drivers, day):
     """
-    Find the best match for the rider. Criterion for best match is
-    defined as 1) a matching location and 2) the closest available time.
+    Find the best match for the rider.
+
+    Input: rider, drivers, day
+    Output: most compatible driver
     """
+
+    # this probably needs to be rewritten with some kind of proper algorithm.
+    # right now, we're choosing the driver that is leaving closest to the requested time
+    # given day and location compatibility.
+    #
+    # this algorithm is a good choice if we truly want to give everyone an ~equal~ chance
+    # in getting a car but we disregard how well they fit in it relative to others.
+
+
     compatible_drivers = []
 
     # finds all compatible drivers
