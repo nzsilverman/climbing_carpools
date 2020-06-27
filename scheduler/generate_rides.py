@@ -11,7 +11,6 @@ from util import get_day_info_from_member
 
 logger = logging.getLogger(__name__)
 
-
 def check_in_days(member, day):
     """
     Checks if member is signed up for the given day
@@ -91,16 +90,21 @@ def find_best_match(rider, drivers, day):
 
     # finds all compatible drivers
     for driver in drivers:
-        if driver["seats"] and are_location_compatible(rider, driver, day):
+        if driver["seats_remaining"] and are_location_compatible(rider, driver, day):
             compatible_drivers.append([driver, time_compatibility(rider, driver, day)])
 
     if not compatible_drivers:
         logger.warn("no compatible drivers for %s", rider["name"])
         return
 
-    # return driver that best matches the time
-    return sorted(compatible_drivers, key=lambda lst: lst[1])[0][0]
+    best_match = sorted(compatible_drivers, key=lambda lst: lst[1])[0][0]
 
+    for d in drivers:
+        if best_match == d:
+            d["seats_remaining"] -= 1
+
+    # return driver that best matches the time and the update driver list
+    return best_match, drivers
 
 def generate_rides(riders, drivers, days_enabled):
     """
@@ -110,6 +114,9 @@ def generate_rides(riders, drivers, days_enabled):
     for day in days_enabled:
         # cars for the given day
         cars = []
+
+        for d in drivers:
+            d["seats_remaining"] = d["seats"]
 
         # shuffle the riders for every day
         random.shuffle(riders)
@@ -127,7 +134,7 @@ def generate_rides(riders, drivers, days_enabled):
                 print(chosen_rider["name"], "not riding", day)
                 continue
 
-            best_driver = find_best_match(chosen_rider, drivers, day)
+            best_driver, drivers = find_best_match(chosen_rider, drivers, day)
 
             driver_has_car = False
 
@@ -137,14 +144,14 @@ def generate_rides(riders, drivers, days_enabled):
                 for car in cars:
                     if car.driver == best_driver:
                         car.riders.append(chosen_rider)
-                        car.seats -= 1
                         driver_has_car = True
 
                 # give driver a car if they don't already have one
                 if not driver_has_car:
                     new_car = Car(best_driver)
                     new_car.riders.append(chosen_rider)
-                    new_car.seats -= 1
                     cars.append(new_car)
+
+                seats_remaining -= 1
 
         yield [day, cars]

@@ -2,11 +2,14 @@ import logging
 import gspread
 import pandas as pd
 import json
+import util
+import datetime
+from random import uniform
+
 from classes.AuthorizedClient import AuthorizedClient
 from classes.WSCell import WSCell
 from classes.WSRange import WSRange
-import util
-import datetime
+
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +19,8 @@ PHONE_COLUMN = 3
 SEATS_COLUMN = 6
 CAR_DESCRIPTION_COLUMN = 5
 DAYS_INFO_START_COLUMN = 7
+
+CAR_ROW_SPACING = 4
 
 OUTPUT_TESTING_FOLDER_ID = "1j1w_0k5bIgqxJfmQmxbZZoGr66fJT4Y4"
 
@@ -228,15 +233,34 @@ def write_schedule(schedule, spreadsheet):
         start_col_index = 1
         car_start = WSCell(start_row_index, start_col_index)
 
+        end_row_index = 0
         end_col_index = 5
+        car_end = WSCell(end_row_index, end_col_index)
 
         for car in day[1]:
-            end_row_index = car.driver["seats"] + 1
+            print("Driver:", car.driver["name"])
+            # one extra row for the heading, one for the driver
+            block_length = car.driver["seats"] + 2
 
-            car_end = WSCell(end_row_index, end_col_index)
+            car_end.inc_row(block_length)
+            wsrangeA1 = WSRange(car_start, car_end).getA1()
+
+            print(wsrangeA1)
+
+            ws.format(
+                wsrangeA1,
+                {
+                    "backgroundColor": {
+                        "red": uniform(0.5, 1.0),
+                        "green": uniform(0.5, 1.0),
+                        "blue": uniform(0.5, 1.0),
+                        "alpha": 0.5,
+                    }
+                }
+            )
 
             car_output = {
-                "range": WSRange(car_start, car_end).getA1(),
+                "range": wsrangeA1,
                 "values": [
                     ["", "Name", "Phone Number", "Departure Time", "Locations"],
                     [
@@ -255,7 +279,12 @@ def write_schedule(schedule, spreadsheet):
                 )
 
             day_output.append(car_output)
-            
+
+            print(car_output)
+
+            car_start.inc_row(CAR_ROW_SPACING + block_length)
+            car_end.inc_row(CAR_ROW_SPACING)
+
         ws.batch_update(day_output)
 
 
