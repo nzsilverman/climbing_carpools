@@ -1,10 +1,16 @@
 import logging
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
 import json
+from classes.AuthorizedClient import AuthorizedClient
 
 logger = logging.getLogger(__name__)
+
+NAME_COLUMN = 2
+EMAIL_COLUMN = 1
+PHONE_COLUMN = 3
+SEATS_COLUMN = 5
+DAYS_INFO_START_COLUMN = 6
 
 
 def get_dues_payers(dues_sheet):
@@ -38,9 +44,9 @@ def get_riders(responses, days_enabled, dues_payers):
     for row in responses[1:]:
         if row[4] == "Rider":
             rider = {
-                "name": row[2],
-                "email": row[1],
-                "phone": row[3],
+                "name": row[NAME_COLUMN],
+                "email": row[EMAIL_COLUMN],
+                "phone": row[PHONE_COLUMN],
                 "is_dues_paying": validate_dues_payers(row[2], dues_payers),
                 "is_driver": False,
                 "days": [],
@@ -48,7 +54,7 @@ def get_riders(responses, days_enabled, dues_payers):
 
             # assume each day has a locations column and a departure times column
 
-            rider_days_start = 6
+            rider_days_start = DAYS_INFO_START_COLUMN
             for (i, d) in zip(
                 range(rider_days_start, rider_days_start + len(days_enabled)),
                 days_enabled,
@@ -84,10 +90,10 @@ def get_drivers(days_enabled, responses):
     for row in responses[1:]:
         if row[4] == "Driver":
             driver = {
-                "name": row[2],
-                "email": row[1],
-                "phone": row[3],
-                "seats": int(row[5]),
+                "name": row[NAME_COLUMN],
+                "email": row[EMAIL_COLUMN],
+                "phone": row[PHONE_COLUMN],
+                "seats": int(row[SEATS_COLUMN]),
                 "is_dues_paying": True,
                 "is_driver": True,
                 "days": [],
@@ -95,7 +101,7 @@ def get_drivers(days_enabled, responses):
 
             # assume each day has a locations column and a departure times column
 
-            driver_days_start = 6 + 2 * len(days_enabled)
+            driver_days_start = DAYS_INFO_START_COLUMN + 2 * len(days_enabled)
             for (i, d) in zip(
                 range(driver_days_start, driver_days_start + len(days_enabled)),
                 days_enabled,
@@ -123,29 +129,18 @@ def get_drivers(days_enabled, responses):
 
     return drivers
 
-
 def members_from_sheet(dues_payers, responses, days_enabled):
     """
     Gets all club members who submitted a response using the form.
     """
 
-    SCOPE = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/drive",
-    ]
-    SECRETS_FILE = "secret.json"
+    client = AuthorizedClient.get_instance().client
 
-    # json_key = json.load(open(SECRETS_FILE))
-
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(SECRETS_FILE, SCOPE)
-
-    gc = gspread.authorize(credentials)
-
-    for sheet in gc.openall():
+    for sheet in client.openall():
         logger.debug("%s", sheet.title)
 
-    responses_sheet = gc.open(responses).sheet1
-    dues_payers_sheet = gc.open(dues_payers).sheet1
+    responses_sheet = client.open(responses).sheet1
+    dues_payers_sheet = client.open(dues_payers).sheet1
 
     all_responses = responses_sheet.get_all_values()
 
