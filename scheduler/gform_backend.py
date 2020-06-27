@@ -353,7 +353,14 @@ def write_schedule(schedule, spreadsheet, folder_id):
             car_output = {
                 "range": wsrangeA1,
                 "values": [
-                    ["", "Name", "Car type", "Phone Number", "Departure Time", "Locations"],
+                    [
+                        "",
+                        "Name",
+                        "Car type",
+                        "Phone Number",
+                        "Departure Time",
+                        "Locations",
+                    ],
                     [
                         "Driver",
                         car.driver["name"],
@@ -368,7 +375,14 @@ def write_schedule(schedule, spreadsheet, folder_id):
             # add rider info
             for r in car.riders:
                 car_output["values"].append(
-                    ["Rider", r["name"], "", r["phone"], "", unpack_locations(r, day[0])]
+                    [
+                        "Rider",
+                        r["name"],
+                        "",
+                        r["phone"],
+                        "",
+                        unpack_locations(r, day[0]),
+                    ]
                 )
 
             day_output.append(car_output)

@@ -30,20 +30,6 @@ class GenerateRidesTest(TestCase):
         ({"days": [{"day": "MONDAY"}]}, "TUESDAY", False),
     ]
 
-    get_day_info_from_member_test_data = [
-        (
-            {
-                "days": [
-                    {"day": "MONDAY", "departure_times": [0, 1, 2, 3]},
-                    {"day": "TUESDAY", "departure_times": [2, 3]},
-                ]
-            },
-            "TUESDAY",
-            "departure_times",
-            [2, 3],
-        )
-    ]
-
     are_location_compatible_test_data = [
         (
             {"name": "a", "days": [{"day": "MONDAY", "locations": ["NORTH"]}]},
@@ -105,6 +91,7 @@ class GenerateRidesTest(TestCase):
                 {
                     "name": "a",
                     "seats": 3,
+                    "seats_remaining": 3,
                     "days": [
                         {
                             "day": "MONDAY",
@@ -116,6 +103,7 @@ class GenerateRidesTest(TestCase):
                 {
                     "name": "b",
                     "seats": 0,
+                    "seats_remaining": 0,
                     "days": [
                         {
                             "day": "MONDAY",
@@ -127,6 +115,7 @@ class GenerateRidesTest(TestCase):
                 {
                     "name": "c",
                     "seats": 4,
+                    "seats_remaining": 4,
                     "days": [
                         {
                             "day": "MONDAY",
@@ -138,6 +127,7 @@ class GenerateRidesTest(TestCase):
                 {
                     "name": "d",
                     "seats": 4,
+                    "seats_remaining": 4,
                     "days": [
                         {
                             "day": "TUESDAY",
@@ -162,11 +152,6 @@ class GenerateRidesTest(TestCase):
         seat_count = generate_rides.get_total_seats(drivers, day)
         self.assertEqual(seat_count, seats)
 
-    @params(get_day_info_from_member_test_data[0])
-    def test_get_day_info_from_member(self, member, day, key, check):
-        result = generate_rides.get_day_info_from_member(member, day, key)
-        self.assertListEqual(result, check)
-
     @params(
         are_location_compatible_test_data[0],
         are_location_compatible_test_data[1],
@@ -187,5 +172,5 @@ class GenerateRidesTest(TestCase):
 
     @params(find_best_match_test_data[0])
     def test_find_best_match(self, rider, drivers, day, check):
-        result = generate_rides.find_best_match(rider, drivers, day)
+        result, _ = generate_rides.find_best_match(rider, drivers, day)
         self.assertEqual(result["name"], check)

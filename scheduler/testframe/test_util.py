@@ -1,7 +1,7 @@
 from unittest import TestCase
 from nose2.tools import params
 
-import scheduler.util as util
+import scheduler.util as sutil
 import scheduler.json_backend as json_backend
 from util import sort_by_name
 
@@ -10,6 +10,20 @@ class UtilTest(TestCase):
     """
     Tests for util functions
     """
+
+    get_day_info_from_member_test_data = [
+        (
+            {
+                "days": [
+                    {"day": "MONDAY", "departure_times": [0, 1, 2, 3]},
+                    {"day": "TUESDAY", "departure_times": [2, 3]},
+                ]
+            },
+            "TUESDAY",
+            "departure_times",
+            [2, 3],
+        )
+    ]
 
     get_drivers_test_data = [
         (
@@ -48,7 +62,7 @@ class UtilTest(TestCase):
 
     @params(get_drivers_test_data[0])
     def test_get_drivers(self, members, driver_count):
-        drivers = util.get_drivers(members)
+        drivers = sutil.get_drivers(members)
 
         self.assertEqual(len(drivers), driver_count)
 
@@ -57,7 +71,7 @@ class UtilTest(TestCase):
 
     @params(get_riders_test_data[0])
     def test_get_riders(self, members, rider_count):
-        riders = util.get_riders(members)
+        riders = sutil.get_riders(members)
 
         self.assertEqual(len(riders), rider_count)
 
@@ -66,10 +80,15 @@ class UtilTest(TestCase):
 
     @params(filter_dues_payers_test_data[0], filter_dues_payers_test_data[1])
     def test_dues_payers_filter(self, riders, payers_count, payers):
-        filtered = util.filter_dues_payers(riders)
+        filtered = sutil.filter_dues_payers(riders)
 
         self.assertEqual(len(filtered), payers_count)
         payers.sort()
 
         for filtered_payer, check in zip(sort_by_name(filtered), payers):
             self.assertEqual(filtered_payer["name"], check)
+
+    @params(get_day_info_from_member_test_data[0])
+    def test_get_day_info_from_member(self, member, day, key, check):
+        result = sutil.get_day_info_from_member(member, day, key)
+        self.assertListEqual(result, check)
