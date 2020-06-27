@@ -156,4 +156,4 @@ def generate_rides(riders, drivers, days_enabled):
                     new_car.riders.append(chosen_rider)
                     cars.append(new_car)
 
-        yield cars
+        yield (day, cars)

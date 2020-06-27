@@ -41,9 +41,12 @@ def main():
     write_to_sheet(schedule, OUTPUT_SPREADSHEET)
 
     for day in schedule:
-        for car in day:
-            print(car.driver)
-            print(car.riders)
+        for car in day[1]:
+            print("day:", day[0])
+            print("driver:", car.driver["name"])
+            for r in car.riders:
+                print(r["name"])
+            print()
 
 
 def clean_drive(sheets):

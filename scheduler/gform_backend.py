@@ -168,13 +168,12 @@ def create_spreadsheet(name, location, client):
     if not client.openall(name):
         logger.info("Creating sheet")
         spreadsheet = client.create(name, folder_id=location)
+        spreadsheet.share(
+            "rkalnins@umich.edu", notify=False, perm_type="user", role="writer"
+        )
     else:
         logger.info("Sheet exists")
         spreadsheet = client.open(name)
-
-    spreadsheet.share(
-        "rkalnins@umich.edu", notify=False, perm_type="user", role="writer"
-    )
 
     return spreadsheet
 
@@ -185,9 +184,24 @@ def list_spreadsheets():
     for s in client.openall():
         print(s.title, s.id)
 
+def write_schedule(schedule, spreadsheet):
+    for (i, day) in zip(range(0, len(schedule)), schedule):
+        print(day[0])
+        ws = spreadsheet.get_worksheet(i)
+
+        if not ws:
+            ws = spreadsheet.add_worksheet(day[0], 100, 100)
+        else:
+            ws_new = spreadsheet.duplicate_sheet(ws.id, new_sheet_name=day[0])
+            spreadsheet.del_worksheet(ws)
+            ws = ws_new
+
+
 
 def write_to_sheet(schedule, spreadsheet_name):
     client = AuthorizedClient.get_instance().client
 
     spreadsheet = create_spreadsheet(spreadsheet_name, OUTPUT_TESTING_FOLDER_ID, client)
-    sheet = spreadsheet.sheet1
+
+    write_schedule(schedule, spreadsheet)
+    
