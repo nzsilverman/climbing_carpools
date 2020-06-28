@@ -10,7 +10,6 @@ Writes cars with drivers and riders
 
 import logging
 import gspread
-import pandas as pd
 import json
 import util
 import datetime
