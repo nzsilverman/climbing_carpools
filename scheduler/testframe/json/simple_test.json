@@ -4,7 +4,7 @@
         "email": "rkalnins@umich.edu",
         "phone": 269876325,
         "is_dues_paying": true,
-        "is_driver": false,        
+        "is_driver": false,    
         "days": [
             {
                 "day": "TUESDAY",
@@ -40,4 +40,4 @@
         ],
         "seats": 4
     }
-    ]
+]

@@ -61,6 +61,8 @@
         "phone": 9876543201,
         "is_dues_paying": true,
         "is_driver": true,
+        "seats_remaining": 4,
+        "car_type": "Toyota",
         "days": [
             {
                 "day": "TUESDAY",
