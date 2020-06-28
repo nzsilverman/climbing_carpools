@@ -115,6 +115,8 @@ def generate_rides(riders, drivers, days_enabled):
     Matches riders with drivers.
     """
 
+    schedule = list()
+
     for day in days_enabled:
         # cars for the given day
         cars = []
@@ -158,4 +160,6 @@ def generate_rides(riders, drivers, days_enabled):
 
                 seats_remaining -= 1
 
-        yield [day, cars]
+        schedule.append([day, cars])
+
+    return schedule

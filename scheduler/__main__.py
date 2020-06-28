@@ -40,7 +40,7 @@ def main():
     riders, drivers = get_members()
 
     # convert generator to list for debugging
-    schedule = list(generate_rides(riders, drivers, DAYS_ENABLED))
+    schedule = generate_rides(riders, drivers, DAYS_ENABLED)
 
     write_to_sheet(schedule, OUTPUT_SPREADSHEET, OUTPUT_FOLDER_ID)
 
