@@ -9,7 +9,7 @@ class Configuration:
     Wrapper for toml configuation.
 
     A default configuration is provided.
-    Settings can be overriden in user-config.toml.
+    Settings can be overridden in user-config.toml.
 
     A user can also specify a different configuration file
     using the -c|--config <filename> CLI option
