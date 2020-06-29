@@ -38,6 +38,7 @@ class Configuration:
             Configuration.__config.update(user_override)
 
     def __init__(self, config_file=None):
+        print("test", __name__)
         if Configuration.__instance != None:
             raise Exception("Configuration error")
         else:
@@ -51,11 +52,21 @@ class Configuration:
             Configuration.__instance = self
 
     @staticmethod
-    def config(filename=None):
+    def config(path=None, filename=None):
         """
         Get instance of this client
         """
 
         if Configuration.__instance == None:
             Configuration(filename)
+
+        if not path == None:
+            path = path.split(".")
+            data = Configuration.__instance.__config
+
+            for p in path:
+                data = data[p]
+
+            return data
+
         return Configuration.__instance.__config

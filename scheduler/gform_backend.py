@@ -11,6 +11,7 @@ Writes cars with drivers and riders
 import logging
 import gspread
 import json
+import sys
 import datetime
 from random import uniform
 
@@ -18,30 +19,41 @@ import scheduler.util as util
 from scheduler.classes.AuthorizedClient import AuthorizedClient
 from scheduler.classes.WSCell import WSCell
 from scheduler.classes.WSRange import WSRange
+from scheduler.classes.Configuration import Configuration
 
 
 logger = logging.getLogger(__name__)
+this = sys.modules[__name__]
 
-"""
-Specify column ids for these values. If the form changes, unlink the spreadsheet
-and create a new one. Then reset these values
-"""
-
-EMAIL_COLUMN = 1
-NAME_COLUMN = 2
-PHONE_COLUMN = 3
-CAR_DESCRIPTION_COLUMN = 6
-SEATS_COLUMN = 7
-IS_RIDER_COLUMN = 4
-IS_DRIVER_COLUMN = 5
-DAYS_INFO_START_COLUMN = 8
+# this is hacky and should be fixed
+this.EMAIL_COLUMN = None
+this.NAME_COLUMN = None
+this.PHONE_COLUMN = None
+this.CAR_DESCRIPTION_COLUMN = None
+this.SEATS_COLUMN = None
+this.IS_RIDER_COLUMN = None
+this.IS_DRIVER_COLUMN = None
+this.DAYS_INFO_START_COLUMN = None
+this.CAR_ROW_SPACING = None
 
 
-"""
-Number of rows between cars in the output spreadsheet
-"""
+def config_responses():
+    columns = Configuration.config("gform_backend.columns")
 
-CAR_ROW_SPACING = 2
+    this.EMAIL_COLUMN = columns["email"]
+    this.NAME_COLUMN = columns["name"]
+    this.PHONE_COLUMN = columns["phone_number"]
+    this.CAR_DESCRIPTION_COLUMN = columns["car_type"]
+    this.SEATS_COLUMN = columns["seats"]
+    this.IS_RIDER_COLUMN = columns["is_rider"]
+    this.IS_DRIVER_COLUMN = columns["is_driver"]
+    this.DAYS_INFO_START_COLUMN = columns["days_info_start"]
+
+
+def config_output():
+    output = Configuration.config("gform_backend.output")
+
+    this.CAR_ROW_SPACING = output["car_block_spacing"]
 
 
 def get_dues_payers(dues_sheet):
@@ -95,20 +107,22 @@ def get_riders(responses, days_enabled, dues_payers):
     riders = []
 
     for row in responses[1:]:
-        if row[IS_RIDER_COLUMN] == "Yes":
+        if row[this.IS_RIDER_COLUMN] == "Yes":
 
             # create rider dictionary
             rider = {
-                "name": row[NAME_COLUMN],
-                "email": row[EMAIL_COLUMN],
-                "phone": row[PHONE_COLUMN],
-                "is_dues_paying": validate_dues_payers(row[2], dues_payers),
+                "name": row[this.NAME_COLUMN],
+                "email": row[this.EMAIL_COLUMN],
+                "phone": row[this.PHONE_COLUMN],
+                "is_dues_paying": validate_dues_payers(
+                    row[this.EMAIL_COLUMN], dues_payers
+                ),
                 "is_driver": False,
                 "days": [],
             }
 
             # assume each day has a locations column and a departure times column
-            rider_days_start = DAYS_INFO_START_COLUMN
+            rider_days_start = this.DAYS_INFO_START_COLUMN
 
             # create a dict for each day
             for (i, d) in zip(
@@ -151,22 +165,22 @@ def get_drivers(days_enabled, responses):
     drivers = []
 
     for row in responses[1:]:
-        if row[IS_DRIVER_COLUMN] == "Yes":
+        if row[this.IS_DRIVER_COLUMN] == "Yes":
 
             # create driver dictionary
             driver = {
-                "name": row[NAME_COLUMN],
-                "email": row[EMAIL_COLUMN],
-                "phone": row[PHONE_COLUMN],
-                "car_type": row[CAR_DESCRIPTION_COLUMN],
-                "seats": int(row[SEATS_COLUMN]),
+                "name": row[this.NAME_COLUMN],
+                "email": row[this.EMAIL_COLUMN],
+                "phone": row[this.PHONE_COLUMN],
+                "car_type": row[this.CAR_DESCRIPTION_COLUMN],
+                "seats": int(row[this.SEATS_COLUMN]),
                 "is_dues_paying": True,
                 "is_driver": True,
                 "days": [],
             }
 
             # assume each day has a locations column and a departure times column
-            driver_days_start = DAYS_INFO_START_COLUMN + 2 * len(days_enabled)
+            driver_days_start = this.DAYS_INFO_START_COLUMN + 2 * len(days_enabled)
 
             # create a dict for each day
             for (i, d) in zip(
@@ -199,23 +213,30 @@ def get_drivers(days_enabled, responses):
     return drivers
 
 
-def members_from_sheet(dues_payers, responses, days_enabled):
+def members_from_sheet():
     """
     Gets all club members who submitted a response using the form.
     """
 
     client = AuthorizedClient.get_instance().client
 
+    gform_backend_config = Configuration.config("gform_backend.files")
+    days_enabled = Configuration.config("mcc.days_enabled")
+
+    config_responses()
+
     for sheet in client.openall():
         logger.debug("%s", sheet.title)
 
     # get responses and dues payers sheets
-    responses_sheet = client.open(responses).sheet1
-    dues_payers_sheet = client.open(dues_payers).sheet1
+    responses_sheet = client.open(gform_backend_config["responses_sheet"]).sheet1
+    dues_payers_sheet = client.open(gform_backend_config["dues_sheet"]).sheet1
 
     all_responses = responses_sheet.get_all_values()
 
     # create lists of riders and drivers
+    print(days_enabled)
+
     riders = get_riders(all_responses, days_enabled, get_dues_payers(dues_payers_sheet))
     drivers = get_drivers(days_enabled, all_responses)
 
@@ -236,7 +257,7 @@ def delete_spreadsheet(name):
             logger.info("Deleting spreadsheet: %s", s.title)
 
 
-def create_spreadsheet(name, location, client):
+def create_spreadsheet():
     """
     Creates a spreadsheet with given name in the location defined by the folder_id.
     The folder_id can be found by viewing the folder in Drive and selecting the 
@@ -245,13 +266,18 @@ def create_spreadsheet(name, location, client):
     drive.google.com/../folders/1/<id>
     """
 
+    config = Configuration.config("gform_backend.files")
+    client = AuthorizedClient.get_instance().client
+
     # checks if sheet with name already exists, deletes if exists
-    if client.openall(name):
-        delete_spreadsheet(name)
+    if client.openall(config["output_sheet"]):
+        delete_spreadsheet(config["output_sheet"])
         logger.info("Sheet exists, deleting")
 
     logger.info("Creating sheet")
-    spreadsheet = client.create(name, folder_id=location)
+    spreadsheet = client.create(
+        config["output_sheet"], folder_id=config["output_folder_id"]
+    )
     spreadsheet.share(
         "rkalnins@umich.edu", notify=False, perm_type="user", role="writer"
     )
@@ -295,7 +321,7 @@ def unpack_time(driver, day):
     return "{0:02.0f}:{1:02.0f}".format(*divmod(time[0] * 60, 60))
 
 
-def write_schedule(schedule, spreadsheet, folder_id):
+def write_schedule(schedule, spreadsheet):
     """
     Write schedule to provided sheet.
     """
@@ -386,22 +412,19 @@ def write_schedule(schedule, spreadsheet, folder_id):
             day_output.append(car_output)
 
             # move to next writing location
-            car_start.inc_row(CAR_ROW_SPACING + block_length)
-            car_end.inc_row(CAR_ROW_SPACING)
+            car_start.inc_row(this.CAR_ROW_SPACING + block_length)
+            car_end.inc_row(this.CAR_ROW_SPACING)
 
         # batch update minimizes API calls
         ws.batch_update(day_output)
 
 
-def write_to_sheet(schedule, spreadsheet_name, folder_id):
+def write_to_sheet(schedule):
     """
     Writes provided schedule to a spreadsheet defined by the provided name.
     An exisiting spreadsheet with the same name will be deleted and a new one will
     be made in its place.
     """
-
-    client = AuthorizedClient.get_instance().client
-
-    spreadsheet = create_spreadsheet(spreadsheet_name, folder_id, client)
-
-    write_schedule(schedule, spreadsheet, folder_id)
+    config_output()
+    spreadsheet = create_spreadsheet()
+    write_schedule(schedule, spreadsheet)

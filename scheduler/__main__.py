@@ -13,37 +13,28 @@ from scheduler.gform_backend import (
     list_spreadsheets,
 )
 from scheduler.json_backend import members_from_json
-from scheduler.generate_rides import generate_rides, test
+from scheduler.generate_rides import generate_rides
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 logger = logging.getLogger(__name__)
-
-"""
-Spreadsheet and output configuration
-"""
-DUES_SHEET = "dues-testing-v20.0.0"
-SPREADSHEET = "Carpool Form v20.0.0 (Responses)"
-OUTPUT_SPREADSHEET = "Carpool test output 3"
-DAYS_ENABLED = ["TUESDAY", "THURSDAY", "SUNDAY"]
-OUTPUT_FOLDER_ID = "1j1w_0k5bIgqxJfmQmxbZZoGr66fJT4Y4"
 
 
 def get_members():
     """
     Gets members. Abstraction for any backends (JSON, google forms).
-    Currently JSON only used in tests
+    Currently JSON only used in tests. 
     """
 
-    return members_from_sheet(DUES_SHEET, SPREADSHEET, DAYS_ENABLED)
+    return members_from_sheet()
 
 
 def match():
     riders, drivers = get_members()
 
     # convert generator to list for debugging
-    schedule = generate_rides(riders, drivers, DAYS_ENABLED)
+    schedule = generate_rides(riders, drivers)
 
-    write_to_sheet(schedule, OUTPUT_SPREADSHEET, OUTPUT_FOLDER_ID)
+    write_to_sheet(schedule)
 
     print("Summary:")
     for day in schedule:
@@ -56,13 +47,13 @@ def match():
 
 
 def usage():
-    print("Usage: scheduler [-m|--match] [-c|--config <filename>] [-l|--list]")
+    print("Usage: scheduler [-m|--match] [-c|--config <filename>] [-l|--list] [-d|--delete <sheet name>")
 
 
 def main():
     try:
         opts, _ = getopt.getopt(
-            sys.argv[1:], "mlc:d:t", ["match", "list", "config=", "delete=", "--test"]
+            sys.argv[1:], "mlc:d:t", ["match", "list", "config=", "delete=", "test"]
         )
     except getopt.GetoptError:
         usage()
@@ -89,7 +80,8 @@ def main():
             # do whatever with this, just set up the infrastructure
             is_test = True
 
-    Configuration(config_file)
+    # initializes configuration instance
+    Configuration(config_file=config_file)
 
     if matching:
         match()

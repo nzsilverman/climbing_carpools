@@ -111,12 +111,14 @@ def find_best_match(rider, drivers, day):
     return best_match, drivers
 
 
-def generate_rides(riders, drivers, days_enabled):
+def generate_rides(riders, drivers):
     """
     Matches riders with drivers.
     """
 
     schedule = list()
+
+    days_enabled = Configuration.config("mcc.days_enabled")
 
     for day in days_enabled:
         # cars for the given day
