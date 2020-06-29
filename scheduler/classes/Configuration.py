@@ -14,7 +14,7 @@ class Configuration:
     A user can also specify a different configuration file
     using the -c|--config <filename> CLI option
 
-
+    TODO: isntance exists check
     """
 
     __instance = None
@@ -38,27 +38,24 @@ class Configuration:
             Configuration.__config.update(user_override)
 
     def __init__(self, config_file=None):
-
-        if not config_file == None and not config_file == "":
-            logger.info("Override configuration provided: %s", config_file)
-            self.__set_config(config_file)
+        if Configuration.__instance != None:
+            raise Exception("Configuration error")
         else:
-            logger.info("No override configuration provided. Using defaults")
-            self.__set_config()
+            if not config_file == None and not config_file == "":
+                logger.info("Override configuration provided: %s", config_file)
+                self.__set_config(config_file)
+            else:
+                logger.info("No override configuration provided. Using defaults")
+                self.__set_config()
+
+            Configuration.__instance = self
 
     @staticmethod
-    def get_instance(config_override=None):
+    def config(filename=None):
         """
-        Get instance of this configuration
+        Get instance of this client
         """
 
         if Configuration.__instance == None:
-
-            if config_override == None:
-                logger.info("No override configuration provided. Using defaults")
-            elif not config_override == None:
-                logger.info("Override configuration provided: %s", config_override)
-
-            Configuration(config_override)
-
-        return Configuration.__instance
+            Configuration(filename)
+        return Configuration.__instance.__config

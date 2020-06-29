@@ -70,7 +70,7 @@ def main():
 
     matching = False
     config_file = None
-    test = False
+    is_test = False
 
     if len(opts) == 0:
         usage()
@@ -85,11 +85,11 @@ def main():
             matching = True
         elif opt == "-c" or opt == "--config":
             config_file = arg
+        elif opt == "-t" or opt == "--test":
+            # do whatever with this, just set up the infrastructure
+            is_test = True
 
     Configuration(config_file)
-
-    if test:
-        return
 
     if matching:
         match()
