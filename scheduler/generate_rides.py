@@ -7,6 +7,7 @@ import sys
 
 from scheduler.classes.Car import Car
 from scheduler.classes.MeetingLocation import MeetingLocation
+from scheduler.classes.Configuration import Configuration
 from scheduler.util import get_day_info_from_member
 
 logger = logging.getLogger(__name__)

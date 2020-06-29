@@ -25,7 +25,7 @@ class AuthorizedClient:
 
     def __init__(self):
         if AuthorizedClient.__instance != None:
-            raise Exception("Singleton error")
+            raise Exception("Authorized client error")
         else:
             self.client, self.credentials = AuthorizedClient.__authorize()
             AuthorizedClient.__instance = self

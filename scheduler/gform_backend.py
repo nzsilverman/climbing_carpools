@@ -11,13 +11,13 @@ Writes cars with drivers and riders
 import logging
 import gspread
 import json
-import util
 import datetime
 from random import uniform
 
-from classes.AuthorizedClient import AuthorizedClient
-from classes.WSCell import WSCell
-from classes.WSRange import WSRange
+import scheduler.util as util
+from scheduler.classes.AuthorizedClient import AuthorizedClient
+from scheduler.classes.WSCell import WSCell
+from scheduler.classes.WSRange import WSRange
 
 
 logger = logging.getLogger(__name__)
@@ -222,19 +222,18 @@ def members_from_sheet(dues_payers, responses, days_enabled):
     return riders, drivers
 
 
-def delete_spreadsheet(names):
+def delete_spreadsheet(name):
     """
     Deletes the spreadsheets in names
     """
-
-    for n in names:
-        n.strip()
+    name.strip()
 
     client = AuthorizedClient.get_instance().client
 
     for s in client.openall():
-        if s.title in names:
+        if s.title == name:
             client.del_spreadsheet(s.id)
+            logger.info("Deleting spreadsheet: %s", s.title)
 
 
 def create_spreadsheet(name, location, client):
