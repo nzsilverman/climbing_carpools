@@ -2,10 +2,9 @@ from unittest import TestCase
 from nose2.tools import params
 
 from util import sort_by_name
+from test_data import JsonBackendTestData as test_data
 
 import scheduler.json_backend as json_backend
-
-test_path_prefix = "scheduler/testframe/json/"
 
 
 class JsonBackendTest(TestCase):
@@ -13,10 +12,7 @@ class JsonBackendTest(TestCase):
     Test JSON backend
     """
 
-    backend_test_data = [
-        (test_path_prefix + "simple_test.json", 2, 0, ["Roberts", "Suzy"], []),
-        (test_path_prefix + "test.json", 3, 1, ["Roberts", "Bob", "Jon"], ["Suzy"]),
-    ]
+    backend_test_data = test_data.backend_test_data
 
     @params(backend_test_data[0], backend_test_data[1])
     def test_backend(

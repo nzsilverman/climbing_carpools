@@ -3,7 +3,9 @@ from nose2.tools import params
 
 import scheduler.util as sutil
 import scheduler.json_backend as json_backend
+
 from util import sort_by_name
+from test_data import UtilTestData as test_data
 
 
 class UtilTest(TestCase):
@@ -11,54 +13,10 @@ class UtilTest(TestCase):
     Tests for util functions
     """
 
-    get_day_info_from_member_test_data = [
-        (
-            {
-                "days": [
-                    {"day": "MONDAY", "departure_times": [0, 1, 2, 3]},
-                    {"day": "TUESDAY", "departure_times": [2, 3]},
-                ]
-            },
-            "TUESDAY",
-            "departure_times",
-            [2, 3],
-        )
-    ]
-
-    get_drivers_test_data = [
-        (
-            [
-                {"name": "d1", "is_driver": True},
-                {"name": "r1", "is_driver": False},
-                {"name": "d2", "is_driver": True},
-            ],
-            2,
-        )
-    ]
-
-    get_riders_test_data = [
-        (
-            [
-                {"name": "d1", "is_driver": True},
-                {"name": "r1", "is_driver": False},
-                {"name": "d2", "is_driver": True},
-            ],
-            1,
-        )
-    ]
-
-    filter_dues_payers_test_data = [
-        (
-            [
-                {"name": "d1", "is_dues_paying": True},
-                {"name": "r1", "is_dues_paying": False},
-                {"name": "d2", "is_dues_paying": True},
-            ],
-            2,
-            ["d1", "d2"],
-        ),
-        ([{"name": "r1", "is_dues_paying": False},], 0, []),
-    ]
+    get_day_info_from_member_test_data = test_data.get_day_info_from_member_test_data
+    get_drivers_test_data = test_data.get_drivers_test_data
+    get_riders_test_data = test_data.get_riders_test_data
+    filter_dues_payers_test_data = test_data.filter_dues_payers_test_data
 
     @params(get_drivers_test_data[0])
     def test_get_drivers(self, members, driver_count):
