@@ -47,7 +47,9 @@ def match():
 
 
 def usage():
-    print("Usage: scheduler [-m|--match] [-c|--config <filename>] [-l|--list] [-d|--delete <sheet name>")
+    print(
+        "Usage: scheduler [-m|--match] [-c|--config <filename>] [-l|--list] [-d|--delete <sheet name>"
+    )
 
 
 def main():

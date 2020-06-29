@@ -14,11 +14,10 @@ class Configuration:
     A user can also specify a different configuration file
     using the -c|--config <filename> CLI option
 
-    TODO: isntance exists check
     """
 
     __instance = None
-    __defaults_filename = "defaults.toml"
+    __defaults_filename = ".defaults.toml"
     __override_filename = "user-config.toml"
     __config = None
 
@@ -28,13 +27,16 @@ class Configuration:
         Sets the instance configuration
         """
 
+        # get default configuration
         Configuration.__config = toml.load(Configuration.__defaults_filename)
         user_override = toml.load(Configuration.__override_filename)
 
         if not filename == None:
+            # override with user provided file
             override = toml.load(filename)
             Configuration.__config.update(override)
         else:
+            # override with user-config.toml overrides
             Configuration.__config.update(user_override)
 
     def __init__(self, config_file=None):
@@ -55,11 +57,14 @@ class Configuration:
     def config(path=None, filename=None):
         """
         Get instance of this client
+
+        path: dot separated path to simplify access to nested tables
         """
 
         if Configuration.__instance == None:
             Configuration(filename)
 
+        # get nested table dictionaries
         if not path == None:
             path = path.split(".")
             data = Configuration.__instance.__config

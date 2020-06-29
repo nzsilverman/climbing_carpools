@@ -38,6 +38,10 @@ this.CAR_ROW_SPACING = None
 
 
 def config_responses():
+    """
+    Sets configuration for collecting responses
+    """
+
     columns = Configuration.config("gform_backend.columns")
 
     this.EMAIL_COLUMN = columns["email"]
@@ -51,6 +55,10 @@ def config_responses():
 
 
 def config_output():
+    """
+    Sets configuration for writing to sheet.
+    """
+
     output = Configuration.config("gform_backend.output")
 
     this.CAR_ROW_SPACING = output["car_block_spacing"]

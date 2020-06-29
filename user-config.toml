@@ -1,1 +1,16 @@
-title = "User config"
+###################################################################
+#   USER CONFIGURATION FILE
+#
+#   If you wish to change settings, add the setting under the
+#   same table and key name below.
+#                   
+#
+#   This file (user-config.toml) defines a user configuration 
+#   for the Michgain Climbing Club Carpool scheduler
+#   application.
+#
+###################################################################
+
+
+# example: uncomment and change name to override title
+# title = "User config"
