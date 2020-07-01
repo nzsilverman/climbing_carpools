@@ -394,7 +394,7 @@ def write_schedule(schedule, spreadsheet):
                 WSCell(1, 1), WSCell(1, title_cell_merge_count)
             ).getA1()
 
-            cell_A1A1 = WSRange(WSCell(1, 1), WSCell(1,1)).getA1()
+            cell_A1A1 = WSRange(WSCell(1, 1), WSCell(1, 1)).getA1()
 
             title = sheet_name_base + name_suffix_list[i]
             heading_text = {
@@ -457,13 +457,9 @@ def write_schedule(schedule, spreadsheet):
                 textFormat=textFormat(fontSize=general_font_size),
             )
 
-            roles_col_fmt = cellFormat(
-                textFormat=textFormat(bold=bold_roles)
-            )
+            roles_col_fmt = cellFormat(textFormat=textFormat(bold=bold_roles))
 
             header_row_fmt = cellFormat(textFormat=textFormat(bold=bold_header))
-
-
 
             days_format.append((car_block_a1_range, car_block_fmt))
             days_format.append((heading_a1_range, header_row_fmt))
