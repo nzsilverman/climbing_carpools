@@ -10,6 +10,7 @@ Writes cars with drivers and riders
 
 import logging
 import gspread
+from gspread_formatting import *
 import json
 import sys
 import datetime
@@ -54,16 +55,6 @@ def config_responses():
     this.DAYS_INFO_START_COLUMN = columns["days_info_start"]
 
 
-def config_output():
-    """
-    Sets configuration for writing to sheet.
-    """
-
-    output = Configuration.config("gform_backend.output")
-
-    this.CAR_ROW_SPACING = output["car_block_spacing"]
-
-
 def get_dues_payers(dues_sheet):
     """
     Gets the spreadsheet of dues payers
@@ -102,7 +93,6 @@ def parse_times(time):
     """
 
     time = time.split(":")
-    print(time)
     return float(time[0]) + (float(time[1]) / 60)
 
 
@@ -329,14 +319,51 @@ def unpack_time(driver, day):
     return "{0:02.0f}:{1:02.0f}".format(*divmod(time[0] * 60, 60))
 
 
+def get_car_block_colors():
+    config = Configuration.config("gform_backend.output")
+    colors = Configuration.config("gform_backend.output.default_background_color")
+
+    if config["random_colors"]:
+        low = config["random_low_range"]
+        high = config["random_high_range"]
+
+        r = uniform(low, high)
+        g = uniform(low, high)
+        b = uniform(low, high)
+    else:
+        r = colors[0]
+        g = colors[1]
+        b = colors[2]
+
+    return r, g, b, config["color_alpha"]
+
+
 def write_schedule(schedule, spreadsheet):
     """
     Write schedule to provided sheet.
     """
 
+    output_config = Configuration.config("gform_backend.output")
+
+    notes_enabled = output_config["notes_column"]
+    car_block_spacing = output_config["car_block_spacing"]
+    column_buffer_left = output_config["column_buffer_left"]
+    row_buffer_top = output_config["row_buffer_top"]
+    bold_header = output_config["bold_header"]
+    bold_roles = output_config["bold_roles"]
+    sheet_name_base = output_config["name"]
+    name_suffix_list = output_config["name_suffixes"]
+    use_sheet_titles = output_config["use_sheet_titles"]
+    bold_title = output_config["bold_title"]
+    title_font_size = output_config["title_font_size"]
+    title_cell_merge_count = output_config["title_cell_merge_count"]
+
+    general_font_size = output_config["general_font_size"]
+    column_widths = output_config["column_widths"]
+    defualt_width = output_config["default_width"]
+
     # each day is a worksheet
     for (i, day) in zip(range(0, len(schedule)), schedule):
-
         ws = spreadsheet.get_worksheet(i)
 
         # deletes default Sheet1 and creates a sheet for the current day
@@ -348,16 +375,61 @@ def write_schedule(schedule, spreadsheet):
             ws = ws_new
 
         day_output = []
+        days_format = []
+        widths_list = []
+
+        for j, w in zip(range(1, len(column_widths) + 1), column_widths):
+            col_lettr = WSCell(1, j).get_column()
+
+            if i == len(column_widths):
+                col_lettr = col_lettr + ":"
+
+            widths_list.append((col_lettr, w))
+
+        set_column_widths(ws, widths_list)
+
+        # sheet titles
+        if use_sheet_titles:
+            title_range_a1 = WSRange(
+                WSCell(1, 1), WSCell(1, title_cell_merge_count)
+            ).getA1()
+
+            cell_A1A1 = WSRange(WSCell(1, 1), WSCell(1,1)).getA1()
+
+            title = sheet_name_base + name_suffix_list[i]
+            heading_text = {
+                "range": cell_A1A1,
+                "values": [[title]],
+            }
+
+            title_fmt = cellFormat(
+                textFormat=textFormat(bold=bold_title, fontSize=title_font_size)
+            )
+
+            day_output.append(heading_text)
+            days_format.append((cell_A1A1, title_fmt))
+            ws.merge_cells(title_range_a1)
 
         # track cell indicies for sheet writing ranges
+        if use_sheet_titles:
+            start_row_index = 1
+        else:
+            start_row_index = 0
 
-        start_row_index = 1
-        start_col_index = 1
-        car_start = WSCell(start_row_index, start_col_index)
+        start_row_index += row_buffer_top
+        start_col_index = 1 + column_buffer_left
 
-        end_row_index = 0
-        end_col_index = 6
-        car_end = WSCell(end_row_index, end_col_index)
+        end_row_index = row_buffer_top
+        if notes_enabled:
+            end_col_index = start_col_index + 6
+        else:
+            end_col_index = start_col_index + 5
+
+        # corners of each block
+        car_block_upper_left = WSCell(start_row_index, start_col_index)
+        car_block_upper_right = WSCell(start_row_index, end_col_index)
+        car_block_lower_right = WSCell(end_row_index, end_col_index)
+        car_block_lower_left = WSCell(end_row_index, start_col_index)
 
         # add each car in the current day to the day's output list
         for car in day[1]:
@@ -365,25 +437,41 @@ def write_schedule(schedule, spreadsheet):
             # one extra row for the heading, one for the driver
             block_length = car.driver["seats"] + 2
 
-            car_end.inc_row(block_length)
-            wsrangeA1 = WSRange(car_start, car_end).getA1()
+            car_block_lower_right.inc_row(block_length)
+            car_block_lower_left.inc_row(block_length)
 
-            # cell format
-            ws.format(
-                wsrangeA1,
-                {
-                    "backgroundColor": {
-                        "red": uniform(0.5, 1.0),
-                        "green": uniform(0.5, 1.0),
-                        "blue": uniform(0.5, 1.0),
-                        "alpha": 0.5,
-                    }
-                },
+            car_block_a1_range = WSRange(
+                car_block_upper_left, car_block_lower_right
+            ).getA1()
+
+            heading_a1_range = WSRange(
+                car_block_upper_left, car_block_upper_right
+            ).getA1()
+
+            roles_a1_range = WSRange(car_block_upper_left, car_block_lower_left).getA1()
+
+            red, green, blue, alpha = get_car_block_colors()
+
+            car_block_fmt = cellFormat(
+                backgroundColor=color(red, green, blue, alpha),
+                textFormat=textFormat(fontSize=general_font_size),
             )
+
+            roles_col_fmt = cellFormat(
+                textFormat=textFormat(bold=bold_roles)
+            )
+
+            header_row_fmt = cellFormat(textFormat=textFormat(bold=bold_header))
+
+
+
+            days_format.append((car_block_a1_range, car_block_fmt))
+            days_format.append((heading_a1_range, header_row_fmt))
+            days_format.append((roles_a1_range, roles_col_fmt))
 
             # add headings and driver
             car_output = {
-                "range": wsrangeA1,
+                "range": car_block_a1_range,
                 "values": [
                     [
                         "",
@@ -404,27 +492,39 @@ def write_schedule(schedule, spreadsheet):
                 ],
             }
 
+            if notes_enabled:
+                car_output["values"][0].append("Notes")
+                car_output["values"][1].append("")
+
             # add rider info
             for r in car.riders:
-                car_output["values"].append(
-                    [
-                        "Rider",
-                        r["name"],
-                        "",
-                        r["phone"],
-                        "",
-                        unpack_locations(r, day[0]),
-                    ]
-                )
+                row = [
+                    "Rider",
+                    r["name"],
+                    "",
+                    r["phone"],
+                    "",
+                    unpack_locations(r, day[0]),
+                ]
+
+                if notes_enabled:
+                    row.append("")
+
+                car_output["values"].append(row)
 
             day_output.append(car_output)
 
             # move to next writing location
-            car_start.inc_row(this.CAR_ROW_SPACING + block_length)
-            car_end.inc_row(this.CAR_ROW_SPACING)
+            car_block_upper_left.inc_row(car_block_spacing + block_length)
+            car_block_upper_right.inc_row(car_block_spacing + block_length)
+
+            # update in the beginning of the loop when block size is calculated
+            car_block_lower_right.inc_row(car_block_spacing)
+            car_block_lower_left.inc_row(car_block_spacing)
 
         # batch update minimizes API calls
         ws.batch_update(day_output)
+        format_cell_ranges(ws, days_format)
 
 
 def write_to_sheet(schedule):
@@ -433,6 +533,5 @@ def write_to_sheet(schedule):
     An exisiting spreadsheet with the same name will be deleted and a new one will
     be made in its place.
     """
-    config_output()
     spreadsheet = create_spreadsheet()
     write_schedule(schedule, spreadsheet)

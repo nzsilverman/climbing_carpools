@@ -32,6 +32,12 @@ class WSCell:
 
         return self.__get_column(self.col) + str(self.row)
 
+    def get_column(self):
+        """
+        Returns column as letter
+        """
+        return self.__get_column(self.col)
+
     def get(self):
         """
         Get integer cell coordinates

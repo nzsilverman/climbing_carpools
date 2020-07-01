@@ -99,7 +99,7 @@ def find_best_match(rider, drivers, day):
 
     if not compatible_drivers:
         logger.warn("no compatible drivers for %s", rider["name"])
-        return
+        return None, drivers
 
     best_match = sorted(compatible_drivers, key=lambda lst: lst[1])[0][0]
 
@@ -162,6 +162,8 @@ def generate_rides(riders, drivers):
                     cars.append(new_car)
 
                 seats_remaining -= 1
+            else:
+                logger.debug("%s not matched", chosen_rider["name"])
 
         schedule.append([day, cars])
 

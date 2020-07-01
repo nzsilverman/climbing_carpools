@@ -55,14 +55,22 @@ days_enabled = ["TUESDAY", "THURSDAY", "SUNDAY"]
 
     [gform_backend.output]
 
+    # sheet name to appear on all sheets
+    name = "MCC Carpool Lists"
+
+    # suffix per day, ensure this is the same length as days
+    name_suffixes = [" — TUESDAY", " — THURSDAY", " — SUNDAY"] 
+    bold_title = true
+    title_font_size = 16
+
+    general_font_size = 12
+
+    # enable title
+    use_sheet_titles = true
+    title_cell_merge_count = 6
+
     # vertical spacing (in rows) between cars on the output sheet
     car_block_spacing = 2
-
-    # when true, chooses random rgb values between 0.5 and 1.0. alpha is set to 0.5
-    random_colors = true
-
-    # set this to the desired background color if enable_range_colors is false
-    default_background_color = [0.75, 0.0, 0.75, 0.5]
 
     # adds column for additional rider/driver notes
     notes_column = true
@@ -70,4 +78,34 @@ days_enabled = ["TUESDAY", "THURSDAY", "SUNDAY"]
     # column spacing
     column_buffer_left = 0
 
+    row_buffer_top = 4
 
+    # when true, chooses random rgb values between 0.5 and 1.0. alpha is set to 0.5
+    random_colors = true
+    random_low_range = 0.5
+    random_high_range = 1.0
+
+    color_alpha = 0.5
+
+    # set this to the desired background color if enable_range_colors is false
+    default_background_color = [0.75, 0.0, 0.75]
+    
+    #
+    # set the format of each car block's header
+    #
+
+    # header
+    bold_header = true
+
+    #
+    # set the format of each car block's columns
+    #
+
+    # driver/rider column bold
+    bold_roles = true
+
+    # column widths in px of the first n columns
+    column_widths = [75, 200, 150, 150, 250, 200, 400]
+
+    # width for all remaining columns
+    default_width = 100
