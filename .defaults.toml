@@ -8,7 +8,7 @@
 #
 #   If user-config.toml does not exist, you can create it in
 #   project's root directory or specify a different config file
-#   with the -config <filename> option
+#   with the --config <filename> option
 #
 #   This file (defaults.toml) defines a default configuration 
 #   for the Michgain Climbing Club Carpool scheduler
