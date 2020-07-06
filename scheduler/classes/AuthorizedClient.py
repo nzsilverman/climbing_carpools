@@ -3,10 +3,10 @@ import gspread
 
 
 class AuthorizedClient:
-    __instance = None
+    _instance = None
 
     @staticmethod
-    def __authorize():
+    def _authorize() -> None:
         """
         Authorizes this client
         """
@@ -24,18 +24,18 @@ class AuthorizedClient:
         return gspread.authorize(credentials), credentials
 
     def __init__(self):
-        if AuthorizedClient.__instance != None:
+        if AuthorizedClient._instance is not None:
             raise Exception("Authorized client error")
         else:
-            self.client, self.credentials = AuthorizedClient.__authorize()
-            AuthorizedClient.__instance = self
+            self.client, self.credentials = AuthorizedClient._authorize()
+            AuthorizedClient._instance = self
 
-    @staticmethod
-    def get_instance():
+    @classmethod
+    def get_instance(cls):
         """
         Get instance of this client
         """
 
-        if AuthorizedClient.__instance == None:
-            AuthorizedClient()
-        return AuthorizedClient.__instance
+        if cls._instance is None:
+            cls()
+        return cls._instance

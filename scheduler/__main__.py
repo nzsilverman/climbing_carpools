@@ -19,7 +19,7 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
 logger = logging.getLogger(__name__)
 
 
-def get_members():
+def get_members() -> (list, list):
     """
     Gets members. Abstraction for any backends (JSON, google forms).
     Currently JSON only used in tests. 
@@ -28,7 +28,7 @@ def get_members():
     return members_from_sheet()
 
 
-def match():
+def match() -> None:
     riders, drivers = get_members()
 
     # convert generator to list for debugging
@@ -46,7 +46,7 @@ def match():
             print()
 
 
-def usage():
+def usage() -> None:
     print(
         "Usage: scheduler [-m|--match] [-c|--config <filename>] [-l|--list] [-d|--delete <sheet name>"
     )
@@ -61,9 +61,9 @@ def main():
         usage()
         sys.exit(2)
 
-    matching = False
-    config_file = None
-    is_test = False
+    matching: bool = False
+    config_file: str = None
+    is_test: bool = False
 
     if len(opts) == 0:
         usage()

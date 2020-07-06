@@ -27,15 +27,15 @@ logger = logging.getLogger(__name__)
 this = sys.modules[__name__]
 
 # this is hacky and should be fixed
-this.EMAIL_COLUMN = None
-this.NAME_COLUMN = None
-this.PHONE_COLUMN = None
-this.CAR_DESCRIPTION_COLUMN = None
-this.SEATS_COLUMN = None
-this.IS_RIDER_COLUMN = None
-this.IS_DRIVER_COLUMN = None
-this.DAYS_INFO_START_COLUMN = None
-this.CAR_ROW_SPACING = None
+this.EMAIL_COLUMN: int = None
+this.NAME_COLUMN: int = None
+this.PHONE_COLUMN: int = None
+this.CAR_DESCRIPTION_COLUMN: int = None
+this.SEATS_COLUMN: int = None
+this.IS_RIDER_COLUMN: int = None
+this.IS_DRIVER_COLUMN: int = None
+this.DAYS_INFO_START_COLUMN: int = None
+this.CAR_ROW_SPACING: int = None
 
 
 def config_responses():
@@ -55,7 +55,7 @@ def config_responses():
     this.DAYS_INFO_START_COLUMN = columns["days_info_start"]
 
 
-def get_dues_payers(dues_sheet):
+def get_dues_payers(dues_sheet: str) -> set:
     """
     Gets the spreadsheet of dues payers
     """
@@ -67,7 +67,7 @@ def get_dues_payers(dues_sheet):
     return payers
 
 
-def validate_dues_payers(email, dues_payers):
+def validate_dues_payers(email: str, dues_payers: str) -> bool:
     """
     Checks if email is a dues payer
     """
@@ -76,7 +76,7 @@ def validate_dues_payers(email, dues_payers):
     return uniqname in dues_payers
 
 
-def parse_location(location):
+def parse_location(location: str) -> str:
     """
     Converts location name in value for locations list
     """
@@ -87,7 +87,7 @@ def parse_location(location):
         return "CENTRAL"
 
 
-def parse_times(time):
+def parse_times(time: str) -> float:
     """
     Converts hh:mm to decimal time: hh.(mm/60)
     """
@@ -96,13 +96,13 @@ def parse_times(time):
     return float(time[0]) + (float(time[1]) / 60)
 
 
-def get_riders(responses, days_enabled, dues_payers):
+def get_riders(responses: list, days_enabled: list, dues_payers: set) -> list:
     """
     Gets riders from the responses
     """
 
     # list of all riders
-    riders = []
+    riders = list()
 
     for row in responses[1:]:
         if row[this.IS_RIDER_COLUMN] == "Yes":
@@ -116,7 +116,7 @@ def get_riders(responses, days_enabled, dues_payers):
                     row[this.EMAIL_COLUMN], dues_payers
                 ),
                 "is_driver": False,
-                "days": [],
+                "days": list(),
             }
 
             # assume each day has a locations column and a departure times column
@@ -135,7 +135,7 @@ def get_riders(responses, days_enabled, dues_payers):
                     day["day"] = d
 
                     # add locations
-                    day["locations"] = []
+                    day["locations"] = list()
                     locations = row[i].split(",")
 
                     for l in locations:
@@ -143,7 +143,7 @@ def get_riders(responses, days_enabled, dues_payers):
 
                     # add departure times
                     times = row[i + len(days_enabled)].split(",")
-                    day["departure_times"] = []
+                    day["departure_times"] = list()
 
                     for t in times:
                         day["departure_times"].append(parse_times(t.strip()))
@@ -155,12 +155,12 @@ def get_riders(responses, days_enabled, dues_payers):
     return riders
 
 
-def get_drivers(days_enabled, responses):
+def get_drivers(responses: list, days_enabled: list) -> list:
     """
     Gets drivers from the responses
     """
 
-    drivers = []
+    drivers = list()
 
     for row in responses[1:]:
         if row[this.IS_DRIVER_COLUMN] == "Yes":
@@ -174,7 +174,7 @@ def get_drivers(days_enabled, responses):
                 "seats": int(row[this.SEATS_COLUMN]),
                 "is_dues_paying": True,
                 "is_driver": True,
-                "days": [],
+                "days": list(),
             }
 
             # assume each day has a locations column and a departure times column
@@ -193,7 +193,7 @@ def get_drivers(days_enabled, responses):
                     day["day"] = d
 
                     # add locations
-                    day["locations"] = []
+                    day["locations"] = list()
                     locations = row[i].split(",")
 
                     for l in locations:
@@ -211,7 +211,7 @@ def get_drivers(days_enabled, responses):
     return drivers
 
 
-def members_from_sheet():
+def members_from_sheet() -> (list, list):
     """
     Gets all club members who submitted a response using the form.
     """
@@ -236,12 +236,12 @@ def members_from_sheet():
     print(days_enabled)
 
     riders = get_riders(all_responses, days_enabled, get_dues_payers(dues_payers_sheet))
-    drivers = get_drivers(days_enabled, all_responses)
+    drivers = get_drivers(all_responses, days_enabled)
 
     return riders, drivers
 
 
-def delete_spreadsheet(name):
+def delete_spreadsheet(name: str) -> None:
     """
     Deletes the spreadsheets in names
     """
@@ -255,7 +255,7 @@ def delete_spreadsheet(name):
             logger.info("Deleting spreadsheet: %s", s.title)
 
 
-def create_spreadsheet():
+def create_spreadsheet() -> gspread.models.Spreadsheet:
     """
     Creates a spreadsheet with given name in the location defined by the folder_id.
     The folder_id can be found by viewing the folder in Drive and selecting the 
@@ -283,7 +283,7 @@ def create_spreadsheet():
     return spreadsheet
 
 
-def list_spreadsheets():
+def list_spreadsheets() -> None:
     """
     Lists spreadsheets available to the client.
     """
@@ -294,7 +294,7 @@ def list_spreadsheets():
         print(s.title, s.id)
 
 
-def unpack_locations(member, day):
+def unpack_locations(member: dict, day: str) -> str:
     """
     Converts locations in member's locations list to a string of location names
     """
@@ -308,7 +308,7 @@ def unpack_locations(member, day):
     return location_str
 
 
-def unpack_time(driver, day):
+def unpack_time(driver: dict, day: str) -> str:
     """
     Converts time from decimal time (hh.(mm/60)) to hh:mm format
     """
@@ -319,7 +319,7 @@ def unpack_time(driver, day):
     return "{0:02.0f}:{1:02.0f}".format(*divmod(time[0] * 60, 60))
 
 
-def get_car_block_colors():
+def get_car_block_colors() -> (float, float, float, float):
     config = Configuration.config("gform_backend.output")
     colors = Configuration.config("gform_backend.output.default_background_color")
 
@@ -338,7 +338,7 @@ def get_car_block_colors():
     return r, g, b, config["color_alpha"]
 
 
-def write_schedule(schedule, spreadsheet):
+def write_schedule(schedule: list, spreadsheet: gspread.models.Spreadsheet) -> None:
     """
     Write schedule to provided sheet.
     """
@@ -374,9 +374,9 @@ def write_schedule(schedule, spreadsheet):
             spreadsheet.del_worksheet(ws)
             ws = ws_new
 
-        day_output = []
-        days_format = []
-        widths_list = []
+        day_output = list()
+        days_format = list()
+        widths_list = list()
 
         for j, w in zip(range(1, len(column_widths) + 1), column_widths):
             col_lettr = WSCell(1, j).get_column()
@@ -523,7 +523,7 @@ def write_schedule(schedule, spreadsheet):
         format_cell_ranges(ws, days_format)
 
 
-def write_to_sheet(schedule):
+def write_to_sheet(schedule: list) -> None:
     """
     Writes provided schedule to a spreadsheet defined by the provided name.
     An exisiting spreadsheet with the same name will be deleted and a new one will
