@@ -8,12 +8,12 @@ import json
 logger = logging.getLogger(__name__)
 
 
-def filter_dues_payers(riders):
+def filter_dues_payers(riders: list) -> list:
     """
     Returns list of riders that are dues paying.
     """
 
-    dues_payers = []
+    dues_payers = list()
 
     for rider in riders:
         if rider["is_dues_paying"]:
@@ -25,12 +25,12 @@ def filter_dues_payers(riders):
     return dues_payers
 
 
-def get_drivers(members):
+def get_drivers(members: list) -> list:
     """
     Gets drivers from the list of members
     """
 
-    drivers = []
+    drivers = list()
 
     for member in members:
         if member["is_driver"]:
@@ -39,12 +39,12 @@ def get_drivers(members):
     return drivers
 
 
-def get_riders(members):
+def get_riders(members: list) -> list:
     """
     Gets riders from the list of members
     """
 
-    riders = []
+    riders = list()
 
     for member in members:
         if not member["is_driver"]:
@@ -53,7 +53,7 @@ def get_riders(members):
     return riders
 
 
-def get_day_info_from_member(member, day, key):
+def get_day_info_from_member(member: dict, day: str, key: str):
     """
     Gets info associated with the key on the given day from the provided member
     """
@@ -63,4 +63,4 @@ def get_day_info_from_member(member, day, key):
             return d[key]
 
     logger.error("%s not found for %s in %s", key, day, member)
-    return []
+    return list()

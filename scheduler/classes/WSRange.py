@@ -1,9 +1,12 @@
+from scheduler.classes.WSCell import WSCell
+
+
 class WSRange:
     """
     A spreadsheet range defined by a starting and ending cell
     """
 
-    def __init__(self, start, end):
+    def __init__(self, start: WSCell, end: WSCell):
         """
         Creates a range from a starting cell and ending cell
         """
@@ -11,7 +14,7 @@ class WSRange:
         self.start = start
         self.end = end
 
-    def getA1(self):
+    def getA1(self) -> str:
         """
         Returns a spreadsheet range in A1 notation
 

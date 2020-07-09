@@ -30,11 +30,8 @@ class WSCellTest(TestCase):
     """
 
     ws_basic_test = WSCellTestData.ws_basic_test
-
     column_increment_test_data = WSCellTestData.column_increment_test_data
-
     row_increment_test_data = WSCellTestData.row_increment_test_data
-
     get_a1_test_data = WSCellTestData.get_a1_test_data
 
     @params(ws_basic_test[0], ws_basic_test[1])

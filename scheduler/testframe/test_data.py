@@ -1,4 +1,8 @@
 class JsonBackendTestData:
+    """
+    Data for the JsonBackendTest
+    """
+
     test_path_prefix = "scheduler/testframe/json/"
 
     backend_test_data = [
@@ -8,6 +12,10 @@ class JsonBackendTestData:
 
 
 class GenerateRidesTestData:
+    """
+    Data for the GenerateRidesTest
+    """
+
     get_total_seats_test_data = [
         (
             [
@@ -141,6 +149,10 @@ class GenerateRidesTestData:
 
 
 class UtilTestData:
+    """
+    Test data for UtilTest
+    """
+
     get_day_info_from_member_test_data = [
         (
             {
@@ -192,6 +204,10 @@ class UtilTestData:
 
 
 class WSRangeTestData:
+    """
+    Test data for WSRangeTest
+    """
+
     ws_range_basic = [
         (4, 4, 4, 6, "D4:F4"),
         (1, 1, 1, 1, "A1:A1"),
@@ -200,6 +216,10 @@ class WSRangeTestData:
 
 
 class WSCellTestData:
+    """
+    Test data for WSCellTest
+    """
+
     ws_basic_test = [(2, 3, 2, 3), (1, 2, 1, 2)]
 
     column_increment_test_data = [(4, 5, 5, 10), (1, 2, -1, 1)]

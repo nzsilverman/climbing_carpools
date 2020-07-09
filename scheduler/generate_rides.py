@@ -7,12 +7,13 @@ import sys
 
 from scheduler.classes.Car import Car
 from scheduler.classes.MeetingLocation import MeetingLocation
+from scheduler.classes.Configuration import Configuration
 from scheduler.util import get_day_info_from_member
 
 logger = logging.getLogger(__name__)
 
 
-def check_in_days(member, day):
+def check_in_days(member: dict, day: str) -> bool:
     """
     Checks if member is signed up for the given day
     """
@@ -24,7 +25,7 @@ def check_in_days(member, day):
     return False
 
 
-def get_total_seats(drivers, day):
+def get_total_seats(drivers: list, day: str) -> int:
     """
     Returns the number of available seats for passengers.
     """
@@ -32,7 +33,7 @@ def get_total_seats(drivers, day):
     return sum([driver["seats"] for driver in drivers if check_in_days(driver, day)])
 
 
-def are_location_compatible(rider, driver, day):
+def are_location_compatible(rider: dict, driver: dict, day: str) -> bool:
     """
     Checks if rider and driver have compatible location settings.
     """
@@ -45,7 +46,7 @@ def are_location_compatible(rider, driver, day):
     return False
 
 
-def time_compatibility(rider, driver, day):
+def time_compatibility(rider: dict, driver: dict, day: str) -> float:
     """
     Checks time compatibility. Finds driver and rider with closest departure time
     """
@@ -74,7 +75,7 @@ def time_compatibility(rider, driver, day):
     return result
 
 
-def find_best_match(rider, drivers, day):
+def find_best_match(rider: dict, drivers: list, day: str) -> (dict, list):
     """
     Find the best match for the rider.
 
@@ -89,7 +90,7 @@ def find_best_match(rider, drivers, day):
     # this algorithm is a good choice if we truly want to give everyone an ~equal~ chance
     # in getting a car but we disregard how well they fit in it relative to others.
 
-    compatible_drivers = []
+    compatible_drivers = list()
 
     # finds all compatible drivers
     for driver in drivers:
@@ -98,7 +99,7 @@ def find_best_match(rider, drivers, day):
 
     if not compatible_drivers:
         logger.warn("no compatible drivers for %s", rider["name"])
-        return
+        return None, drivers
 
     best_match = sorted(compatible_drivers, key=lambda lst: lst[1])[0][0]
 
@@ -110,16 +111,18 @@ def find_best_match(rider, drivers, day):
     return best_match, drivers
 
 
-def generate_rides(riders, drivers, days_enabled):
+def generate_rides(riders: list, drivers: list) -> list:
     """
     Matches riders with drivers.
     """
 
     schedule = list()
 
+    days_enabled = Configuration.config("mcc.days_enabled")
+
     for day in days_enabled:
         # cars for the given day
-        cars = []
+        cars = list()
 
         for d in drivers:
             d["seats_remaining"] = d["seats"]
@@ -159,6 +162,8 @@ def generate_rides(riders, drivers, days_enabled):
                     cars.append(new_car)
 
                 seats_remaining -= 1
+            else:
+                logger.debug("%s not matched", chosen_rider["name"])
 
         schedule.append([day, cars])
 
