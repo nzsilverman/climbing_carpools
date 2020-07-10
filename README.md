@@ -1,6 +1,8 @@
 # University of Michigan Climbing Club Carpool Scheduling Software
 > Carpool Scheduling software used for fairly coordinating carpools to the local climbing gym.
 
+![](https://github.com/nzsilverman/climbing_carpools/workflows/YAPF%20Formatting%20Check/badge.svg) 
+![](https://github.com/nzsilverman/climbing_carpools/workflows/Tests/badge.svg) 
 
 The carpool scheduling software is designed to fairly match drivers and riders going to Planet Rock (a local climbing gym in Ann Arbor) with carpools that match both the driver and riders unique date, time, and location preferences. 
 
