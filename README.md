@@ -73,7 +73,7 @@ A discord channel has been set up for communication between developers. It can b
 * 2.0.0
   * This version is currently under development. It has been developed by Roberts Kalnins and Nathan Silverman. This version represents a major rewrite of the software from the ground up. It solves many of the issues found from running v1.0.0 for an entire year.
 
-  # Meta
+  ## Meta
   Primary contributions by:
 
   * Nathan Silverman - nzsilverman@gmail.com
