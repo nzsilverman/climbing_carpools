@@ -46,7 +46,8 @@ Contributions are welcome. Anyone who wants to help improve this project should 
 1. Create a new pull request
 
 ### Formatting
-This project is formatted using the [black](https://github.com/psf/black) formatter. Please use this before attempting to submit a pull requests. Non formatted code will fail the pull request.
+
+This project is formatted using the [yapf](https://github.com/google/yapf/) code formatter. This formatter enforces the google style guide. It is using presets defined in the file `setup.cfg`. A github workflow has been established to run this check on every push and pull request. Any failed checks will not be accepted in a pull request. To format the code, run the script `./bin/format_with_yapf.sh` from the top level directory. This has all the neccesary flags and will run using the configuration file.
 
 ### Testing
 Tests for this codebase have been developed using the [nose2](https://docs.nose2.io/en/latest/) testing framework. Please add tests for new features you contribute, and ensure that any code you add does not break the codebase. 
