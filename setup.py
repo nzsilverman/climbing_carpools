@@ -4,7 +4,7 @@ setup(
     name="scheduler",
     version="2.0.0",
     author="Nathan Silverman",
-    author_email="nzsilver@umich.edu",
+    author_email="nzsilverman@gmail.com",
     description="Climbing Club Carpool Scheduling Software",
     packages=find_packages(),
     install_requires=["gspread", "gspread-formatting", "oauth2client", "toml"],
