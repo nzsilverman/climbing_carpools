@@ -2,6 +2,7 @@ class Car:
     """
     Car
     """
+
     def __init__(self, driver: dict):
         self.driver: dict = driver
         self.car_type: str = driver["car_type"]
