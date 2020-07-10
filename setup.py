@@ -7,7 +7,7 @@ setup(
     author_email="nzsilverman@gmail.com",
     description="Climbing Club Carpool Scheduling Software",
     packages=find_packages(),
-    install_requires=["gspread", "gspread-formatting", "oauth2client", "toml"],
+    install_requires=["gspread", "gspread-formatting", "oauth2client", "toml", "nose2"],
     include_package_data=True,
     entry_points={"console_scripts": ["scheduler = scheduler.__main__:main",]},
     test_suite="nose2.collector.collector",
