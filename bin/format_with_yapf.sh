@@ -5,4 +5,4 @@
 # yapf settings. In the absence of a setup.cfg yapf defaults will
 # be used 
 
-yapf -i -r .
+yapf -i -r --verbose .
