@@ -15,7 +15,7 @@ __pycache__/
 # VS Code
 .vscode
 
-documentation/html/*
+documentation/*
 
 # Distribution / packaging
 .Python
