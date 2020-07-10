@@ -29,7 +29,7 @@ UPDATE THESE TO INCLUDE FINAL PROGRAM OPTIONS AND DESCRIPTIONS
 Running the program requires a secrets.json file that is the key to a service account for the google developer console project. This is needed to allow the program to communicate with google drive. To get this setup, access needs to be granted by a system admin. Contact Nathan Silverman or Roberts Kalnins for this. 
 
 ## Development Setup
-All developers should be using python >=3.5, have a `secret.json` file, and should have run the installation step above. See note above about obtaining a `secret.json` file.
+All developers should be using python >=3.6, have a `secret.json` file, and should have run the installation step above. See note above about obtaining a `secret.json` file.
 
 ## Contribution Guidelines
 
