@@ -68,14 +68,18 @@ A discord channel has been set up for communication between developers. It can b
 
 ## Revision History
 * 1.0.0
-  * Initial version. This version worked succesfully for the 2019 - 2020 school year. This version was developed by Nathan Silverman.
+  * Initial version. This version worked succesfully for the 2019 - 2020 school year. This version was developed by Nathan Silverman. Thank you to Jonah Rosenblum (jonaher@umich.edu) and Chris Wentland (chriswen@umich.edu) for editing help.
 
 * 2.0.0
   * This version is currently under development. It has been developed by Roberts Kalnins and Nathan Silverman. This version represents a major rewrite of the software from the ground up. It solves many of the issues found from running v1.0.0 for an entire year.
 
   # Meta
-  Nathan Silverman - nzsilverman@gmail.com
+  Primary contributions by:
 
-  Roberts Kalnins - rkalnins@umich.edu
+  * Nathan Silverman - nzsilverman@gmail.com
+
+  * Roberts Kalnins - rkalnins@umich.edu
+
+  Thank you to all others who have contributed to the development of this project.
 
   Distributed under the GNU GPL v3 license. See [LICENSE](LICENSE) for more information.
