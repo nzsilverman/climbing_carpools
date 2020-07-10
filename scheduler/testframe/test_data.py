@@ -7,7 +7,8 @@ class JsonBackendTestData:
 
     backend_test_data = [
         (test_path_prefix + "simple_test.json", 2, 0, ["Roberts", "Suzy"], []),
-        (test_path_prefix + "test.json", 3, 1, ["Roberts", "Bob", "Jon"], ["Suzy"]),
+        (test_path_prefix + "test.json", 3, 1, ["Roberts", "Bob",
+                                                "Jon"], ["Suzy"]),
     ]
 
 
@@ -19,41 +20,107 @@ class GenerateRidesTestData:
     get_total_seats_test_data = [
         (
             [
-                {"seats": 4, "days": [{"day": "FRIDAY"}]},
-                {"seats": 3, "days": [{"day": "TUESDAY"}]},
-                {"seats": 2, "days": [{"day": "MONDAY"}]},
-                {"seats": 1, "days": [{"day": "TUESDAY"}]},
+                {
+                    "seats": 4,
+                    "days": [{
+                        "day": "FRIDAY"
+                    }]
+                },
+                {
+                    "seats": 3,
+                    "days": [{
+                        "day": "TUESDAY"
+                    }]
+                },
+                {
+                    "seats": 2,
+                    "days": [{
+                        "day": "MONDAY"
+                    }]
+                },
+                {
+                    "seats": 1,
+                    "days": [{
+                        "day": "TUESDAY"
+                    }]
+                },
             ],
             "TUESDAY",
             4,
         ),
-        ([{"seats": 0, "days": [{"day": "MONDAY"}]}], "MONDAY", 0),
+        ([{
+            "seats": 0,
+            "days": [{
+                "day": "MONDAY"
+            }]
+        }], "MONDAY", 0),
     ]
 
     check_in_days_test_data = [
-        ({"days": [{"day": "MONDAY"}]}, "MONDAY", True),
-        ({"days": [{"day": "MONDAY"}]}, "TUESDAY", False),
+        ({
+            "days": [{
+                "day": "MONDAY"
+            }]
+        }, "MONDAY", True),
+        ({
+            "days": [{
+                "day": "MONDAY"
+            }]
+        }, "TUESDAY", False),
     ]
 
     are_location_compatible_test_data = [
         (
-            {"name": "a", "days": [{"day": "MONDAY", "locations": ["NORTH"]}]},
+            {
+                "name": "a",
+                "days": [{
+                    "day": "MONDAY",
+                    "locations": ["NORTH"]
+                }]
+            },
             {
                 "name": "b",
-                "days": [{"day": "MONDAY", "locations": ["NORTH", "CENTRAL"]}],
+                "days": [{
+                    "day": "MONDAY",
+                    "locations": ["NORTH", "CENTRAL"]
+                }],
             },
             "MONDAY",
             True,
         ),
         (
-            {"name": "a", "days": [{"day": "MONDAY", "locations": ["NORTH"]}]},
-            {"name": "b", "days": [{"day": "MONDAY", "locations": ["CENTRAL"]}]},
+            {
+                "name": "a",
+                "days": [{
+                    "day": "MONDAY",
+                    "locations": ["NORTH"]
+                }]
+            },
+            {
+                "name": "b",
+                "days": [{
+                    "day": "MONDAY",
+                    "locations": ["CENTRAL"]
+                }]
+            },
             "MONDAY",
             False,
         ),
         (
-            {"name": "a", "days": [{"day": "MONDAY", "locations": ["NORTH"]}]},
-            {"name": "b", "days": [{"day": "TUESDAY", "locations": ["NORTH"]}]},
+            {
+                "name": "a",
+                "days": [{
+                    "day": "MONDAY",
+                    "locations": ["NORTH"]
+                }]
+            },
+            {
+                "name": "b",
+                "days": [{
+                    "day": "TUESDAY",
+                    "locations": ["NORTH"]
+                }]
+            },
             "TUESDAY",
             False,
         ),
@@ -61,20 +128,50 @@ class GenerateRidesTestData:
 
     time_compatibility_test_data = [
         (
-            {"days": [{"day": "MONDAY", "departure_times": [1, 2, 3, 4]}]},
-            {"days": [{"day": "MONDAY", "departure_times": [4]}]},
+            {
+                "days": [{
+                    "day": "MONDAY",
+                    "departure_times": [1, 2, 3, 4]
+                }]
+            },
+            {
+                "days": [{
+                    "day": "MONDAY",
+                    "departure_times": [4]
+                }]
+            },
             "MONDAY",
             0,
         ),
         (
-            {"days": [{"day": "TUESDAY", "departure_times": [1, 2, 3, 4]}]},
-            {"days": [{"day": "TUESDAY", "departure_times": [8]}]},
+            {
+                "days": [{
+                    "day": "TUESDAY",
+                    "departure_times": [1, 2, 3, 4]
+                }]
+            },
+            {
+                "days": [{
+                    "day": "TUESDAY",
+                    "departure_times": [8]
+                }]
+            },
             "TUESDAY",
             4,
         ),
         (
-            {"days": [{"day": "MONDAY", "departure_times": [1.5, 2, 3, 4]}]},
-            {"days": [{"day": "MONDAY", "departure_times": [0]}]},
+            {
+                "days": [{
+                    "day": "MONDAY",
+                    "departure_times": [1.5, 2, 3, 4]
+                }]
+            },
+            {
+                "days": [{
+                    "day": "MONDAY",
+                    "departure_times": [0]
+                }]
+            },
             "MONDAY",
             1.5,
         ),
@@ -83,63 +180,66 @@ class GenerateRidesTestData:
     find_best_match_test_data = [
         (
             {
-                "name": "r",
-                "days": [
-                    {
-                        "day": "MONDAY",
-                        "locations": ["NORTH"],
-                        "departure_times": [1, 2, 3],
-                    }
-                ],
+                "name":
+                    "r",
+                "days": [{
+                    "day": "MONDAY",
+                    "locations": ["NORTH"],
+                    "departure_times": [1, 2, 3],
+                }],
             },
             [
                 {
-                    "name": "a",
-                    "seats": 3,
-                    "seats_remaining": 3,
-                    "days": [
-                        {
-                            "day": "MONDAY",
-                            "locations": ["CENTRAL", "NORTH"],
-                            "departure_times": [0],
-                        }
-                    ],
+                    "name":
+                        "a",
+                    "seats":
+                        3,
+                    "seats_remaining":
+                        3,
+                    "days": [{
+                        "day": "MONDAY",
+                        "locations": ["CENTRAL", "NORTH"],
+                        "departure_times": [0],
+                    }],
                 },
                 {
-                    "name": "b",
-                    "seats": 0,
-                    "seats_remaining": 0,
-                    "days": [
-                        {
-                            "day": "MONDAY",
-                            "locations": ["CENTRAL", "NORTH"],
-                            "departure_times": [0],
-                        }
-                    ],
+                    "name":
+                        "b",
+                    "seats":
+                        0,
+                    "seats_remaining":
+                        0,
+                    "days": [{
+                        "day": "MONDAY",
+                        "locations": ["CENTRAL", "NORTH"],
+                        "departure_times": [0],
+                    }],
                 },
                 {
-                    "name": "c",
-                    "seats": 4,
-                    "seats_remaining": 4,
-                    "days": [
-                        {
-                            "day": "MONDAY",
-                            "locations": ["NORTH"],
-                            "departure_times": [8],
-                        }
-                    ],
+                    "name":
+                        "c",
+                    "seats":
+                        4,
+                    "seats_remaining":
+                        4,
+                    "days": [{
+                        "day": "MONDAY",
+                        "locations": ["NORTH"],
+                        "departure_times": [8],
+                    }],
                 },
                 {
-                    "name": "d",
-                    "seats": 4,
-                    "seats_remaining": 4,
-                    "days": [
-                        {
-                            "day": "TUESDAY",
-                            "locations": ["CENTRAL"],
-                            "departure_times": [2],
-                        }
-                    ],
+                    "name":
+                        "d",
+                    "seats":
+                        4,
+                    "seats_remaining":
+                        4,
+                    "days": [{
+                        "day": "TUESDAY",
+                        "locations": ["CENTRAL"],
+                        "departure_times": [2],
+                    }],
                 },
             ],
             "MONDAY",
@@ -153,53 +253,85 @@ class UtilTestData:
     Test data for UtilTest
     """
 
-    get_day_info_from_member_test_data = [
-        (
+    get_day_info_from_member_test_data = [(
+        {
+            "days": [
+                {
+                    "day": "MONDAY",
+                    "departure_times": [0, 1, 2, 3]
+                },
+                {
+                    "day": "TUESDAY",
+                    "departure_times": [2, 3]
+                },
+            ]
+        },
+        "TUESDAY",
+        "departure_times",
+        [2, 3],
+    )]
+
+    get_drivers_test_data = [(
+        [
             {
-                "days": [
-                    {"day": "MONDAY", "departure_times": [0, 1, 2, 3]},
-                    {"day": "TUESDAY", "departure_times": [2, 3]},
-                ]
+                "name": "d1",
+                "is_driver": True
             },
-            "TUESDAY",
-            "departure_times",
-            [2, 3],
-        )
-    ]
+            {
+                "name": "r1",
+                "is_driver": False
+            },
+            {
+                "name": "d2",
+                "is_driver": True
+            },
+        ],
+        2,
+    )]
 
-    get_drivers_test_data = [
-        (
-            [
-                {"name": "d1", "is_driver": True},
-                {"name": "r1", "is_driver": False},
-                {"name": "d2", "is_driver": True},
-            ],
-            2,
-        )
-    ]
-
-    get_riders_test_data = [
-        (
-            [
-                {"name": "d1", "is_driver": True},
-                {"name": "r1", "is_driver": False},
-                {"name": "d2", "is_driver": True},
-            ],
-            1,
-        )
-    ]
+    get_riders_test_data = [(
+        [
+            {
+                "name": "d1",
+                "is_driver": True
+            },
+            {
+                "name": "r1",
+                "is_driver": False
+            },
+            {
+                "name": "d2",
+                "is_driver": True
+            },
+        ],
+        1,
+    )]
 
     filter_dues_payers_test_data = [
         (
             [
-                {"name": "d1", "is_dues_paying": True},
-                {"name": "r1", "is_dues_paying": False},
-                {"name": "d2", "is_dues_paying": True},
+                {
+                    "name": "d1",
+                    "is_dues_paying": True
+                },
+                {
+                    "name": "r1",
+                    "is_dues_paying": False
+                },
+                {
+                    "name": "d2",
+                    "is_dues_paying": True
+                },
             ],
             2,
             ["d1", "d2"],
         ),
-        ([{"name": "r1", "is_dues_paying": False},], 0, []),
+        ([
+            {
+                "name": "r1",
+                "is_dues_paying": False
+            },
+        ], 0, []),
     ]
 
 

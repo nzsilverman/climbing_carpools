@@ -54,9 +54,8 @@ def usage() -> None:
 
 def main():
     try:
-        opts, _ = getopt.getopt(
-            sys.argv[1:], "mlc:d:t", ["match", "list", "config=", "delete=", "test"]
-        )
+        opts, _ = getopt.getopt(sys.argv[1:], "mlc:d:t",
+                                ["match", "list", "config=", "delete=", "test"])
     except getopt.GetoptError:
         usage()
         sys.exit(2)

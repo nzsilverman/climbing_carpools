@@ -30,7 +30,8 @@ def get_total_seats(drivers: list, day: str) -> int:
     Returns the number of available seats for passengers.
     """
 
-    return sum([driver["seats"] for driver in drivers if check_in_days(driver, day)])
+    return sum(
+        [driver["seats"] for driver in drivers if check_in_days(driver, day)])
 
 
 def are_location_compatible(rider: dict, driver: dict, day: str) -> bool:
@@ -40,7 +41,8 @@ def are_location_compatible(rider: dict, driver: dict, day: str) -> bool:
 
     for location in get_day_info_from_member(rider, day, "locations"):
         if location in get_day_info_from_member(driver, day, "locations"):
-            logger.debug("location match %s and %s", rider["name"], driver["name"])
+            logger.debug("location match %s and %s", rider["name"],
+                         driver["name"])
             return True
 
     return False
@@ -94,8 +96,10 @@ def find_best_match(rider: dict, drivers: list, day: str) -> (dict, list):
 
     # finds all compatible drivers
     for driver in drivers:
-        if driver["seats_remaining"] and are_location_compatible(rider, driver, day):
-            compatible_drivers.append([driver, time_compatibility(rider, driver, day)])
+        if driver["seats_remaining"] and are_location_compatible(
+                rider, driver, day):
+            compatible_drivers.append(
+                [driver, time_compatibility(rider, driver, day)])
 
     if not compatible_drivers:
         logger.warn("no compatible drivers for %s", rider["name"])

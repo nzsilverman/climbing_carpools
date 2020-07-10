@@ -48,7 +48,8 @@ class Configuration:
                 logger.info("Override configuration provided: %s", config_file)
                 self._set_config(config_file)
             else:
-                logger.info("No override configuration provided. Using defaults")
+                logger.info(
+                    "No override configuration provided. Using defaults")
                 self._set_config()
 
             Configuration._instance = self

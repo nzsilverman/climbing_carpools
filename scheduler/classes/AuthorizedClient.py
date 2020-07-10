@@ -18,8 +18,7 @@ class AuthorizedClient:
         SECRETS_FILE = "secret.json"
 
         credentials = ServiceAccountCredentials.from_json_keyfile_name(
-            SECRETS_FILE, SCOPE
-        )
+            SECRETS_FILE, SCOPE)
 
         return gspread.authorize(credentials), credentials
 

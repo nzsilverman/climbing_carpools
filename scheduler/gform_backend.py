@@ -7,7 +7,6 @@ Writes cars with drivers and riders
 
 """
 
-
 import logging
 import gspread
 from gspread_formatting import *
@@ -21,7 +20,6 @@ from scheduler.classes.AuthorizedClient import AuthorizedClient
 from scheduler.classes.WSCell import WSCell
 from scheduler.classes.WSRange import WSRange
 from scheduler.classes.Configuration import Configuration
-
 
 logger = logging.getLogger(__name__)
 this = sys.modules[__name__]
@@ -109,14 +107,18 @@ def get_riders(responses: list, days_enabled: list, dues_payers: set) -> list:
 
             # create rider dictionary
             rider = {
-                "name": row[this.NAME_COLUMN],
-                "email": row[this.EMAIL_COLUMN],
-                "phone": row[this.PHONE_COLUMN],
-                "is_dues_paying": validate_dues_payers(
-                    row[this.EMAIL_COLUMN], dues_payers
-                ),
-                "is_driver": False,
-                "days": list(),
+                "name":
+                    row[this.NAME_COLUMN],
+                "email":
+                    row[this.EMAIL_COLUMN],
+                "phone":
+                    row[this.PHONE_COLUMN],
+                "is_dues_paying":
+                    validate_dues_payers(row[this.EMAIL_COLUMN], dues_payers),
+                "is_driver":
+                    False,
+                "days":
+                    list(),
             }
 
             # assume each day has a locations column and a departure times column
@@ -124,8 +126,9 @@ def get_riders(responses: list, days_enabled: list, dues_payers: set) -> list:
 
             # create a dict for each day
             for (i, d) in zip(
-                range(rider_days_start, rider_days_start + len(days_enabled)),
-                days_enabled,
+                    range(rider_days_start,
+                          rider_days_start + len(days_enabled)),
+                    days_enabled,
             ):
                 day = dict()
 
@@ -178,12 +181,14 @@ def get_drivers(responses: list, days_enabled: list) -> list:
             }
 
             # assume each day has a locations column and a departure times column
-            driver_days_start = this.DAYS_INFO_START_COLUMN + 2 * len(days_enabled)
+            driver_days_start = this.DAYS_INFO_START_COLUMN + 2 * len(
+                days_enabled)
 
             # create a dict for each day
             for (i, d) in zip(
-                range(driver_days_start, driver_days_start + len(days_enabled)),
-                days_enabled,
+                    range(driver_days_start,
+                          driver_days_start + len(days_enabled)),
+                    days_enabled,
             ):
                 day = dict()
 
@@ -227,7 +232,8 @@ def members_from_sheet() -> (list, list):
         logger.debug("%s", sheet.title)
 
     # get responses and dues payers sheets
-    responses_sheet = client.open(gform_backend_config["responses_sheet"]).sheet1
+    responses_sheet = client.open(
+        gform_backend_config["responses_sheet"]).sheet1
     dues_payers_sheet = client.open(gform_backend_config["dues_sheet"]).sheet1
 
     all_responses = responses_sheet.get_all_values()
@@ -235,7 +241,8 @@ def members_from_sheet() -> (list, list):
     # create lists of riders and drivers
     print(days_enabled)
 
-    riders = get_riders(all_responses, days_enabled, get_dues_payers(dues_payers_sheet))
+    riders = get_riders(all_responses, days_enabled,
+                        get_dues_payers(dues_payers_sheet))
     drivers = get_drivers(all_responses, days_enabled)
 
     return riders, drivers
@@ -273,12 +280,12 @@ def create_spreadsheet() -> gspread.models.Spreadsheet:
         logger.info("Sheet exists, deleting")
 
     logger.info("Creating sheet")
-    spreadsheet = client.create(
-        config["output_sheet"], folder_id=config["output_folder_id"]
-    )
-    spreadsheet.share(
-        "rkalnins@umich.edu", notify=False, perm_type="user", role="writer"
-    )
+    spreadsheet = client.create(config["output_sheet"],
+                                folder_id=config["output_folder_id"])
+    spreadsheet.share("rkalnins@umich.edu",
+                      notify=False,
+                      perm_type="user",
+                      role="writer")
 
     return spreadsheet
 
@@ -321,7 +328,8 @@ def unpack_time(driver: dict, day: str) -> str:
 
 def get_car_block_colors() -> (float, float, float, float):
     config = Configuration.config("gform_backend.output")
-    colors = Configuration.config("gform_backend.output.default_background_color")
+    colors = Configuration.config(
+        "gform_backend.output.default_background_color")
 
     if config["random_colors"]:
         low = config["random_low_range"]
@@ -338,7 +346,8 @@ def get_car_block_colors() -> (float, float, float, float):
     return r, g, b, config["color_alpha"]
 
 
-def write_schedule(schedule: list, spreadsheet: gspread.models.Spreadsheet) -> None:
+def write_schedule(schedule: list,
+                   spreadsheet: gspread.models.Spreadsheet) -> None:
     """
     Write schedule to provided sheet.
     """
@@ -390,9 +399,8 @@ def write_schedule(schedule: list, spreadsheet: gspread.models.Spreadsheet) -> N
 
         # sheet titles
         if use_sheet_titles:
-            title_range_a1 = WSRange(
-                WSCell(1, 1), WSCell(1, title_cell_merge_count)
-            ).getA1()
+            title_range_a1 = WSRange(WSCell(1, 1),
+                                     WSCell(1, title_cell_merge_count)).getA1()
 
             cell_A1A1 = WSRange(WSCell(1, 1), WSCell(1, 1)).getA1()
 
@@ -402,9 +410,8 @@ def write_schedule(schedule: list, spreadsheet: gspread.models.Spreadsheet) -> N
                 "values": [[title]],
             }
 
-            title_fmt = cellFormat(
-                textFormat=textFormat(bold=bold_title, fontSize=title_font_size)
-            )
+            title_fmt = cellFormat(textFormat=textFormat(
+                bold=bold_title, fontSize=title_font_size))
 
             day_output.append(heading_text)
             days_format.append((cell_A1A1, title_fmt))
@@ -440,15 +447,14 @@ def write_schedule(schedule: list, spreadsheet: gspread.models.Spreadsheet) -> N
             car_block_lower_right.inc_row(block_length)
             car_block_lower_left.inc_row(block_length)
 
-            car_block_a1_range = WSRange(
-                car_block_upper_left, car_block_lower_right
-            ).getA1()
+            car_block_a1_range = WSRange(car_block_upper_left,
+                                         car_block_lower_right).getA1()
 
-            heading_a1_range = WSRange(
-                car_block_upper_left, car_block_upper_right
-            ).getA1()
+            heading_a1_range = WSRange(car_block_upper_left,
+                                       car_block_upper_right).getA1()
 
-            roles_a1_range = WSRange(car_block_upper_left, car_block_lower_left).getA1()
+            roles_a1_range = WSRange(car_block_upper_left,
+                                     car_block_lower_left).getA1()
 
             red, green, blue, alpha = get_car_block_colors()
 
@@ -467,7 +473,8 @@ def write_schedule(schedule: list, spreadsheet: gspread.models.Spreadsheet) -> N
 
             # add headings and driver
             car_output = {
-                "range": car_block_a1_range,
+                "range":
+                    car_block_a1_range,
                 "values": [
                     [
                         "",
