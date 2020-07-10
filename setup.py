@@ -1,17 +1,8 @@
-"""
-Climbing Carpool Scheduler
-
-Nathan Silverman <nzsilver@umich.edu>
-"""
-
 from setuptools import setup, find_packages
-
-
-# Note to self, look at 485 p1, maybe need an install requires
 
 setup(
     name="scheduler",
-    version="20.0.0-alpha",
+    version="2.0.0",
     packages=find_packages(),
     install_requires=["gspread", "gspread-formatting", "oauth2client", "toml"],
     include_package_data=True,
