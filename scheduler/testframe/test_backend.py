@@ -20,11 +20,6 @@ class JsonBackendTest(TestCase):
         riders, drivers = json_backend.members_from_json(filename)
 
         self.assertEqual(len(riders), rider_count)
-
-        #### THIS LINE INSERTED TO FAIL AND CHECK IF
-        #### GITHUB WORKFLOW WORKS
-        self.assertNotEqual(len(riders), rider_count)
-
         self.assertEqual(len(drivers), driver_count)
 
         rider_names.sort()
