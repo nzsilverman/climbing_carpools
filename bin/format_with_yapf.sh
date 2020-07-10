@@ -5,4 +5,4 @@
 # yapf settings. In the absence of a setup.cfg yapf defaults will
 # be used 
 
-yapf -i -r --verbose --style='{based_on_style: google, spaces_before_comment: 4, indent_width: 4}' .
+yapf -i -r --verbose .
