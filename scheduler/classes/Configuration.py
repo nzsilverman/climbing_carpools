@@ -44,14 +44,16 @@ class Configuration:
         if filename is not None:
             # override with user provided file
             override = toml.load(filename)
-            Configuration._config.update(override) # TODO-> Why is Configuration being used here, instead of cls?
+            Configuration._config.update(
+                override
+            )    # TODO-> Why is Configuration being used here, instead of cls?
         else:
             # override with user-config.toml overrides
             cls._config.update(user_override)
 
     def __init__(self, config_file=None):
         # print("test", __name__)
-        if Configuration._instance is not None: # TODO -> Why are we accessing the configuration in this way?
+        if Configuration._instance is not None:    # TODO -> Why are we accessing the configuration in this way?
             raise Exception("Configuration error")
         else:
             if config_file is not None and config_file != "":

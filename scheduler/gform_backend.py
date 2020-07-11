@@ -24,7 +24,7 @@ from scheduler.classes.WSRange import WSRange
 from scheduler.classes.Configuration import Configuration
 
 logger = logging.getLogger(__name__)
-this = sys.modules[__name__] # TODO -> I am confused by this (nathan)
+this = sys.modules[__name__]    # TODO -> I am confused by this (nathan)
 
 # TODO -> why is the 'this' keyword being used here? I see it is using the modules
 # this is hacky and should be fixed
@@ -73,6 +73,7 @@ def get_dues_payers(dues_sheet: str) -> set:
         payers.add(entry["Uniqname"].strip())
 
     return payers
+
 
 # TODO -> why is dues_payers type str and above we made a set for due paying members?
 def validate_dues_payers(email: str, dues_payers: str) -> bool:
@@ -205,6 +206,7 @@ def get_riders(responses: list, days_enabled: list, dues_payers: set) -> list:
 # TODO -> this is a lot of somewhat unclear code that is repeated from above.
 # I would suggest we combine the reading of drivers and riders and do it in one
 # pass over the data.
+
 
 def get_drivers(responses: list, days_enabled: list) -> list:
     """Gets drivers from the responses.
@@ -437,7 +439,8 @@ def get_car_block_colors() -> (float, float, float, float):
 
 
 # TODO -> This function is a monster. I appreciate that it works well, but I think for maintainability it should
-# be broken up into smaller functions, and needs to be more clearly labeled and commented and documented 
+# be broken up into smaller functions, and needs to be more clearly labeled and commented and documented
+
 
 def write_schedule(schedule: list,
                    spreadsheet: gspread.models.Spreadsheet) -> None:
@@ -474,7 +477,7 @@ def write_schedule(schedule: list,
     for (i, day) in zip(range(0, len(schedule)), schedule):
         ws = spreadsheet.get_worksheet(i)
 
-        # TODO -> would like more of an explanation of this if statement 
+        # TODO -> would like more of an explanation of this if statement
         # deletes default Sheet1 and creates a sheet for the current day
         if not ws:
             ws = spreadsheet.add_worksheet(day[0], 100, 100)
