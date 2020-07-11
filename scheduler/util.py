@@ -64,3 +64,13 @@ def get_day_info_from_member(member: dict, day: str, key: str):
 
     logger.error("%s not found for %s in %s", key, day, member)
     return list()
+
+
+def get_version() -> str:
+    """ Return the version number of the program.
+    
+    Reads from the VERSION file for this information
+    """
+    with open('VERSION') as version_file:
+        version = version_file.read().strip()
+    return version
