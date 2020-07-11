@@ -1,6 +1,12 @@
+# TODO-> why does this need to be a class versus a helper file?
 class WSCell:
-    """
-    A spreadsheet cell defined by a row and column
+    """A spreadsheet cell defined by a row and column.
+
+        Attributes:
+            row:
+                spreadsheet row
+            col:
+                spreadsheet column
     """
 
     def __init__(self, row: int, col: int):
@@ -9,8 +15,7 @@ class WSCell:
         self.col = col
 
     def _get_column(self, id: int) -> str:
-        """
-        Converts an integer column into a spreadsheet column
+        """Converts an integer column into a spreadsheet column.
 
         1 -> A
         2 -> B
@@ -26,8 +31,7 @@ class WSCell:
         return column_name
 
     def getA1(self) -> str:
-        """
-        Returns cell posiiton in A1 notation
+        """Returns cell posiiton in A1 notation
         """
 
         return self._get_column(self.col) + str(self.row)
