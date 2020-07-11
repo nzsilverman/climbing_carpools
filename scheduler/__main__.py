@@ -179,7 +179,7 @@ def main():
 
     # initialize configuration instance
     if config_provided is False:
-        Configuration.config(filename=config_file)
+        Configuration(config_file=config_file)
 
     if matching:
         match()
