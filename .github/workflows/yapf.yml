@@ -1,3 +1,5 @@
+# Run a yapf formatting check using github actions 
+# Uses the settings for yapf specified in the setup.cfg file
 name: YAPF Formatting Check
 on: [push, pull_request]
 jobs:
