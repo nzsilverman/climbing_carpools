@@ -1,5 +1,16 @@
-#!/usr/bin/env python3
-""" Climbing Carpool generator. """
+""" Climbing Carpool generator.
+
+This carpool scheduling software is designed to fairly match riders with drivers that
+best meet their date, location, and time preferences. It is designed to give priority 
+to due paying club members who are seeking a ride. The software pulls google form response
+data from a google sheet that is specified in the user-config.toml file. It then fairly
+selects due paying riders to be matched to available drivers. This matching is then 
+written to a google sheet.
+
+    Typical Usage Example:
+
+        scheduler -m
+ """
 
 import logging
 import os
@@ -14,76 +25,161 @@ from scheduler.gform_backend import (
 )
 from scheduler.json_backend import members_from_json
 from scheduler.generate_rides import generate_rides
+from scheduler.util import get_version
 
-logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
+logging.basicConfig(
+    filename="climbing_carpools.log",
+    filemode="w",
+    format="%(name)s - %(levelname)s - %(message)s",
+)
+# logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG")) # Prefer to log to a file
 logger = logging.getLogger(__name__)
 
 
 def get_members() -> (list, list):
-    """
-    Gets members. Abstraction for any backends (JSON, google forms).
-    Currently JSON only used in tests. 
+    """ Gets all club members who are looking to ride or drive.
+    
+    This function is an abstraction that allows this function to be agnostic of the backend that
+    the member data is stored in / collected from (JSON, google forms/ sheets, etc).
+
+    Returns:
+        (riders list, drivers list)
+        Returns a tuple of lists- the first being for the riders, and the second being for the drivers.
+
+        Each rider in the riders list is a dictionary that has the following form:
+            rider = {
+                    "name":
+                    "email":
+                    "phone":
+                    "is_dues_paying":
+                    "is_driver":
+                    "days":
+                }
+
+        Each driver in the drivers list is a dictionary that has the following form:
+            driver = {
+                            "name":, 
+                            "email":, 
+                            "phone":,
+                            "car_type":,
+                            "seats":,
+                            "is_dues_paying":,
+                            "is_driver":,
+                            "days":,
+                        }
     """
 
     return members_from_sheet()
 
 
 def match() -> None:
+    """ Matches riders to a car, writes the result to the google sheet.
+
+    """
     riders, drivers = get_members()
 
-    # convert generator to list for debugging
     schedule = generate_rides(riders, drivers)
 
     write_to_sheet(schedule)
 
-    print("Summary:")
+    print("Summary of rides generated:")
     for day in schedule:
+        print("Rides for:\t{}".format(day[0]))
         for car in day[1]:
-            print("day:", day[0])
-            print("driver:", car.driver["name"])
+            print("Driver:\t{}".format(car.driver["name"]))
             for r in car.riders:
-                print(r["name"])
+                print("Rider:\t{}".format(r["name"]))
             print()
 
 
+def print_tab(message: str) -> None:
+    """ Print a tab followed by the message string passed in. 
+    """
+    print("\t{}".format(message))
+
+
 def usage() -> None:
-    print(
-        "Usage: scheduler [-m|--match] [-c|--config <filename>] [-l|--list] [-d|--delete <sheet name>"
+    """ Print program usage.
+    """
+    # print(
+    #     "Usage: scheduler [-m|--match] [-c|--config <filename>] [-l|--list] [-d|--delete <sheet name>"
+    # )
+    print("scheduler\tversion: {}\n".format(get_version()))
+    print("NAME:")
+    print_tab("scheduler - a command line utility for scheduling carpools")
+    print("SYNOPSIS")
+    print_tab("-m\t--match\tMatch drivers and riders, publish google sheet")
+    print_tab("-c\t--config <filename>\t Provide a path to a config file")
+    print_tab("-l\t--list\tList all files the service account has access to")
+    print_tab(
+        "-d\t--delete <sheet name> Delete the specified sheet from google drive"
+    )
+    print_tab("-h\t--help\t Print help menu")
+    print_tab("-v\t--version\tPrint version number")
+
+    print("DESCRIPTION")
+    print_tab(
+        "This software matches riders to the best carpool driver for them.")
+    print_tab(
+        "It is designed to do this task fairly, and take into account whether ")
+    print_tab(
+        "riders have paid dues. Please see the github repository for more information."
+    )
+    print_tab(
+        "The repository can be found here: https://github.com/nzsilverman/climbing_carpools"
     )
 
 
 def main():
+    """ Orchestrate the running of the scheduler program.
+
+    Parses arguments, decides how the program should be run.
+    """
+
+    # Extract command line arguments
     try:
         opts, _ = getopt.getopt(
-            sys.argv[1:], "mlc:d:t", ["match", "list", "config=", "delete=", "test"]
-        )
+            sys.argv[1:], "mlcvh:d:t",
+            ["match", "list", "config=", "delete=", "test", "version", "help"])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
 
     matching: bool = False
     config_file: str = None
+    config_provided: bool = False
     is_test: bool = False
 
     if len(opts) == 0:
         usage()
-        sys.exit(2)
+        sys.exit(0)
 
+    # Decide how to treat arguments that were passed in
     for opt, arg in opts:
         if opt == "-l" or opt == "--list":
             list_spreadsheets()
+            sys.exit(0)
         elif opt == "-d" or opt == "--delete":
             delete_spreadsheet(arg)
+            sys.exit(0)
         elif opt == "-m" or opt == "--match":
             matching = True
         elif opt == "-c" or opt == "--config":
             config_file = arg
+            config_provided = True
         elif opt == "-t" or opt == "--test":
             # do whatever with this, just set up the infrastructure
             is_test = True
+        elif opt == "-h" or opt == "--help":
+            usage()
+            sys.exit(0)
+        elif opt == "-v" or opt == "--version":
+            print("Version: {}".format(get_version()))
+            sys.exit(0)
 
-    # initializes configuration instance
-    Configuration(config_file=config_file)
+    # initialize configuration instance
+    if config_provided is False:
+        Configuration(config_file=config_file)
 
     if matching:
         match()

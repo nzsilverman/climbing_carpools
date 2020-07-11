@@ -1,5 +1,4 @@
-"""
-Backend for reading data from JSON.
+"""Backend for reading data from JSON.
 
 Primarily for debugging and testing
 

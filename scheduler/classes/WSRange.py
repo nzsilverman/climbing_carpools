@@ -1,9 +1,9 @@
 from scheduler.classes.WSCell import WSCell
 
 
+# TODO -> Why does this need to be a class?
 class WSRange:
-    """
-    A spreadsheet range defined by a starting and ending cell
+    """A spreadsheet range defined by a starting and ending cells.
     """
 
     def __init__(self, start: WSCell, end: WSCell):

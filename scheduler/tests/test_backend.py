@@ -15,9 +15,8 @@ class JsonBackendTest(TestCase):
     backend_test_data = test_data.backend_test_data
 
     @params(backend_test_data[0], backend_test_data[1])
-    def test_backend(
-        self, filename, rider_count, driver_count, rider_names, driver_names
-    ):
+    def test_backend(self, filename, rider_count, driver_count, rider_names,
+                     driver_names):
         riders, drivers = json_backend.members_from_json(filename)
 
         self.assertEqual(len(riders), rider_count)

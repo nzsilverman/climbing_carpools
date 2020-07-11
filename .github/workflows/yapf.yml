@@ -1,0 +1,14 @@
+# Run a yapf formatting check using github actions 
+# Uses the settings for yapf specified in the setup.cfg file
+name: YAPF Formatting Check
+on: [pull_request]
+jobs:
+  formatting-check:
+    name: Formatting Check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: run YAPF to test if python code is correctly formatted
+      uses: AlexanderMelde/yapf-action@master
+      with:
+        args: --verbose
