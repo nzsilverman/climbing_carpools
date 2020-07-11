@@ -1,65 +1,88 @@
 # University of Michigan Climbing Club Carpool Scheduling Software
-Initially Written by Nathan Silverman (nzsilver@umich.edu) in Summer 2019.
-Version 2.0 is under development currently
-# Installing the program
-To install the program, type the following command in the top level directory where the `setup.py` file is:
+> Carpool Scheduling software used for fairly coordinating carpools to the local climbing gym.
 
-`pip install -e .`
+![](https://github.com/nzsilverman/climbing_carpools/workflows/YAPF%20Formatting%20Check/badge.svg) 
+![](https://github.com/nzsilverman/climbing_carpools/workflows/Tests/badge.svg) 
 
-# Running the program
-To run the program, clone the git repository and run the python package `scheduler` by typing `python3 scheduler` into the terminal.
+The carpool scheduling software is designed to fairly match drivers and riders going to Planet Rock (a local climbing gym in Ann Arbor) with carpools that match both the driver and riders unique date, time, and location preferences. 
 
-Running the program will pull results from the spreadsheet results file that is defined in the `__main__.py` file. The dues sheet which riders are cross referenced against is also defined in the `__main__.py` file.
+ The software relies on data collection from drivers and riders to happen through a google form. The responses collected in the google form are stored in a google sheet. The program is then able to read these responses, and fairly match drivers and riders. Once results are calculated, the program will publish its results to a google sheet. The program is designed to give carpool seat priority to due paying club members seeking a ride, while also ensuring that all due paying members have an equal chance at getting a ride. 
+ 
+ This software was designed to solve issues within the Michigan Climbing Club related to fairness and due paying member priority when members tried to get rides to Planet Rock in years past.  Version 1.0.0 of the software has succesfully worked for over a year. Version 2.0.0 is currently under development.
 
-Running the program requires a secrets.json file that is the key to a service account for the google developer console project. To get this setup, access needs to be granted by a system admin. Contact Nathan Silverman (nzsilver@umich.edu) for this.
+ ## Installation
+ 
+To install the program, type the following command in the top level directory where the `setup.py` file is. Make sure you are using python >= 3.5, and `pip` installs for python 3. It may be necessary to use `pip3` instead of `pip` depending on your system.
 
-# Contribution Guidelines
-Contributions are welcome. Anyone who wants to help improve this project should contribute! To get started, look in the github issues for ideas of what to help with. Please open an issue if you are working on it, and assign yourself to it. Then fork the repo, and make changes on a branch. When the changes are good, you can make a pull request and it can be approved to merge back into the main project.
+```
+pip install -e . 
+```
+Notice the period after the e (i.e. installing in your current path)
 
-For any contribution questions, please email Nathan Silverman at nzsilver@umich.edu
+## Usage
+To run:
+```
+scheduler
+```
+This will list the available options that can be used to run the program. 
 
-To be added as a collaborator on the project, talk with Nathan Silverman.
+UPDATE THESE TO INCLUDE FINAL PROGRAM OPTIONS AND DESCRIPTIONS
+
+Running the program requires a secrets.json file that is the key to a service account for the google developer console project. This is needed to allow the program to communicate with google drive. To get this setup, access needs to be granted by a system admin. Contact Nathan Silverman or Roberts Kalnins for this. 
+
+## Development Setup
+All developers should be using python >=3.6, have a `secret.json` file, and should have run the installation step above. See note above about obtaining a `secret.json` file.
+
+## Contribution Guidelines
+
+Contributions are welcome. Anyone who wants to help improve this project should contribute! Please follow the following steps to contribute.
+
+1. Check Github issues. If needed, create a new issue with what problem/ feature you are solving or adding
+1. Fork the repo
+1. Create your branch (`git checkout -b feature/fooBar`)
+1. Do the work. Add tests if needed to verify your work is correct.
+1. Format code
+1. Run tests
+1. Commit your changes
+1. Push to the new branch
+1. Create a new pull request
+
+### Formatting
+
+This project is formatted using the [yapf](https://github.com/google/yapf/) code formatter. This formatter enforces the google style guide. It is using presets defined in the file `setup.cfg`. A github workflow has been established to run this check on every push and pull request. Any failed checks will not be accepted in a pull request. To format the code, run the script `./bin/format_with_yapf.sh` from the top level directory. This has all the neccesary flags and will run using the configuration file.
+
+### Testing
+Tests for this codebase have been developed using the [nose2](https://docs.nose2.io/en/latest/) testing framework. Please add tests for new features you contribute, and ensure that any code you add does not break the codebase. 
+
+To run tests, run the following command from the top level directory.
+```
+nose2
+```
+
+### Python Guide
+The [Google Python Style Guide](https://github.com/google/styleguide/blob/gh-pages/pyguide.md) is used in this project. Please keep code consistent with the style guide.
+
+### Documentation
+Code should be documented well according to the Google Python Style Guide. Documentation should be written in the form of docstrings primarily. Code should also be clearly commented. See [this](https://github.com/google/styleguide/blob/gh-pages/pyguide.md#38-comments-and-docstrings) section of Googles documentation for docstring guidelines. For more information about documenting python code, see [this] (https://realpython.com/documenting-python-code/) article.
 
 ## Discord Channel
-A discord channel can be joined with the code: 7q8C9NF
 
-This should be used for all communication about the project, along with github issues. 
+A discord channel has been set up for communication between developers. It can be joined with the code: 7q8C9NF
 
-# Development Notes
-This program is designed to facilitate carpools for the University of Michigan Climbing Club. This program gets information from a google spreadsheet that collects data about when club members want to drive to the gym, and matches riders with the best drivers in a fair manner. The algorithm for choosing a rider is based on selecting a random rider, and then finding the best driver that has seats left in their vehicle.The best driver is defined as a driver that wants to leave at a similar time and similar location.
+## Revision History
+* 1.0.0
+  * Initial version. This version worked succesfully for the 2019 - 2020 school year. This version was developed by Nathan Silverman. Thank you to Jonah Rosenblum (jonaher@umich.edu) and Chris Wentland (chriswen@umich.edu) for editing help.
 
-The forms and spreadsheets used are found [here](https://drive.google.com/drive/u/0/folders/1j1w_0k5bIgqxJfmQmxbZZoGr66fJT4Y4). For any access issues, contact Nathan Silverman (nzsilver@umich.edu).
+* 2.0.0
+  * This version is currently under development. It has been developed by Roberts Kalnins and Nathan Silverman. This version represents a major rewrite of the software from the ground up. It solves many of the issues found from running v1.0.0 for an entire year.
 
-## Code structure
-### `__main__.py`
-* Calls from `read_responses.py` to generate lists for tues_riders, tues_drivers, thurs_riders, thurs_drivers, sun_riders, and sun_drivers based on input from the google form
-* Capool responses spreadsheet and dues spreadsheet defined in this file
+  ## Meta
+  Primary contributions by:
 
+  * Nathan Silverman - nzsilverman@gmail.com
 
-### `read_responses.py`
-* Uses Google API to pull data from carpool responses spreadsheet and dues spreadsheet (names assigned in `__main__.py`)
-* Performs validation checks to make sure data from forms have necessary fields and all riders have paid dues
+  * Roberts Kalnins - rkalnins@umich.edu
 
-### `generate_rides.py`
-* Matches riders with drivers, based on an algorithm that randomly selects riders and pairs them with their best matched available driver
+  Thank you to all others who have contributed to the development of this project.
 
-### `print_responses.py`
-* Prints results of pairing drivers with riders
-* Eventually, this should post results to a google sheet. For now it prints to stdout
-
-### classes/`Dept_Time.py`
-* Enum defining different possible departure times
-
-### classes/`Driver.py`
-* Class defining different aspects of a driver
-
-### classes/`Loc.py`
-* Enum defining different possible departure locations
-
-### classes/`Rider.py`
-* Class defining different aspects of a rider
-
-## Working/ Authenticating with Google
-[This](https://pbpython.com/pandas-google-forms-part1.html) is a great resource and starting point to integrate into Google sheets with. The google sheets API also has to be enabled from the google developer console. A few of the lines of code in the article are outdated, and have been updated in the code.
-
-To get access to this authentication, you will need to be added to the project. For this, contact Nathan Silverman (nzsilver@umich.edu)
+  Distributed under the GNU GPL v3 license. See [LICENSE](LICENSE) for more information.

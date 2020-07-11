@@ -1,26 +1,28 @@
+""" Script that installs dependencies needed for this project.
+
+    Typical Usage Example: (from command line)
+
+        pip install -e .
 """
-Climbing Carpool Scheduler
 
-Nathan Silverman <nzsilver@umich.edu>
-"""
+from setuptools import setup, find_packages
+from scheduler.util import get_version
 
-from setuptools import setup
-
-
-# Note to self, look at 485 p1, maybe need an install requires
+version = get_version()
 
 setup(
-    name='scheduler',
-    version='0.1.0',
-    packages=['scheduler'],
+    name="scheduler",
+    version=version,
+    author="Nathan Silverman",
+    author_email="nzsilverman@gmail.com",
+    description="Climbing Club Carpool Scheduling Software",
+    packages=find_packages(),
     install_requires=[
-    	'gspread',
-    	'oauth2client',
+        "gspread", "gspread-formatting", "oauth2client", "toml", "nose2"
     ],
     include_package_data=True,
-    entry_points={
-        'console_scripts': [
-            'scheduler = scheduler.__main__:main'
-        ]
-    },
+    entry_points={"console_scripts": ["scheduler = scheduler.__main__:main",]},
+    test_suite="nose2.collector.collector",
+    tests_require=["nose2"],
+    python_requires=">=3.6",
 )
