@@ -66,9 +66,6 @@ def get_riders(members: list) -> list:
     return riders
 
 
-# TODO- very confusing about what is a member vs rider vs driver and what info
-# this is actually fetching. Need classes 
-
 def get_day_info_from_member(member: dict, day: str, key: str):
     """ Gets info associated with the key on the given day from the provided member.
 
