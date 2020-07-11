@@ -15,7 +15,7 @@ class Configuration:
 
     Attributes:
         _instance:
-            instance of this class # TODO why do we need this?
+            instance of this class 
         _defaults_filename:
             default toml filename
         _override_filename:
@@ -44,16 +44,14 @@ class Configuration:
         if filename is not None:
             # override with user provided file
             override = toml.load(filename)
-            Configuration._config.update(
-                override
-            )    # TODO-> Why is Configuration being used here, instead of cls?
+            cls._config.update(override)
         else:
             # override with user-config.toml overrides
             cls._config.update(user_override)
 
     def __init__(self, config_file=None):
         # print("test", __name__)
-        if Configuration._instance is not None:    # TODO -> Why are we accessing the configuration in this way?
+        if Configuration._instance is not None:
             raise Exception("Configuration error")
         else:
             if config_file is not None and config_file != "":
@@ -79,7 +77,7 @@ class Configuration:
         # get nested table dictionaries
         if path is not None:
             path = path.split(".")
-            data = Configuration._instance._config
+            data = cls._instance._config
 
             for p in path:
                 data = data[p]

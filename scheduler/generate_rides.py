@@ -76,9 +76,6 @@ def are_location_compatible(rider: dict, driver: dict, day: str) -> bool:
     return False
 
 
-# TODO- this function does not ensure that a rider is ok at leaving when the driver
-# wants to leave. This could results in riders being assigned times that are invalid for
-# when they want to leave, which is an error
 def time_compatibility(rider: dict, driver: dict, day: str) -> float:
     """ Checks time compatibility. Finds driver and rider with closest departure time.
 
@@ -107,9 +104,6 @@ def time_compatibility(rider: dict, driver: dict, day: str) -> float:
     driver_times.sort()
     if len(driver_times) != 1:
         logger.error("driver has multiple departure times for %s", day)
-        # Todo- this probably does not need to kill the program, we could prob
-        # catch this kind of error more gracefully and ignore that driver and
-        # output that
         exit(2)
 
     driver_time = driver_times[0]

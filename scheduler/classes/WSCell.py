@@ -1,4 +1,3 @@
-# TODO-> why does this need to be a class versus a helper file?
 class WSCell:
     """A spreadsheet cell defined by a row and column.
 
