@@ -154,6 +154,7 @@ def main():
         usage()
         sys.exit(0)
 
+    # Decide how to treat arguments that were passed in
     for opt, arg in opts:
         if opt == "-l" or opt == "--list":
             list_spreadsheets()
