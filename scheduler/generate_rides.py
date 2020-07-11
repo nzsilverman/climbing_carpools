@@ -169,7 +169,7 @@ def find_best_match(rider: dict, drivers: list, day: str) -> (dict, list):
     if not compatible_drivers:
         logger.warn("no compatible drivers for %s", rider["name"])
         return None, drivers
-        
+
     # compatible_drivers is a list where each entry is a list with two elements
     # inner list strucutre:
     # [0] -> driver dictionary entry
