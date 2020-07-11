@@ -1,9 +1,11 @@
-"""
-Backend for reading and writing data with Google Sheets
+"""Backend for reading and writing data with Google Sheets/
 
-Reads form responses, dues payers.
-
+Reads form responses and due paying members sheet.
 Writes cars with drivers and riders
+
+Typical usage:
+    import gform_backend
+    <call appropriate function>
 
 """
 
@@ -22,8 +24,9 @@ from scheduler.classes.WSRange import WSRange
 from scheduler.classes.Configuration import Configuration
 
 logger = logging.getLogger(__name__)
-this = sys.modules[__name__]
+this = sys.modules[__name__] # TODO -> I am confused by this (nathan)
 
+# TODO -> why is the 'this' keyword being used here? I see it is using the modules
 # this is hacky and should be fixed
 this.EMAIL_COLUMN: int = None
 this.NAME_COLUMN: int = None
@@ -37,8 +40,9 @@ this.CAR_ROW_SPACING: int = None
 
 
 def config_responses():
-    """
-    Sets configuration for collecting responses
+    """Sets configuration needed for collecting responses.
+
+    Uses configuration data found in the config files for this information
     """
 
     columns = Configuration.config("gform_backend.columns")
@@ -54,8 +58,14 @@ def config_responses():
 
 
 def get_dues_payers(dues_sheet: str) -> set:
-    """
-    Gets the spreadsheet of dues payers
+    """Gets the spreadsheet of dues payers.
+
+        Args:
+            dues_sheet:
+                A string object that contains all the data from the due paying members spreadhset
+        
+        Returns:
+            A set that contains uniqnames of all due paying members
     """
 
     payers = set()
@@ -64,10 +74,20 @@ def get_dues_payers(dues_sheet: str) -> set:
 
     return payers
 
-
+# TODO -> why is dues_payers type str and above we made a set for due paying members?
 def validate_dues_payers(email: str, dues_payers: str) -> bool:
-    """
-    Checks if email is a dues payer
+    """Checks if email is a dues payer.
+
+        Args:
+            email:
+                string of an email that contains a uniqname. Uniqname is defined as the 
+                email address before the @ symbol
+            dues_payers:
+                String of dues payers
+        
+        Returns:
+            True -> email address paid dues
+            False -> email address did not pay dues
     """
 
     uniqname = email.split("@")[0].strip()
@@ -75,8 +95,13 @@ def validate_dues_payers(email: str, dues_payers: str) -> bool:
 
 
 def parse_location(location: str) -> str:
-    """
-    Converts location name in value for locations list
+    """Converts location name in value for locations list.
+
+        Args:
+            location: 
+                string that contains the location
+        Returns
+            String that is either "NORTH" or "CENTRAL"
     """
 
     if location == "North Campus (Pierpont Commons)":
@@ -86,8 +111,14 @@ def parse_location(location: str) -> str:
 
 
 def parse_times(time: str) -> float:
-    """
-    Converts hh:mm to decimal time: hh.(mm/60)
+    """Converts hh:mm to decimal time: hh.(mm/60).
+
+        Args:
+            time:
+                time, as a string in hh:mm time
+        
+        Returns
+            float that is the time converted to hh.(mm/60) time
     """
 
     time = time.split(":")
@@ -95,8 +126,20 @@ def parse_times(time: str) -> float:
 
 
 def get_riders(responses: list, days_enabled: list, dues_payers: set) -> list:
-    """
-    Gets riders from the responses
+    """Creates a list of riders from the responses.
+
+        Args:
+            responses:
+                list of responses from spreadsheet
+            days_enabled:
+                list of days that the spreadsheet software is run for
+            dues_payers:
+                set of due paying members
+        
+        Returns:
+            list of riders, where each entry is a rider dictionary entry
+
+
     """
 
     # list of all riders
@@ -125,6 +168,7 @@ def get_riders(responses: list, days_enabled: list, dues_payers: set) -> list:
             rider_days_start = this.DAYS_INFO_START_COLUMN
 
             # create a dict for each day
+            # TODO -> need some more clarity for this zip range shenanigan
             for (i, d) in zip(
                     range(rider_days_start,
                           rider_days_start + len(days_enabled)),
@@ -158,9 +202,21 @@ def get_riders(responses: list, days_enabled: list, dues_payers: set) -> list:
     return riders
 
 
+# TODO -> this is a lot of somewhat unclear code that is repeated from above.
+# I would suggest we combine the reading of drivers and riders and do it in one
+# pass over the data.
+
 def get_drivers(responses: list, days_enabled: list) -> list:
-    """
-    Gets drivers from the responses
+    """Gets drivers from the responses.
+
+        Args:
+            responses:
+                list of responses from spreadsheet
+            days_enabled:
+                list of days that the spreadsheet software is run for
+        
+        Returns:
+            list of drivers, where each entry is a driver dictionary entry
     """
 
     drivers = list()
@@ -217,8 +273,12 @@ def get_drivers(responses: list, days_enabled: list) -> list:
 
 
 def members_from_sheet() -> (list, list):
-    """
-    Gets all club members who submitted a response using the form.
+    """Gets all club members who submitted a response using the form.
+
+        Returns:
+            (list, list)
+            The list in index 0 is a list of riders, where each entry is a rider dict
+            The list in index 1 is a list of drivers, where each entry is a driver dict
     """
 
     client = AuthorizedClient.get_instance().client
@@ -249,8 +309,7 @@ def members_from_sheet() -> (list, list):
 
 
 def delete_spreadsheet(name: str) -> None:
-    """
-    Deletes the spreadsheets in names
+    """Deletes the spreadsheet called 'name'.
     """
     name.strip()
 
@@ -263,12 +322,17 @@ def delete_spreadsheet(name: str) -> None:
 
 
 def create_spreadsheet() -> gspread.models.Spreadsheet:
-    """
-    Creates a spreadsheet with given name in the location defined by the folder_id.
-    The folder_id can be found by viewing the folder in Drive and selecting the 
-    id
-    
+    """Creates a spreadsheet with given name in the location defined by the folder_id.
+
+    The folder_id can be found by viewing the folder in Drive and selecting the
+    id.
+    i.e:
     drive.google.com/../folders/1/<id>
+
+    The folder id and the name of the spreadsheet to create are in the toml config files
+
+        Returns:
+            A gspread.models.Spreadsheet object
     """
 
     config = Configuration.config("gform_backend.files")
@@ -291,8 +355,7 @@ def create_spreadsheet() -> gspread.models.Spreadsheet:
 
 
 def list_spreadsheets() -> None:
-    """
-    Lists spreadsheets available to the client.
+    """Prints spreadsheets available to the client.
     """
 
     client = AuthorizedClient.get_instance().client
@@ -302,8 +365,18 @@ def list_spreadsheets() -> None:
 
 
 def unpack_locations(member: dict, day: str) -> str:
-    """
-    Converts locations in member's locations list to a string of location names
+    """Converts locations in member's locations list to a string of location names
+
+        Appends together all of the location strings for a particular member
+
+        Args:
+            member:
+                dictionary entry of a member
+            day:
+                string of which day to query on
+        
+        Returns:
+            string that is a concatenated string of all the locations a member is trying to leave from
     """
 
     locations = util.get_day_info_from_member(member, day, "locations")
@@ -316,8 +389,16 @@ def unpack_locations(member: dict, day: str) -> str:
 
 
 def unpack_time(driver: dict, day: str) -> str:
-    """
-    Converts time from decimal time (hh.(mm/60)) to hh:mm format
+    """Converts time from decimal time (hh.(mm/60)) to hh:mm format
+
+        Args:
+            driver:
+                dictionary entry of the driver
+            day:
+                day to use
+        
+        Returns:
+            Returns the unpacked time as a string, converted from (hh.(mm/60)) to (hh:mm) format
     """
 
     time = util.get_day_info_from_member(driver, day, "departure_times")
@@ -327,6 +408,15 @@ def unpack_time(driver: dict, day: str) -> str:
 
 
 def get_car_block_colors() -> (float, float, float, float):
+    """ Get the color parameters to use for a car box on the google sheet.
+
+        Returns:
+            (float, float, float, float)
+            [0] -> r value
+            [1] -> g value
+            [2] -> b value
+            [3] -> color alpha value 
+    """
     config = Configuration.config("gform_backend.output")
     colors = Configuration.config(
         "gform_backend.output.default_background_color")
@@ -346,12 +436,21 @@ def get_car_block_colors() -> (float, float, float, float):
     return r, g, b, config["color_alpha"]
 
 
+# TODO -> This function is a monster. I appreciate that it works well, but I think for maintainability it should
+# be broken up into smaller functions, and needs to be more clearly labeled and commented and documented 
+
 def write_schedule(schedule: list,
                    spreadsheet: gspread.models.Spreadsheet) -> None:
-    """
-    Write schedule to provided sheet.
+    """Write schedule to provided sheet.
+
+        Args:
+            schedule:
+                list of the schedule that is to be written to google sheets
+            spreadsheet:
+                spreadsheet to write the schedule to
     """
 
+    # Get settings for sheet writing from configuration file
     output_config = Configuration.config("gform_backend.output")
 
     notes_enabled = output_config["notes_column"]
@@ -371,10 +470,11 @@ def write_schedule(schedule: list,
     column_widths = output_config["column_widths"]
     defualt_width = output_config["default_width"]
 
-    # each day is a worksheet
+    # each day is a worksheet (i.e. a tab)
     for (i, day) in zip(range(0, len(schedule)), schedule):
         ws = spreadsheet.get_worksheet(i)
 
+        # TODO -> would like more of an explanation of this if statement 
         # deletes default Sheet1 and creates a sheet for the current day
         if not ws:
             ws = spreadsheet.add_worksheet(day[0], 100, 100)
@@ -387,6 +487,7 @@ def write_schedule(schedule: list,
         days_format = list()
         widths_list = list()
 
+        # TODO -> needs more of a comment for what this is acheiving
         for j, w in zip(range(1, len(column_widths) + 1), column_widths):
             col_lettr = WSCell(1, j).get_column()
 
@@ -397,6 +498,7 @@ def write_schedule(schedule: list,
 
         set_column_widths(ws, widths_list)
 
+        # TODO -> more comments please
         # sheet titles
         if use_sheet_titles:
             title_range_a1 = WSRange(WSCell(1, 1),
@@ -416,6 +518,9 @@ def write_schedule(schedule: list,
             day_output.append(heading_text)
             days_format.append((cell_A1A1, title_fmt))
             ws.merge_cells(title_range_a1)
+
+        # TODO -> comments/ explanations of what this is doing, like why we track cell indicies and where
+        # the magic numbers come from
 
         # track cell indicies for sheet writing ranges
         if use_sheet_titles:
@@ -531,8 +636,8 @@ def write_schedule(schedule: list,
 
 
 def write_to_sheet(schedule: list) -> None:
-    """
-    Writes provided schedule to a spreadsheet defined by the provided name.
+    """Writes provided schedule to a spreadsheet defined by the provided name.
+
     An exisiting spreadsheet with the same name will be deleted and a new one will
     be made in its place.
     """
