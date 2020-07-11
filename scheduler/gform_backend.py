@@ -24,10 +24,8 @@ from scheduler.classes.WSRange import WSRange
 from scheduler.classes.Configuration import Configuration
 
 logger = logging.getLogger(__name__)
-this = sys.modules[__name__]    # TODO -> I am confused by this (nathan)
+this = sys.modules[__name__]
 
-# TODO -> why is the 'this' keyword being used here? I see it is using the modules
-# this is hacky and should be fixed
 this.EMAIL_COLUMN: int = None
 this.NAME_COLUMN: int = None
 this.PHONE_COLUMN: int = None
@@ -75,8 +73,7 @@ def get_dues_payers(dues_sheet: str) -> set:
     return payers
 
 
-# TODO -> why is dues_payers type str and above we made a set for due paying members?
-def validate_dues_payers(email: str, dues_payers: str) -> bool:
+def validate_dues_payers(email: str, dues_payers: set) -> bool:
     """Checks if email is a dues payer.
 
         Args:
@@ -169,7 +166,6 @@ def get_riders(responses: list, days_enabled: list, dues_payers: set) -> list:
             rider_days_start = this.DAYS_INFO_START_COLUMN
 
             # create a dict for each day
-            # TODO -> need some more clarity for this zip range shenanigan
             for (i, d) in zip(
                     range(rider_days_start,
                           rider_days_start + len(days_enabled)),
@@ -201,11 +197,6 @@ def get_riders(responses: list, days_enabled: list, dues_payers: set) -> list:
             riders.append(rider)
 
     return riders
-
-
-# TODO -> this is a lot of somewhat unclear code that is repeated from above.
-# I would suggest we combine the reading of drivers and riders and do it in one
-# pass over the data.
 
 
 def get_drivers(responses: list, days_enabled: list) -> list:

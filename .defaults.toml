@@ -59,7 +59,6 @@ days_enabled = ["TUESDAY", "THURSDAY", "SUNDAY"]
     name = "MCC Carpool Lists"
 
     # suffix per day, ensure this is the same length as days
-    # TODO- can't we make this happen in the code?
     name_suffixes = [" — TUESDAY", " — THURSDAY", " — SUNDAY"] 
     bold_title = true
     title_font_size = 16

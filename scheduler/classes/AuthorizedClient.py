@@ -20,12 +20,8 @@ class AuthorizedClient:
         client = AuthorizedClient.get_instance().client
     """
 
-    # TODO -> I am a little confused why we need to keep track of this. It seems a little convoluted
-    # and might be better served reworking how we interact with this class to obtain an authorized client
-    # the decorators for staticmethod and classmethod should go in accordance with the Google style guide
     _instance = None
 
-    # TODO don't use static methods and limit use of classmethods (i.e we can prob get rid of em). Google style guide says this
     @staticmethod
     def _authorize() -> None:
         """
