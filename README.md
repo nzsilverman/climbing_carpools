@@ -8,7 +8,7 @@ The carpool scheduling software is designed to fairly match drivers and riders g
 
  The software relies on data collection from drivers and riders to happen through a google form. The responses collected in the google form are stored in a google sheet. The program is then able to read these responses, and fairly match drivers and riders. Once results are calculated, the program will publish its results to a google sheet. The program is designed to give carpool seat priority to due paying club members seeking a ride, while also ensuring that all due paying members have an equal chance at getting a ride. 
  
- This software was designed to solve issues within the Michigan Climbing Club related to fairness and due paying member priority when members tried to get rides to Planet Rock in years past. This software has succesfully worked for over a year.
+ This software was designed to solve issues within the Michigan Climbing Club related to fairness and due paying member priority when members tried to get rides to Planet Rock in years past.  Version 1.0.0 of the software has succesfully worked for over a year. Version 2.0.0 is currently under development.
 
  ## Installation
  
