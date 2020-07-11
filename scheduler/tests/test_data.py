@@ -3,7 +3,7 @@ class JsonBackendTestData:
     Data for the JsonBackendTest
     """
 
-    test_path_prefix = "scheduler/testframe/json/"
+    test_path_prefix = "scheduler/tests/json/"
 
     backend_test_data = [
         (test_path_prefix + "simple_test.json", 2, 0, ["Roberts", "Suzy"], []),
