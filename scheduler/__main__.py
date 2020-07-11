@@ -138,8 +138,9 @@ def main():
 
     # Extract command line arguments
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], "mlcvh:d:t",
-                                ["match", "list", "config=", "delete=", "test", "version", "help"])
+        opts, _ = getopt.getopt(
+            sys.argv[1:], "mlcvh:d:t",
+            ["match", "list", "config=", "delete=", "test", "version", "help"])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
