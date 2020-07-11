@@ -116,31 +116,50 @@ def find_best_match(rider: dict, drivers: list, day: str) -> (dict, list):
 
 
 def generate_rides(riders: list, drivers: list) -> list:
-    """
-    Matches riders with drivers.
+    """Matches riders with drivers.
+
+    Args:
+        riders:
+            A list of riders, where each rider is a dictionary entry. 
+        drivers:
+            A list of drivers, where each driver is a dictionary entry.
+
+    Returns:
+        A list of departure days and corresponding cars. The list has the following format:
+        [(DAY 1, [CAR 1, CAR2, CAR 3]), (DAY 2, [CAR 1])]
+        
+        Each entry in the list is a tuple. The tuple holds a string in index 0 that 
+        corresponds to the day that group of cars will be departing. Index 1 holds a list of the car 
+        objects that are departing on that day.
+    
+    Typical Usage:
+        schedule = generate_rides(riders, drivers)
     """
 
     schedule = list()
 
+    # Collect which days the club wishes to run a carpool
     days_enabled = Configuration.config("mcc.days_enabled")
 
     for day in days_enabled:
         # cars for the given day
         cars = list()
 
-        for d in drivers:
-            d["seats_remaining"] = d["seats"]
+        for driver in drivers:
+            driver["seats_remaining"] = driver["seats"]
 
-        # shuffle the riders for every day
+        # shuffle the riders for every day to ensure they are chosen fairly
         random.shuffle(riders)
 
         seats_remaining = get_total_seats(drivers, day)
         logger.info("%i seats available", seats_remaining)
 
+        # Copy the riders to maintain the original list of riders so that
+        # each iteration of the loop has an unaffected rider list
         days_riders = riders.copy()
 
+        # keep picking riders until no more seats remain or no more riders remain
         while seats_remaining > 0 and len(days_riders) > 0:
-
             chosen_rider = days_riders.pop()
             # don't match rider if not riding current day
             if not check_in_days(chosen_rider, day):
@@ -149,10 +168,10 @@ def generate_rides(riders: list, drivers: list) -> list:
 
             best_driver, drivers = find_best_match(chosen_rider, drivers, day)
 
+            # Used to check if a Car object has been created for this rider, for this day yet
             driver_has_car = False
 
             if best_driver:
-
                 # add rider to selected driver's car
                 for car in cars:
                     if car.driver == best_driver:
@@ -169,6 +188,6 @@ def generate_rides(riders: list, drivers: list) -> list:
             else:
                 logger.debug("%s not matched", chosen_rider["name"])
 
-        schedule.append([day, cars])
+        schedule.append((day, cars))
 
     return schedule
