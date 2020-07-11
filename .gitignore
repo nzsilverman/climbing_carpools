@@ -15,7 +15,8 @@ __pycache__/
 # VS Code
 .vscode
 
-documentation/*
+# Ignore python log files
+*.log
 
 # Distribution / packaging
 .Python
