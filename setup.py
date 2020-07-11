@@ -1,3 +1,10 @@
+""" Script that installs dependencies needed for this project.
+
+    Typical Usage Example: (from command line)
+
+        pip install -e .
+"""
+
 from setuptools import setup, find_packages
 
 setup(
