@@ -6,10 +6,13 @@
 """
 
 from setuptools import setup, find_packages
+from scheduler.util import get_version
+
+version = get_version()
 
 setup(
     name="scheduler",
-    version="2.0.0",
+    version=version,
     author="Nathan Silverman",
     author_email="nzsilverman@gmail.com",
     description="Climbing Club Carpool Scheduling Software",
