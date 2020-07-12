@@ -22,5 +22,6 @@ class Rider(Member):
         member = Rider("John Foo", "foo@bar.com", "9876543211", [DayInfo(DayName.MONDAY, [6, 7, 8], ["NORTH", "CENTRAL"])], false)
     """
 
-    def __init__(self, name: str, email: str, phone: str, days: list, is_dues_paying: bool):
+    def __init__(self, name: str, email: str, phone: str, days: list,
+                 is_dues_paying: bool):
         super().__init__(name, email, phone, days, is_dues_paying)
