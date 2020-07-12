@@ -19,6 +19,9 @@ from random import uniform
 
 import scheduler.util as util
 from scheduler.classes.AuthorizedClient import AuthorizedClient
+from scheduler.classes.Driver import Driver
+from scheduler.classes.Rider import Rider
+import scheduler.classes.Day as Day
 from scheduler.classes.WSCell import WSCell
 from scheduler.classes.WSRange import WSRange
 from scheduler.classes.Configuration import Configuration
@@ -123,83 +126,66 @@ def parse_times(time: str) -> float:
     return float(time[0]) + (float(time[1]) / 60)
 
 
-def get_riders(responses: list, days_enabled: list, dues_payers: set) -> list:
-    """Creates a list of riders from the responses.
-
+def get_days_and_locations(start_col: int, response: int,
+                           days_enabled: list) -> list:
+    """
         Args:
-            responses:
-                list of responses from spreadsheet
+            start_col:
+                column where this response's time and locations begin
+            response:
+                a list of all values in a carpool form response's row
             days_enabled:
-                list of days that the spreadsheet software is run for
-            dues_payers:
-                set of due paying members
-        
-        Returns:
-            list of riders, where each entry is a rider dictionary entry
+                a list of days for which the scheduler is scheduling
 
+        Returns
+            a list of DayInfo objects corresponding to the provided carpool form response
+    
 
+     assume each day has a locations column and a departure times column
+    
+     n = days_enabled
+     (start rider iter here)  (end rider iter here)  (start driver iter here)                 (end driver iter here)
+     DAYS_INFO_START                            |    driver_days_start                            |
+        |                                       |         |                                       |
+        V                                       V         V                                       V
+     | Day 1     |   | Day n     | Day 1 |   | Day n | Day 1     |   | Day n     | Day 1  |   | Day n  | 
+     | Locations |...| Locations | Times |...| Times | Locations |...| Locations | Times  |...| Times  |
+     | Rider     |   | Rider     | Rider |   | Rider | Driver    |   | Driver    | Driver |   | Driver |
+     |-----------|---|-----------|-------|---|-------|-----------|---|-----------|--------|---|--------|
+     |           |   |           |       |   |       |           |   |           |        |   |        |
+    
+    
     """
 
-    # list of all riders
-    riders = list()
+    # create a dict for each day
 
-    for row in responses[1:]:
-        if row[this.IS_RIDER_COLUMN] == "Yes":
+    days = list()
 
-            # create rider dictionary
-            rider = {
-                "name":
-                    row[this.NAME_COLUMN],
-                "email":
-                    row[this.EMAIL_COLUMN],
-                "phone":
-                    row[this.PHONE_COLUMN],
-                "is_dues_paying":
-                    validate_dues_payers(row[this.EMAIL_COLUMN], dues_payers),
-                "is_driver":
-                    False,
-                "days":
-                    list(),
-            }
+    for (i, d) in zip(
+            range(start_col, start_col + len(days_enabled)),
+            days_enabled,
+    ):
 
-            # assume each day has a locations column and a departure times column
-            rider_days_start = this.DAYS_INFO_START_COLUMN
+        # if driving this day
+        if response[i]:
+            day = Day.DayInfo(
+                day=Day.get_from_str(d),
+                times=[
+                    parse_times(response[i + len(days_enabled)].split(",")[0])
+                ],
+                locations=list())
 
-            # create a dict for each day
-            for (i, d) in zip(
-                    range(rider_days_start,
-                          rider_days_start + len(days_enabled)),
-                    days_enabled,
-            ):
-                day = dict()
+            locations = response[i].split(",")
 
-                # if climbing this day
-                if row[i]:
+            for l in locations:
+                day.locations.append(parse_location(l.strip()))
 
-                    day["day"] = d
+            days.append(day)
 
-                    # add locations
-                    day["locations"] = list()
-                    locations = row[i].split(",")
-
-                    for l in locations:
-                        day["locations"].append(parse_location(l.strip()))
-
-                    # add departure times
-                    times = row[i + len(days_enabled)].split(",")
-                    day["departure_times"] = list()
-
-                    for t in times:
-                        day["departure_times"].append(parse_times(t.strip()))
-
-                    rider["days"].append(day)
-
-            riders.append(rider)
-
-    return riders
+    return days
 
 
-def get_drivers(responses: list, days_enabled: list) -> list:
+def get_riders_and_drivers(responses: list, days_enabled: list) -> (list, list):
     """Gets drivers from the responses.
 
         Args:
@@ -208,61 +194,51 @@ def get_drivers(responses: list, days_enabled: list) -> list:
             days_enabled:
                 list of days that the spreadsheet software is run for
         
-        Returns:
-            list of drivers, where each entry is a driver dictionary entry
+        Returns
+            tuple of lists
+                list at index 0: list of Driver objects
+                list at index 1: list of Rider objects
     """
 
+    dues_payers = get_dues_payers()
+
     drivers = list()
+    riders = list()
 
     for row in responses[1:]:
-        if row[this.IS_DRIVER_COLUMN] == "Yes":
+        is_driver = (row[this.IS_DRIVER_COLUMN] == "Yes")
+        is_rider = (row[this.IS_RIDER_COLUMN] == "Yes")
 
-            # create driver dictionary
-            driver = {
-                "name": row[this.NAME_COLUMN],
-                "email": row[this.EMAIL_COLUMN],
-                "phone": row[this.PHONE_COLUMN],
-                "car_type": row[this.CAR_DESCRIPTION_COLUMN],
-                "seats": int(row[this.SEATS_COLUMN]),
-                "is_dues_paying": True,
-                "is_driver": True,
-                "days": list(),
-            }
+        if is_driver:
 
-            # assume each day has a locations column and a departure times column
-            driver_days_start = this.DAYS_INFO_START_COLUMN + 2 * len(
-                days_enabled)
-
-            # create a dict for each day
-            for (i, d) in zip(
-                    range(driver_days_start,
-                          driver_days_start + len(days_enabled)),
-                    days_enabled,
-            ):
-                day = dict()
-
-                # if driving this day
-                if row[i]:
-
-                    day["day"] = d
-
-                    # add locations
-                    day["locations"] = list()
-                    locations = row[i].split(",")
-
-                    for l in locations:
-                        day["locations"].append(parse_location(l.strip()))
-
-                    # driver only has one departure time
-                    day["departure_times"] = [
-                        parse_times(row[i + len(days_enabled)].split(",")[0])
-                    ]
-
-                    driver["days"].append(day)
+            driver = Driver(
+                name=row[this.NAME_COLUMN],
+                email=row[this.EMAIL_COLUMN],
+                phone=row[this.PHONE_COLUMN],
+                is_dues_paying=validate_dues_payers(row[this.EMAIL_COLUMN],
+                                                    dues_payers),
+                days=get_days_and_locations(
+                    this.DAYS_INFO_START_COLUMN + 2 * len(days_enabled), row,
+                    days_enabled),
+                car_type=row[this.CAR_DESCRIPTION_COLUMN],
+                seats=int(row[this.SEATS_COLUMN]))
 
             drivers.append(driver)
 
-    return drivers
+        if is_rider:
+
+            rider = Rider(
+                name=row[this.NAME_COLUMN],
+                email=row[this.EMAIL_COLUMN],
+                phone=row[this.PHONE_COLUMN],
+                is_dues_paying=validate_dues_payers(row[this.EMAIL_COLUMN],
+                                                    dues_payers),
+                days=get_days_and_locations(this.DAYS_INFO_START_COLUMN, row,
+                                            days_enabled))
+
+            riders.append(rider)
+
+    return drivers, riders
 
 
 def members_from_sheet() -> (list, list):
@@ -270,8 +246,8 @@ def members_from_sheet() -> (list, list):
 
         Returns:
             (list, list)
-            The list in index 0 is a list of riders, where each entry is a rider dict
-            The list in index 1 is a list of drivers, where each entry is a driver dict
+            The list in index 0 is a list of riders, where each entry is a Rider object
+            The list in index 1 is a list of drivers, where each entry is a Driver object
     """
 
     client = AuthorizedClient.get_instance().client
@@ -294,11 +270,7 @@ def members_from_sheet() -> (list, list):
     # create lists of riders and drivers
     print(days_enabled)
 
-    riders = get_riders(all_responses, days_enabled,
-                        get_dues_payers(dues_payers_sheet))
-    drivers = get_drivers(all_responses, days_enabled)
-
-    return riders, drivers
+    return get_riders_and_drivers(all_responses, days_enabled)
 
 
 def delete_spreadsheet(name: str) -> None:

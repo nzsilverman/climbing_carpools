@@ -44,29 +44,7 @@ def get_members() -> (list, list):
 
     Returns:
         (riders list, drivers list)
-        Returns a tuple of lists- the first being for the riders, and the second being for the drivers.
-
-        Each rider in the riders list is a dictionary that has the following form:
-            rider = {
-                    "name":
-                    "email":
-                    "phone":
-                    "is_dues_paying":
-                    "is_driver":
-                    "days":
-                }
-
-        Each driver in the drivers list is a dictionary that has the following form:
-            driver = {
-                            "name":, 
-                            "email":, 
-                            "phone":,
-                            "car_type":,
-                            "seats":,
-                            "is_dues_paying":,
-                            "is_driver":,
-                            "days":,
-                        }
+        Returns a tuple of lists- the first containing Rider objects, and the second containing driver objects.
     """
 
     return members_from_sheet()
@@ -101,9 +79,7 @@ def print_tab(message: str) -> None:
 def usage() -> None:
     """ Print program usage.
     """
-    # print(
-    #     "Usage: scheduler [-m|--match] [-c|--config <filename>] [-l|--list] [-d|--delete <sheet name>"
-    # )
+
     print("scheduler\tversion: {}\n".format(get_version()))
     print("NAME:")
     print_tab("scheduler - a command line utility for scheduling carpools")
