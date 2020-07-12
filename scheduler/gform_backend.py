@@ -186,8 +186,9 @@ def get_days_and_locations(start_col: int, response: int,
     return days
 
 
-def get_riders_and_drivers(responses: list, days_enabled: list,
-                           dues_payers_sheet) -> (list, list):
+def get_riders_and_drivers(
+        responses: list, days_enabled: list,
+        dues_payers_sheet: gspread.models.Worksheet) -> (list, list):
     """Gets drivers from the responses.
 
         Args:
@@ -339,9 +340,9 @@ def unpack_locations(member: Member, day: Day.DayName) -> str:
 
         Args:
             member:
-                dictionary entry of a member
+                Member object
             day:
-                string of which day to query on
+                Day.DayName enum for which to collect locations
         
         Returns:
             string that is a concatenated string of all the locations a member is trying to leave from
@@ -361,9 +362,9 @@ def unpack_time(driver: Driver, day: Day.DayName) -> str:
 
         Args:
             driver:
-                dictionary entry of the driver
+                Driver object
             day:
-                day to use
+                Day.DayName enum for which to get the time
         
         Returns:
             Returns the unpacked time as a string, converted from (hh.(mm/60)) to (hh:mm) format

@@ -36,7 +36,7 @@ logging.basicConfig(
     filemode="w",
     format="%(name)s - %(levelname)s - %(message)s",
 )
-# logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG")) # Prefer to log to a file
+
 logger = logging.getLogger(__name__)
 
 

@@ -15,19 +15,18 @@ from scheduler.classes.Driver import Driver
 from scheduler.classes.Member import Member
 from scheduler.classes.Rider import Rider
 import scheduler.classes.Day as Day
-from scheduler.util import get_day_info_from_member
 
 logger = logging.getLogger(__name__)
 
 
-def check_in_days(member: dict, day: Day.DayName) -> bool:
+def check_in_days(member: Member, day: Day.DayName) -> bool:
     """ Checks if member is signed up for the given day
 
     Args:
         member:
-            member dictionary
+            Member object
         day:
-            day to check if member is signed up for
+            Day.DayName enum, day to check if member is signed up for
 
     Returns:
         True -> member is signed up for the given day
@@ -41,14 +40,14 @@ def check_in_days(member: dict, day: Day.DayName) -> bool:
     return False
 
 
-def get_total_seats(drivers: list, day: str) -> int:
+def get_total_seats(drivers: list, day: Day.DayName) -> int:
     """ Returns the number of available seats for passengers across all drivers for a certain day.
 
     Args:
         drivers:
-            list of drivers, each driver is a dictionary entry of a driver
+            list of Driver objects
         day:
-            string specifying which day the query is for
+            Day.DayName enum specifying the day for which to calculate seats
     
     Returns:
         Integer of total number of seats avaialble for a certain day across all drivers for that day
@@ -91,11 +90,11 @@ def time_compatibility(rider: Rider, driver: Driver, day: Day.DayName) -> float:
     
     Args:
         rider:
-            dictionary of a rider
+            Rider object
         driver:
-            dictionary of a driver
+            Driver object
         day:
-            string of day to check time compatability for
+            Day.DayName enum of day for which to check time compatability
 
     Returns:
         Float that is the minimum time difference between when a specific driver and rider would
@@ -137,16 +136,15 @@ def find_best_match(rider: Rider, drivers: list,
 
     Args:
         rider:
-            dictionary entry that represents a rider
+            Rider object
         drivers:
-            list of drivers, each driver is a dictionary entry
+            list of Driver objects
         day:
-            day that a match is being found for
+            Day.DayName enum of day for which a match is being found
         
     Returns:
-        (dict, list)
-        The dict is the dictionary for the driver that should drive the inputed rider. This was
-        the riders best match driver
+        (Driver, list)
+        Driver: This was the riders best match driver
 
         The list is the updated drivers list. The seats remaining count has been updated for that
         list, so it is important the returned list is used as the new drivers list
@@ -175,7 +173,7 @@ def find_best_match(rider: Rider, drivers: list,
 
     # compatible_drivers is a list where each entry is a list with two elements
     # inner list strucutre:
-    # [0] -> driver dictionary entry
+    # [0] -> Driver object
     # [1] -> float that is the timne delta between when this specific driver and a rider want to leave
 
     # Sort the compatible drivers list based on the time delta between drivers and riders
