@@ -31,8 +31,9 @@ class GenerateRidesTest(TestCase):
 
     @params(get_total_seats_test_data[0], get_total_seats_test_data[1])
     def test_get_total_seats(self, drivers, day, seats):
-        seat_count = generate_rides.get_total_seats(members_to_class(members=drivers, is_driver=True),
-                                                    Day.from_str(day))
+        seat_count = generate_rides.get_total_seats(
+            members_to_class(members=drivers, is_driver=True),
+            Day.from_str(day))
         self.assertEqual(seat_count, seats)
 
     @params(
@@ -42,8 +43,8 @@ class GenerateRidesTest(TestCase):
     )
     def test_are_location_compatible(self, rider, driver, day, check):
         result = generate_rides.are_location_compatible(
-            members_to_class(member=rider), members_to_class(member=driver, is_driver=True),
-            Day.from_str(day))
+            members_to_class(member=rider),
+            members_to_class(member=driver, is_driver=True), Day.from_str(day))
         self.assertEqual(result, check)
 
     @params(
@@ -52,14 +53,15 @@ class GenerateRidesTest(TestCase):
         time_compatibility_test_data[2],
     )
     def test_time_compatibility(self, rider, driver, day, check):
-        result = generate_rides.time_compatibility(members_to_class(member=rider),
-                                                   members_to_class(member=driver, is_driver=True),
-                                                   Day.from_str(day))
+        result = generate_rides.time_compatibility(
+            members_to_class(member=rider),
+            members_to_class(member=driver, is_driver=True), Day.from_str(day))
         self.assertEqual(result, check)
 
     @params(find_best_match_test_data[0])
     def test_find_best_match(self, rider, drivers, day, check):
-        result, _ = generate_rides.find_best_match(members_to_class(member=rider),
-                                                   members_to_class(members=drivers, is_driver=True),
-                                                   Day.from_str(day))
+        result, _ = generate_rides.find_best_match(
+            members_to_class(member=rider),
+            members_to_class(members=drivers, is_driver=True),
+            Day.from_str(day))
         self.assertEqual(result.name, check)

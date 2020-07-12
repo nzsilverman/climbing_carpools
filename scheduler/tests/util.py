@@ -22,14 +22,14 @@ def convert_days(days: list) -> list:
     dayInfos = list()
 
     for d in days:
-        day = Day.DayInfo(
-            day=Day.from_str(get_with_check(d, "day")),
-            times=get_with_check(d, "departure_times"),
-            locations=get_with_check(d, "locations"))
+        day = Day.DayInfo(day=Day.from_str(get_with_check(d, "day")),
+                          times=get_with_check(d, "departure_times"),
+                          locations=get_with_check(d, "locations"))
 
         dayInfos.append(day)
 
     return dayInfos
+
 
 def get_with_check(d: dict, key: str):
     if key in d:
@@ -37,11 +37,14 @@ def get_with_check(d: dict, key: str):
     else:
         return list()
 
+
 # FIXME: this a quick fix to get the tests working again. should be redone
 # TODO: probably should split this up into a to riders and a to drivers function
 # TODO: find a better way to handle single vs. multiple members
 # TODO: add return type hint
-def members_to_class(member: Member = None, members: list = None, is_driver: bool = False):
+def members_to_class(member: Member = None,
+                     members: list = None,
+                     is_driver: bool = False):
     """Converts a dictionary to a Rider or a Driver object
 
         Args:
@@ -66,31 +69,28 @@ def members_to_class(member: Member = None, members: list = None, is_driver: boo
 
     for m in members:
         if is_driver:
-            driver = Driver(
-                name=get_with_check(m, "name"),
-                email=get_with_check(m, "email"),
-                phone=get_with_check(m, "phone"),
-                days=convert_days(get_with_check(m, "days")),
-                is_dues_paying=get_with_check(m, "is_dues_paying"),
-                car_type=get_with_check(m, "car_type"),
-                seats=get_with_check(m, "seats"))
+            driver = Driver(name=get_with_check(m, "name"),
+                            email=get_with_check(m, "email"),
+                            phone=get_with_check(m, "phone"),
+                            days=convert_days(get_with_check(m, "days")),
+                            is_dues_paying=get_with_check(m, "is_dues_paying"),
+                            car_type=get_with_check(m, "car_type"),
+                            seats=get_with_check(m, "seats"))
 
             member_objects.append(driver)
 
         else:
-            rider = Rider(
-                name=get_with_check(m, "name"),
-                email=get_with_check(m, "email"),
-                phone=get_with_check(m, "phone"),
-                days=convert_days(get_with_check(m, "days")),
-                is_dues_paying=get_with_check(m, "is_dues_paying")
-            )
-        
+            rider = Rider(name=get_with_check(m, "name"),
+                          email=get_with_check(m, "email"),
+                          phone=get_with_check(m, "phone"),
+                          days=convert_days(get_with_check(m, "days")),
+                          is_dues_paying=get_with_check(m, "is_dues_paying"))
+
             member_objects.append(rider)
 
     if member is not None:
         return member_objects[0]
-    else: 
+    else:
         return member_objects
 
 
