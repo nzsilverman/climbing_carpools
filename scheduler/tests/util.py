@@ -8,42 +8,90 @@ import scheduler.classes.Day as Day
 
 
 def convert_days(days: list) -> list:
+    """Converts a list of dictionary days to DayInfo objects
+
+
+        Args:
+            days:
+                a list of dictionaries containing the required information to create a DayInfo object
+        
+        Returns:
+            A DayInfo object
+    """
+
     dayInfos = list()
 
     for d in days:
         day = Day.DayInfo(
-            day=(Day.from_str(d["day"]) if d["day"] else None),
-            times=(d["times"] if d["times"] else None),
-            locations=(d["locations"] if d["locations"] else None))
+            day=Day.from_str(get_with_check(d, "day")),
+            times=get_with_check(d, "departure_times"),
+            locations=get_with_check(d, "locations"))
 
         dayInfos.append(day)
 
     return dayInfos
 
+def get_with_check(d: dict, key: str):
+    if key in d:
+        return d[key]
+    else:
+        return list()
 
-def members_to_class(members: list) -> list:
+# FIXME: this a quick fix to get the tests working again. should be redone
+# TODO: probably should split this up into a to riders and a to drivers function
+# TODO: find a better way to handle single vs. multiple members
+# TODO: add return type hint
+def members_to_class(member: Member = None, members: list = None, is_driver: bool = False):
+    """Converts a dictionary to a Rider or a Driver object
+
+        Args:
+            member:
+                A single member to be converted
+            members:
+                A list of members to be converted
+            is_driver:
+                Flag to set if member is a driver
+
+        Returns:
+            Member objects, number of objects is equal to the number of members passed in the parameters
+
+    """
+
+    #TODO: this is hacky
     member_objects = list()
+
+    # TODO: this is pretty hacky too I think
+    if member is not None:
+        members = [member]
+
     for m in members:
-        print(members)
-        if m["is_driver"]:
+        if is_driver:
             driver = Driver(
-                name=(m["name"] if m["name"] else None),
-                email=(m["email"] if m["email"] else None),
-                phone=(m["phone"] if m["phone"] else None),
-                days=(convert_days(m["days"]) if m["days"] else None),
-                is_dues_paying=(m["is_dues_paying"]
-                                if m["is_dues_paying"] else None),
-                car_type=(m["car_type"] if m["car_type"] else None),
-                seats=(m["seats"] if m["seats"] else None))
+                name=get_with_check(m, "name"),
+                email=get_with_check(m, "email"),
+                phone=get_with_check(m, "phone"),
+                days=convert_days(get_with_check(m, "days")),
+                is_dues_paying=get_with_check(m, "is_dues_paying"),
+                car_type=get_with_check(m, "car_type"),
+                seats=get_with_check(m, "seats"))
+
+            member_objects.append(driver)
+
         else:
             rider = Rider(
-                name=(m["name"] if m["name"] else None),
-                email=(m["email"] if m["email"] else None),
-                phone=(m["phone"] if m["phone"] else None),
-                days=(convert_days(m["days"]) if m["days"] else None),
-                is_dues_paying=(m["is_dues_paying"]
-                                if m["is_dues_paying"] else None),
+                name=get_with_check(m, "name"),
+                email=get_with_check(m, "email"),
+                phone=get_with_check(m, "phone"),
+                days=convert_days(get_with_check(m, "days")),
+                is_dues_paying=get_with_check(m, "is_dues_paying")
             )
+        
+            member_objects.append(rider)
+
+    if member is not None:
+        return member_objects[0]
+    else: 
+        return member_objects
 
 
 def sort_by_name(members):
