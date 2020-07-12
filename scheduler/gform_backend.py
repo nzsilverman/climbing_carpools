@@ -20,6 +20,7 @@ from random import uniform
 import scheduler.util as util
 from scheduler.classes.AuthorizedClient import AuthorizedClient
 from scheduler.classes.Driver import Driver
+from scheduler.classes.Member import Member
 from scheduler.classes.Rider import Rider
 import scheduler.classes.Day as Day
 from scheduler.classes.WSCell import WSCell
@@ -169,7 +170,7 @@ def get_days_and_locations(start_col: int, response: int,
         # if driving this day
         if response[i]:
             day = Day.DayInfo(
-                day=Day.get_from_str(d),
+                day=Day.from_str(d),
                 times=[
                     parse_times(response[i + len(days_enabled)].split(",")[0])
                 ],
@@ -185,7 +186,8 @@ def get_days_and_locations(start_col: int, response: int,
     return days
 
 
-def get_riders_and_drivers(responses: list, days_enabled: list) -> (list, list):
+def get_riders_and_drivers(responses: list, days_enabled: list,
+                           dues_payers_sheet) -> (list, list):
     """Gets drivers from the responses.
 
         Args:
@@ -200,7 +202,7 @@ def get_riders_and_drivers(responses: list, days_enabled: list) -> (list, list):
                 list at index 1: list of Rider objects
     """
 
-    dues_payers = get_dues_payers()
+    dues_payers = get_dues_payers(dues_payers_sheet)
 
     drivers = list()
     riders = list()
@@ -238,7 +240,7 @@ def get_riders_and_drivers(responses: list, days_enabled: list) -> (list, list):
 
             riders.append(rider)
 
-    return drivers, riders
+    return riders, drivers
 
 
 def members_from_sheet() -> (list, list):
@@ -270,7 +272,8 @@ def members_from_sheet() -> (list, list):
     # create lists of riders and drivers
     print(days_enabled)
 
-    return get_riders_and_drivers(all_responses, days_enabled)
+    return get_riders_and_drivers(all_responses, days_enabled,
+                                  dues_payers_sheet)
 
 
 def delete_spreadsheet(name: str) -> None:
@@ -329,7 +332,7 @@ def list_spreadsheets() -> None:
         print(s.title, s.id)
 
 
-def unpack_locations(member: dict, day: str) -> str:
+def unpack_locations(member: Member, day: Day.DayName) -> str:
     """Converts locations in member's locations list to a string of location names
 
         Appends together all of the location strings for a particular member
@@ -344,7 +347,7 @@ def unpack_locations(member: dict, day: str) -> str:
             string that is a concatenated string of all the locations a member is trying to leave from
     """
 
-    locations = util.get_day_info_from_member(member, day, "locations")
+    locations = member.get_locations(day)
     location_str = ""
 
     for l in locations:
@@ -353,7 +356,7 @@ def unpack_locations(member: dict, day: str) -> str:
     return location_str
 
 
-def unpack_time(driver: dict, day: str) -> str:
+def unpack_time(driver: Driver, day: Day.DayName) -> str:
     """Converts time from decimal time (hh.(mm/60)) to hh:mm format
 
         Args:
@@ -366,7 +369,7 @@ def unpack_time(driver: dict, day: str) -> str:
             Returns the unpacked time as a string, converted from (hh.(mm/60)) to (hh:mm) format
     """
 
-    time = util.get_day_info_from_member(driver, day, "departure_times")
+    time = driver.get_times(day)
 
     # there should only be one time for the driver
     return "{0:02.0f}:{1:02.0f}".format(*divmod(time[0] * 60, 60))
@@ -401,7 +404,7 @@ def get_car_block_colors() -> (float, float, float, float):
     return r, g, b, config["color_alpha"]
 
 
-# TODO -> This function is a monster. I appreciate that it works well, but I think for maintainability it should
+# TODO -> This function is a monster! I appreciate that it works well, but I think for maintainability it should
 # be broken up into smaller functions, and needs to be more clearly labeled and commented and documented
 
 
@@ -443,9 +446,11 @@ def write_schedule(schedule: list,
         # TODO -> would like more of an explanation of this if statement
         # deletes default Sheet1 and creates a sheet for the current day
         if not ws:
-            ws = spreadsheet.add_worksheet(day[0], 100, 100)
+            ws = spreadsheet.add_worksheet(Day.to_str(day[0]), 100, 100)
         else:
-            ws_new = spreadsheet.duplicate_sheet(ws.id, new_sheet_name=day[0])
+            ws_new = spreadsheet.duplicate_sheet(ws.id,
+                                                 new_sheet_name=Day.to_str(
+                                                     day[0]))
             spreadsheet.del_worksheet(ws)
             ws = ws_new
 
@@ -513,7 +518,7 @@ def write_schedule(schedule: list,
         for car in day[1]:
 
             # one extra row for the heading, one for the driver
-            block_length = car.driver["seats"] + 2
+            block_length = car.seats + 2
 
             car_block_lower_right.inc_row(block_length)
             car_block_lower_left.inc_row(block_length)
@@ -557,9 +562,9 @@ def write_schedule(schedule: list,
                     ],
                     [
                         "Driver",
-                        car.driver["name"],
-                        car.driver["car_type"],
-                        car.driver["phone"],
+                        car.driver.name,
+                        car.car_type,
+                        car.driver.phone,
                         unpack_time(car.driver, day[0]),
                         unpack_locations(car.driver, day[0]),
                     ],
@@ -574,9 +579,9 @@ def write_schedule(schedule: list,
             for r in car.riders:
                 row = [
                     "Rider",
-                    r["name"],
+                    r.name,
                     "",
-                    r["phone"],
+                    r.phone,
                     "",
                     unpack_locations(r, day[0]),
                 ]

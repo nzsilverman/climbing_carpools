@@ -11,12 +11,16 @@ import sys
 from scheduler.classes.Car import Car
 from scheduler.classes.MeetingLocation import MeetingLocation
 from scheduler.classes.Configuration import Configuration
+from scheduler.classes.Driver import Driver
+from scheduler.classes.Member import Member
+from scheduler.classes.Rider import Rider
+import scheduler.classes.Day as Day
 from scheduler.util import get_day_info_from_member
 
 logger = logging.getLogger(__name__)
 
 
-def check_in_days(member: dict, day: str) -> bool:
+def check_in_days(member: dict, day: Day.DayName) -> bool:
     """ Checks if member is signed up for the given day
 
     Args:
@@ -30,8 +34,8 @@ def check_in_days(member: dict, day: str) -> bool:
         False -> member is not signed up for the given day
     """
 
-    for d in member["days"]:
-        if d["day"] == day:
+    for d in member.days:
+        if d.day == day:
             return True
 
     return False
@@ -50,11 +54,15 @@ def get_total_seats(drivers: list, day: str) -> int:
         Integer of total number of seats avaialble for a certain day across all drivers for that day
     """
 
-    return sum(
-        [driver["seats"] for driver in drivers if check_in_days(driver, day)])
+    return sum([
+        driver.seats_remaining
+        for driver in drivers
+        if check_in_days(driver, day)
+    ])
 
 
-def are_location_compatible(rider: dict, driver: dict, day: str) -> bool:
+def are_location_compatible(rider: Rider, driver: Driver,
+                            day: Day.DayName) -> bool:
     """ Checks if rider and driver have compatible location settings.
     
     Compatible locations are defined as listing the same location as an option to
@@ -67,16 +75,15 @@ def are_location_compatible(rider: dict, driver: dict, day: str) -> bool:
 
     """
 
-    for location in get_day_info_from_member(rider, day, "locations"):
-        if location in get_day_info_from_member(driver, day, "locations"):
-            logger.debug("location match %s and %s", rider["name"],
-                         driver["name"])
+    for location in rider.get_locations(day):
+        if location in driver.get_locations(day):
+            logger.debug("location match %s and %s", rider.name, driver.name)
             return True
 
     return False
 
 
-def time_compatibility(rider: dict, driver: dict, day: str) -> float:
+def time_compatibility(rider: Rider, driver: Driver, day: Day.DayName) -> float:
     """ Checks time compatibility. Finds driver and rider with closest departure time.
 
     For a specific driver and rider, returns the smallest time difference between when
@@ -95,13 +102,14 @@ def time_compatibility(rider: dict, driver: dict, day: str) -> float:
         like to leave
     """
 
-    rider_times = get_day_info_from_member(rider, day, "departure_times")
-    driver_times = get_day_info_from_member(driver, day, "departure_times")
+    rider_times = rider.get_times(day)
+    driver_times = driver.get_times(day)
 
     rider_times.sort()
 
     # there should only be one time here
     driver_times.sort()
+
     if len(driver_times) != 1:
         logger.error("driver has multiple departure times for %s", day)
         exit(2)
@@ -119,7 +127,8 @@ def time_compatibility(rider: dict, driver: dict, day: str) -> float:
     return result
 
 
-def find_best_match(rider: dict, drivers: list, day: str) -> (dict, list):
+def find_best_match(rider: Rider, drivers: list,
+                    day: Day.DayName) -> (Driver, list):
     """Find the best match for the rider.
 
     Finds all compatible drivers for the rider and gives priority to the driver
@@ -155,13 +164,13 @@ def find_best_match(rider: dict, drivers: list, day: str) -> (dict, list):
 
     # finds all compatible drivers
     for driver in drivers:
-        if driver["seats_remaining"] and are_location_compatible(
+        if driver.seats_remaining and are_location_compatible(
                 rider, driver, day):
             compatible_drivers.append(
                 [driver, time_compatibility(rider, driver, day)])
 
     if not compatible_drivers:
-        logger.warn("no compatible drivers for %s", rider["name"])
+        logger.warn("no compatible drivers for %s", rider.name)
         return None, drivers
 
     # compatible_drivers is a list where each entry is a list with two elements
@@ -176,7 +185,7 @@ def find_best_match(rider: dict, drivers: list, day: str) -> (dict, list):
     # Decrement the seats remaining for the driver that was the best match
     for d in drivers:
         if best_match == d:
-            d["seats_remaining"] -= 1
+            d.seats_remaining -= 1
 
     # return driver that best matches the time and the updated driver list
     return best_match, drivers
@@ -187,9 +196,9 @@ def generate_rides(riders: list, drivers: list) -> list:
 
     Args:
         riders:
-            A list of riders, where each rider is a dictionary entry. 
+            A list of Rider objects. 
         drivers:
-            A list of drivers, where each driver is a dictionary entry.
+            A list of Driver objects.
 
     Returns:
         A list of departure days and corresponding cars. The list has the following format:
@@ -209,11 +218,11 @@ def generate_rides(riders: list, drivers: list) -> list:
     days_enabled = Configuration.config("mcc.days_enabled")
 
     for day in days_enabled:
+
+        day = Day.from_str(day)
+
         # cars for the given day
         cars = list()
-
-        for driver in drivers:
-            driver["seats_remaining"] = driver["seats"]
 
         # shuffle the riders for every day to ensure they are chosen fairly
         random.shuffle(riders)
@@ -230,7 +239,7 @@ def generate_rides(riders: list, drivers: list) -> list:
             chosen_rider = days_riders.pop()
             # don't match rider if not riding current day
             if not check_in_days(chosen_rider, day):
-                logger.debug("%s not riding %s", chosen_rider["name"], day)
+                logger.debug("%s not riding %s", chosen_rider.name, day)
                 continue
 
             best_driver, drivers = find_best_match(chosen_rider, drivers, day)
@@ -253,7 +262,7 @@ def generate_rides(riders: list, drivers: list) -> list:
 
                 seats_remaining -= 1
             else:
-                logger.debug("%s not matched", chosen_rider["name"])
+                logger.debug("%s not matched", chosen_rider.name)
 
         schedule.append((day, cars))
 

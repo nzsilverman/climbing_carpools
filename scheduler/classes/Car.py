@@ -1,9 +1,12 @@
+from scheduler.classes.Driver import Driver
+
+
 class Car:
     """Car class for representing the data needed for a car
     
     Attributes:
         driver:
-            dictionary entry of the cars driver
+            Driver object
         car_type:
             string of the cars type
         seats:
@@ -15,8 +18,8 @@ class Car:
         car = Car(driver)
     """
 
-    def __init__(self, driver: dict):
+    def __init__(self, driver: Driver):
         self.driver: dict = driver
-        self.car_type: str = driver["car_type"]
-        self.seats: int = driver["seats"]
+        self.car_type: str = driver.car_type
+        self.seats: int = driver.seats
         self.riders = list()

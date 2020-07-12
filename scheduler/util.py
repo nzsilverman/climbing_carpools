@@ -8,6 +8,7 @@
 
 import logging
 import json
+from scheduler.classes.Member import Member
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +67,7 @@ def get_riders(members: list) -> list:
     return riders
 
 
-def get_day_info_from_member(member: dict, day: str, key: str):
+def get_day_info_from_member(member: Member, day: str, key: str):
     """ Gets info associated with the key on the given day from the provided member.
 
     Reads the member dict for a specific day to return the information stored under a specific

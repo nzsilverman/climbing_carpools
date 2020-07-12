@@ -31,3 +31,4 @@ class Driver(Member):
         super().__init__(name, email, phone, days, is_dues_paying)
         self.car_type: str = car_type
         self.seats: int = seats
+        self.seats_remaining: int = seats

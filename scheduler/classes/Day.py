@@ -11,7 +11,7 @@ class DayName(enum.Enum):
     SUNDAY = 6
 
 
-def from_str(day_name_str) -> DayName:
+def from_str(day_name_str: str) -> DayName:
     """Returns corresponding DayName enum to a day name provided by string
     """
 
@@ -30,6 +30,27 @@ def from_str(day_name_str) -> DayName:
         return DayName.SATURDAY
     if day_name_str == "SUNDAY":
         return DayName.SUNDAY
+
+
+def to_str(day_name: DayName) -> str:
+    """Returns corresponding DayName enum to a day name provided by string
+    """
+
+    #TODO: this can be better, maybe use a dict to pair these up instead?
+    if day_name == DayName.MONDAY:
+        return "MONDAY"
+    if day_name == DayName.TUESDAY:
+        return "TUESDAY"
+    if day_name == DayName.WEDNESDAY:
+        return "WEDNESDAY"
+    if day_name == DayName.THURSDAY:
+        return "THURSDAY"
+    if day_name == DayName.FRIDAY:
+        return "FRIDAY"
+    if day_name == DayName.SATURDAY:
+        return "SATURDAY"
+    if day_name == DayName.SUNDAY:
+        return "SUNDAY"
 
 
 class DayInfo:

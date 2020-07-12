@@ -1,3 +1,6 @@
+import scheduler.classes.Day as Day
+
+
 class Member:
     """Member class for representing a climbing club member
 
@@ -26,3 +29,17 @@ class Member:
         self.phone: str = phone
         self.days: list = days
         self.is_dues_paying: bool = is_dues_paying
+
+    def get_locations(self, day: Day.DayName) -> list():
+        for d in self.days:
+            if d.day == day:
+                return d.locations
+
+        return list()
+
+    def get_times(self, day: Day.DayName) -> list():
+        for d in self.days:
+            if d.day == day:
+                return d.times
+
+        return list()

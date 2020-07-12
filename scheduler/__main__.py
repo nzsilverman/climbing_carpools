@@ -27,6 +27,10 @@ from scheduler.json_backend import members_from_json
 from scheduler.generate_rides import generate_rides
 from scheduler.util import get_version
 
+from scheduler.classes.Rider import Rider
+from scheduler.classes.Driver import Driver
+import scheduler.classes.Day as Day
+
 logging.basicConfig(
     filename="climbing_carpools.log",
     filemode="w",
@@ -62,11 +66,11 @@ def match() -> None:
 
     print("Summary of rides generated:")
     for day in schedule:
-        print("Rides for:\t{}".format(day[0]))
+        print("Rides for:\t{}".format(Day.to_str(day[0])))
         for car in day[1]:
-            print("Driver:\t{}".format(car.driver["name"]))
+            print("Driver:\t{}".format(car.driver.name))
             for r in car.riders:
-                print("Rider:\t{}".format(r["name"]))
+                print("Rider:\t{}".format(r.name))
             print()
 
 
