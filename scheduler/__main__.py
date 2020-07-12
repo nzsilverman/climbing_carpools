@@ -23,7 +23,6 @@ from scheduler.gform_backend import (
     delete_spreadsheet,
     list_spreadsheets,
 )
-from scheduler.json_backend import members_from_json
 from scheduler.generate_rides import generate_rides
 from scheduler.util import get_version
 
