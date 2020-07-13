@@ -35,10 +35,30 @@ def convert_days(days: list) -> list:
 
 
 def get_with_check(d: dict, key: str):
+    """Returns value for key if key exists in the provided dictionary.
+
+        Not all dictionaries used for tests contain all the data required
+        to create a Rider, Driver, or Member object so we create 
+        a Rider, Driver, or Member object with only the data present in 
+        the provided dictionary a fill the empty Rider, Driver, or Member
+        constructor parameters with None
+
+        Args:
+            d:
+                dictionary
+            key:
+                key to retrieve from dictionary if it exists
+            
+        Returns:
+            value for key if the key exists or None if the key doesn't exist
+
+        Typical Usage:
+
+    """
     if key in d:
         return d[key]
     else:
-        return list()
+        return None
 
 
 # FIXME: this a quick fix to get the tests working again. should be redone
@@ -72,6 +92,10 @@ def members_to_class(member: Member = None,
 
     for m in members:
         if is_driver:
+
+            # not all dictionaries used for tests contain all the data required
+            # to create a Driver, we must check if the key exists first.
+            # If the key doesn't exist we can substitute None instead
             driver = Driver(name=get_with_check(m, "name"),
                             email=get_with_check(m, "email"),
                             phone=get_with_check(m, "phone"),
@@ -83,6 +107,10 @@ def members_to_class(member: Member = None,
             member_objects.append(driver)
 
         else:
+
+            # not all dictionaries used for tests contain all the data required
+            # to create a Rider, we must check if the key exists first.
+            # If the key doesn't exist we can substitute None instead
             rider = Rider(name=get_with_check(m, "name"),
                           email=get_with_check(m, "email"),
                           phone=get_with_check(m, "phone"),
