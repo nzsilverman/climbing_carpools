@@ -21,6 +21,8 @@ class Driver(Member):
             string of a short description of this driver's car
         seats:
             number of seats available for riders
+        seats_remaining:
+            number of seats remaining in the car. Initialized to same number as seats param
 
     Typical Usage:
         member = Driver("John Foo", "foo@bar.com", "9876543211", [DayInfo(DayName.MONDAY, [6], ["NORTH", "CENTRAL"])], false, "red toyota", 4)
