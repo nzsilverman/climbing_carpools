@@ -23,16 +23,19 @@ from scheduler.gform_backend import (
     delete_spreadsheet,
     list_spreadsheets,
 )
-from scheduler.json_backend import members_from_json
 from scheduler.generate_rides import generate_rides
 from scheduler.util import get_version
+
+from scheduler.classes.Rider import Rider
+from scheduler.classes.Driver import Driver
+import scheduler.classes.Day as Day
 
 logging.basicConfig(
     filename="climbing_carpools.log",
     filemode="w",
     format="%(name)s - %(levelname)s - %(message)s",
 )
-# logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG")) # Prefer to log to a file
+
 logger = logging.getLogger(__name__)
 
 
@@ -44,29 +47,7 @@ def get_members() -> (list, list):
 
     Returns:
         (riders list, drivers list)
-        Returns a tuple of lists- the first being for the riders, and the second being for the drivers.
-
-        Each rider in the riders list is a dictionary that has the following form:
-            rider = {
-                    "name":
-                    "email":
-                    "phone":
-                    "is_dues_paying":
-                    "is_driver":
-                    "days":
-                }
-
-        Each driver in the drivers list is a dictionary that has the following form:
-            driver = {
-                            "name":, 
-                            "email":, 
-                            "phone":,
-                            "car_type":,
-                            "seats":,
-                            "is_dues_paying":,
-                            "is_driver":,
-                            "days":,
-                        }
+        Returns a tuple of lists- the first containing Rider objects, and the second containing driver objects.
     """
 
     return members_from_sheet()
@@ -84,11 +65,11 @@ def match() -> None:
 
     print("Summary of rides generated:")
     for day in schedule:
-        print("Rides for:\t{}".format(day[0]))
+        print("Rides for:\t{}".format(Day.to_str(day[0])))
         for car in day[1]:
-            print("Driver:\t{}".format(car.driver["name"]))
+            print("Driver:\t{}".format(car.driver.name))
             for r in car.riders:
-                print("Rider:\t{}".format(r["name"]))
+                print("Rider:\t{}".format(r.name))
             print()
 
 
@@ -101,9 +82,7 @@ def print_tab(message: str) -> None:
 def usage() -> None:
     """ Print program usage.
     """
-    # print(
-    #     "Usage: scheduler [-m|--match] [-c|--config <filename>] [-l|--list] [-d|--delete <sheet name>"
-    # )
+
     print("scheduler\tversion: {}\n".format(get_version()))
     print("NAME:")
     print_tab("scheduler - a command line utility for scheduling carpools")
