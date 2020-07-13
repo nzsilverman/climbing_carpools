@@ -129,7 +129,9 @@ def parse_times(time: str) -> float:
 
 def get_days_and_locations(start_col: int, response: int,
                            days_enabled: list) -> list:
-    """
+    """Converts club member responses regarding driving and riding times and departure locations
+    from the Google Form responses sheet into DayInfo objects
+
         Args:
             start_col:
                 column where this response's time and locations begin
@@ -142,20 +144,40 @@ def get_days_and_locations(start_col: int, response: int,
             a list of DayInfo objects corresponding to the provided carpool form response
     
 
+        Typical Usage:
+            rider = Rider(
+                name=row[this.NAME_COLUMN],
+                email=row[this.EMAIL_COLUMN],
+                phone=row[this.PHONE_COLUMN],
+                is_dues_paying=validate_dues_payers(row[this.EMAIL_COLUMN],
+                                                    dues_payers),
+                days=get_days_and_locations(this.DAYS_INFO_START_COLUMN, row,
+                                            days_enabled))
+
+
      assume each day has a locations column and a departure times column
     
      n = days_enabled
-     (start rider iter here)  (end rider iter here)  (start driver iter here)                 (end driver iter here)
-     DAYS_INFO_START                            |    driver_days_start                            |
-        |                                       |         |                                       |
-        V                                       V         V                                       V
-     | Day 1     |   | Day n     | Day 1 |   | Day n | Day 1     |   | Day n     | Day 1  |   | Day n  | 
-     | Locations |...| Locations | Times |...| Times | Locations |...| Locations | Times  |...| Times  |
-     | Rider     |   | Rider     | Rider |   | Rider | Driver    |   | Driver    | Driver |   | Driver |
-     |-----------|---|-----------|-------|---|-------|-----------|---|-----------|--------|---|--------|
-     |           |   |           |       |   |       |           |   |           |        |   |        |
-    
-    
+
+
+     This diagram is a representation of the Google Form responses sheet showing from which
+     columns data is being extracted. Day 1 Locations Rider is the first column of
+     location data if the member is a rider (column I of the current v2.0.0 responses sheet). 
+
+                 (start rider iter here)  (end rider iter here)  (start driver iter here)                 (end driver iter here)
+                 DAYS_INFO_START                            |    driver_days_start                            |
+                    |                                       |         |                                       |
+                    V                                       V         V                                       V
+             |   | Day 1     |   | Day n     | Day 1 |   | Day n | Day 1     |   | Day n     | Day 1  |   | Day n  | 
+             |   | Locations |...| Locations | Times |...| Times | Locations |...| Locations | Times  |...| Times  |
+             |   | Rider     |   | Rider     | Rider |   | Rider | Driver    |   | Driver    | Driver |   | Driver |
+     --------|...|-----------|---|-----------|-------|---|-------|-----------|---|-----------|--------|---|--------|
+     Member 1|   |           |   |           |       |   |       |           |   |           |        |   |        |
+     Member 2|   |
+     .       |   |
+     .       |   |
+     .       |   |
+     Member n|   |
     """
 
     # create a dict for each day
