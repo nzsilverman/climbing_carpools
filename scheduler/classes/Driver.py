@@ -5,6 +5,8 @@ class Driver(Member):
     """Driver class for representing a climbing club member that has a car
     and offers rides to members without cars
 
+    Subclass of a member
+
     Attributes:
         name:
             string of member name
