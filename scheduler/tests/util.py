@@ -10,6 +10,9 @@ import scheduler.classes.Day as Day
 def convert_days(days: list) -> list:
     """Converts a list of dictionary days to DayInfo objects
 
+    This is a TODO item. This function works, but it was written to get tests working again.
+    It might not be needed once a better testing framework gets worked out.
+
 
         Args:
             days:
