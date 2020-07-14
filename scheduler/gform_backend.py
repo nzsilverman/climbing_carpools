@@ -28,35 +28,6 @@ from scheduler.classes.WSRange import WSRange
 from scheduler.classes.Configuration import Configuration
 
 logger = logging.getLogger(__name__)
-this = sys.modules[__name__]
-
-this.EMAIL_COLUMN: int = None
-this.NAME_COLUMN: int = None
-this.PHONE_COLUMN: int = None
-this.CAR_DESCRIPTION_COLUMN: int = None
-this.SEATS_COLUMN: int = None
-this.IS_RIDER_COLUMN: int = None
-this.IS_DRIVER_COLUMN: int = None
-this.DAYS_INFO_START_COLUMN: int = None
-this.CAR_ROW_SPACING: int = None
-
-
-def config_responses():
-    """Sets configuration needed for collecting responses.
-
-    Uses configuration data found in the config files for this information
-    """
-
-    columns = Configuration.config("gform_backend.columns")
-
-    this.EMAIL_COLUMN = columns["email"]
-    this.NAME_COLUMN = columns["name"]
-    this.PHONE_COLUMN = columns["phone_number"]
-    this.CAR_DESCRIPTION_COLUMN = columns["car_type"]
-    this.SEATS_COLUMN = columns["seats"]
-    this.IS_RIDER_COLUMN = columns["is_rider"]
-    this.IS_DRIVER_COLUMN = columns["is_driver"]
-    this.DAYS_INFO_START_COLUMN = columns["days_info_start"]
 
 
 def get_dues_payers(dues_sheet: str) -> set:
@@ -146,12 +117,12 @@ def get_days_and_locations(start_col: int, response: int,
 
         Typical Usage:
             rider = Rider(
-                name=row[this.NAME_COLUMN],
-                email=row[this.EMAIL_COLUMN],
-                phone=row[this.PHONE_COLUMN],
-                is_dues_paying=validate_dues_payers(row[this.EMAIL_COLUMN],
+                name=row[name_column],
+                email=row[email_column],
+                phone=row[phone_column],
+                is_dues_paying=validate_dues_payers(row[email_column],
                                                     dues_payers),
-                days=get_days_and_locations(this.DAYS_INFO_START_COLUMN, row,
+                days=get_days_and_locations(days_info_start_column, row,
                                             days_enabled))
 
 
@@ -230,36 +201,45 @@ def get_riders_and_drivers(
     drivers = list()
     riders = list()
 
+    columns = Configuration.config("gform_backend.columns")
+
+    name_column = columns["name"]
+    email_column = columns["email"]
+    phone_column = columns["phone_number"]
+    car_type_column = columns["car_type"]
+    seats_column = columns["seats"]
+    is_rider_column = columns["is_rider"]
+    is_driver_column = columns["is_driver"]
+    days_info_start_column = columns["days_info_start"]
+
     for row in responses[1:]:
-        is_driver = (row[this.IS_DRIVER_COLUMN] == "Yes")
-        is_rider = (row[this.IS_RIDER_COLUMN] == "Yes")
+        is_driver = (row[is_driver_column] == "Yes")
+        is_rider = (row[is_rider_column] == "Yes")
 
         if is_driver:
 
-            driver = Driver(
-                name=row[this.NAME_COLUMN],
-                email=row[this.EMAIL_COLUMN],
-                phone=row[this.PHONE_COLUMN],
-                is_dues_paying=validate_dues_payers(row[this.EMAIL_COLUMN],
-                                                    dues_payers),
-                days=get_days_and_locations(
-                    this.DAYS_INFO_START_COLUMN + 2 * len(days_enabled), row,
-                    days_enabled),
-                car_type=row[this.CAR_DESCRIPTION_COLUMN],
-                seats=int(row[this.SEATS_COLUMN]))
+            driver = Driver(name=row[name_column],
+                            email=row[email_column],
+                            phone=row[phone_column],
+                            is_dues_paying=validate_dues_payers(
+                                row[email_column], dues_payers),
+                            days=get_days_and_locations(
+                                days_info_start_column + 2 * len(days_enabled),
+                                row, days_enabled),
+                            car_type=row[car_type_column],
+                            seats=int(row[seats_column]))
 
             drivers.append(driver)
 
         if is_rider:
 
-            rider = Rider(
-                name=row[this.NAME_COLUMN],
-                email=row[this.EMAIL_COLUMN],
-                phone=row[this.PHONE_COLUMN],
-                is_dues_paying=validate_dues_payers(row[this.EMAIL_COLUMN],
-                                                    dues_payers),
-                days=get_days_and_locations(this.DAYS_INFO_START_COLUMN, row,
-                                            days_enabled))
+            rider = Rider(name=row[name_column],
+                          email=row[email_column],
+                          phone=row[phone_column],
+                          is_dues_paying=validate_dues_payers(
+                              row[email_column], dues_payers),
+                          days=get_days_and_locations(days_info_start_column,
+                                                      row, days_enabled))
 
             riders.append(rider)
 
@@ -279,8 +259,6 @@ def members_from_sheet() -> (list, list):
 
     gform_backend_config = Configuration.config("gform_backend.files")
     days_enabled = Configuration.config("mcc.days_enabled")
-
-    config_responses()
 
     for sheet in client.openall():
         logger.debug("%s", sheet.title)
