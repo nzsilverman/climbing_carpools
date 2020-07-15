@@ -10,6 +10,7 @@ class MeetingLocation(enum):
     NORTH = 1
     CENTRAL = 2
 
+
 def to_str(loc: MeetingLocation) -> str:
     if loc == MeetingLocation.NORTH:
         return "NORTH"

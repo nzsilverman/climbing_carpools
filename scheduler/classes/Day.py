@@ -1,5 +1,6 @@
 import enum
 
+
 class DayName(enum.Enum):
     MONDAY = 0
     TUESDAY = 1
@@ -74,7 +75,7 @@ class DayInfo:
         self.locations: list = locations
 
     def __repr__(self):
-        
+
         l_str = str()
         for l in self.locations:
             l_str = l_str + str(l) + " "
@@ -82,6 +83,5 @@ class DayInfo:
         t_str = str()
         for t in self.times:
             t_str = t_str + str(t) + " "
-        
 
         return str(self.day) + " from " + l_str + " at " + t_str

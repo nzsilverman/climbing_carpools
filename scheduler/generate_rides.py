@@ -38,7 +38,7 @@ def check_in_days(member: Member, day: Day.DayName) -> bool:
         if d.day == day:
             logger.debug("%s is in %s", member.name, day)
             return True
-    
+
     logger.debug("%s is not in %s", member.name, day)
 
     return False
@@ -233,7 +233,8 @@ def generate_rides(riders: list, drivers: list) -> list:
         random.shuffle(riders)
 
         seats_remaining = get_total_seats(days_drivers, day)
-        logger.info("%i seats available for %s", seats_remaining, Day.to_str(day))
+        logger.info("%i seats available for %s", seats_remaining,
+                    Day.to_str(day))
 
         # Copy the riders to maintain the original list of riders so that
         # each iteration of the loop has an unaffected rider list
@@ -248,7 +249,8 @@ def generate_rides(riders: list, drivers: list) -> list:
                 logger.debug("%s not riding %s", chosen_rider.name, day)
                 continue
 
-            best_driver, days_drivers = find_best_match(chosen_rider, days_drivers, day)
+            best_driver, days_drivers = find_best_match(chosen_rider,
+                                                        days_drivers, day)
 
             # Used to check if a Car object has been created for this rider, for this day yet
             driver_has_car = False
