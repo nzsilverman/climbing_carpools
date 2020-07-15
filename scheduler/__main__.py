@@ -34,6 +34,7 @@ logging.basicConfig(
     filename="climbing_carpools.log",
     filemode="w",
     format="%(name)s - %(levelname)s - %(message)s",
+    level=logging.DEBUG
 )
 
 logger = logging.getLogger(__name__)

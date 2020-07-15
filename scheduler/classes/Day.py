@@ -1,13 +1,12 @@
 import enum
 
-
 class DayName(enum.Enum):
-    MONDAY = 0,
-    TUESDAY = 1,
-    WEDNESDAY = 2,
-    THURSDAY = 3,
-    FRIDAY = 4,
-    SATURDAY = 5,
+    MONDAY = 0
+    TUESDAY = 1
+    WEDNESDAY = 2
+    THURSDAY = 3
+    FRIDAY = 4
+    SATURDAY = 5
     SUNDAY = 6
 
 
@@ -73,3 +72,16 @@ class DayInfo:
         self.day: DayName = day
         self.times: list = times
         self.locations: list = locations
+
+    def __repr__(self):
+        
+        l_str = str()
+        for l in self.locations:
+            l_str = l_str + str(l) + " "
+
+        t_str = str()
+        for t in self.times:
+            t_str = t_str + str(t) + " "
+        
+
+        return str(self.day) + " from " + l_str + " at " + t_str

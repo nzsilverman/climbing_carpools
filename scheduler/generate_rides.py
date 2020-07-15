@@ -7,6 +7,7 @@ Typical Usage:
 import random
 import logging
 import sys
+from copy import deepcopy
 
 from scheduler.classes.Car import Car
 from scheduler.classes.MeetingLocation import MeetingLocation
@@ -35,7 +36,10 @@ def check_in_days(member: Member, day: Day.DayName) -> bool:
 
     for d in member.days:
         if d.day == day:
+            logger.debug("%s is in %s", member.name, day)
             return True
+    
+    logger.debug("%s is not in %s", member.name, day)
 
     return False
 
@@ -217,6 +221,9 @@ def generate_rides(riders: list, drivers: list) -> list:
 
     for day in days_enabled:
 
+        # TODO: find a more efficient way to do this
+        days_drivers = deepcopy(drivers)
+
         day = Day.from_str(day)
 
         # cars for the given day
@@ -225,12 +232,13 @@ def generate_rides(riders: list, drivers: list) -> list:
         # shuffle the riders for every day to ensure they are chosen fairly
         random.shuffle(riders)
 
-        seats_remaining = get_total_seats(drivers, day)
-        logger.info("%i seats available", seats_remaining)
+        seats_remaining = get_total_seats(days_drivers, day)
+        logger.info("%i seats available for %s", seats_remaining, Day.to_str(day))
 
         # Copy the riders to maintain the original list of riders so that
         # each iteration of the loop has an unaffected rider list
-        days_riders = riders.copy()
+        # TODO: find a more efficient way to do this
+        days_riders = deepcopy(riders)
 
         # keep picking riders until no more seats remain or no more riders remain
         while seats_remaining > 0 and len(days_riders) > 0:
@@ -240,7 +248,7 @@ def generate_rides(riders: list, drivers: list) -> list:
                 logger.debug("%s not riding %s", chosen_rider.name, day)
                 continue
 
-            best_driver, drivers = find_best_match(chosen_rider, drivers, day)
+            best_driver, days_drivers = find_best_match(chosen_rider, days_drivers, day)
 
             # Used to check if a Car object has been created for this rider, for this day yet
             driver_has_car = False
