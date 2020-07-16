@@ -365,7 +365,7 @@ def unpack_locations(member: Member, day: Day.DayName) -> str:
 
 
 def unpack_time(driver: Driver, day: Day.DayName) -> str:
-    """Converts time from decimal time (hh.(mm/60)) to hh:mm format
+    """Converts time from decimal time (hh.(mm/60)) to hh:mm <AM|PM> format
 
         Args:
             driver:
@@ -374,7 +374,7 @@ def unpack_time(driver: Driver, day: Day.DayName) -> str:
                 Day.DayName enum for which to get the time
         
         Returns:
-            Returns the unpacked time as a string, converted from (hh.(mm/60)) to (hh:mm) format
+            Returns the unpacked time as a string, converted from (hh.(mm/60)) to (hh:mm) <AM|PM> format
     """
 
     time = driver.get_times(day)[0]
