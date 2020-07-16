@@ -216,13 +216,19 @@ def generate_rides(riders: list, drivers: list) -> list:
 
     schedule = list()
 
+    # copy only once
+    days_drivers = deepcopy(drivers)
+
     # Collect which days the club wishes to run a carpool
     days_enabled = Configuration.config("mcc.days_enabled")
 
     for day in days_enabled:
 
-        # TODO: find a more efficient way to do this
-        days_drivers = deepcopy(drivers)
+        # we're only copying the entire list of drivers once now.
+        # now copying only the seats remaining every day instead
+        # of the whole list.
+        for (days_d, d) in zip(days_drivers, drivers):
+            days_d.seats_remaining = d.seats_remaining
 
         day = Day.from_str(day)
 
