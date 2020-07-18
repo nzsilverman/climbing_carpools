@@ -641,9 +641,9 @@ def write_schedule(schedule: list,
             # + 5 for number of columns without a notes column
             end_col_index = start_col_index + 5
 
-        # corners of each block
         car_block = CarBlock(start_row_index, end_row_index, start_col_index,
                              end_col_index)
+
         # add each car in the current day to the day's output list
         for car in day[1]:
 
