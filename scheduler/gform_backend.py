@@ -616,6 +616,45 @@ def write_schedule(schedule: list,
         format_cell_ranges(ws, days_format)
 
 
+def sort_schedule_for_output(schedule: list) -> list:
+    """Sorts each day's cars in the schedule by departure time
+
+        Args:
+            schedule:
+                a list of days, each day is a list of Car objects
+            
+        Returns:
+            A list of days, each day's list of Car objects is sorted by their departure time
+
+    """
+
+    # we want to sort each day in the schedule
+    for day in schedule:
+
+        # The key parameter in the sort function lets us define the key by which it sorts;
+        # in our case, we need it to be the departure time of the cars.
+        # We need to access the list of departure times for the current day in the list of
+        # the Driver object's days for each car. That's complicated so here's it broken down:
+        #
+        # 1. day in the schedule: (Day.DayName, [Cars]) <- We want to by sort the list at day[1]
+        # 2. Car has a Driver who has a list of Days
+        #       - for each car, we need to get the list of the Driver's days
+        # 3. We need the times corresponding to the current day
+        #       - driver.get_times(Day.DayName) gets us that list (day[0] is a Day.DayName, see 1.)
+        # 4. The driver should only have a single departure time, we get that time
+        #       - get_times(Day.DayName)[0] is the driver's departure time
+        #
+        # Putting that all beack together: the sort function sorts by the key provided
+        # by the lambda function. The lambda function returns the car's departure time
+        # by getting the time from the correct day from the driver
+        #
+        #
+
+        day[1].sort(key=lambda car: car.driver.get_times(day[0])[0])
+
+    return schedule
+
+
 def write_to_sheet(schedule: list) -> None:
     """Writes provided schedule to a spreadsheet defined by the provided name.
 
@@ -623,4 +662,5 @@ def write_to_sheet(schedule: list) -> None:
     be made in its place.
     """
     spreadsheet = create_spreadsheet()
-    write_schedule(schedule, spreadsheet)
+
+    write_schedule(sort_schedule_for_output(schedule), spreadsheet)
