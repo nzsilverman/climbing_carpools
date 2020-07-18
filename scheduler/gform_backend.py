@@ -25,7 +25,7 @@ from scheduler.classes.Member import Member
 from scheduler.classes.Rider import Rider
 import scheduler.classes.Day as Day
 from scheduler.classes.WSCell import WSCell
-from scheduler.classes.WSRange import WSRange
+from scheduler.classes.WSRange import WSRange, CarBlock
 from scheduler.classes.Configuration import Configuration
 
 logger = logging.getLogger(__name__)
@@ -625,11 +625,15 @@ def write_schedule(schedule: list,
 
         # track cell indicies for sheet writing ranges
         if use_sheet_titles:
+            # if we have a title, start 1 row down
             start_row_index = 1
         else:
+            # if no title, start at row 0
             start_row_index = 0
 
         start_row_index += row_buffer_top
+
+        # + 1 spreadsheet columns start at index 1
         start_col_index = 1 + column_buffer_left
 
         end_row_index = row_buffer_top
@@ -639,28 +643,16 @@ def write_schedule(schedule: list,
             end_col_index = start_col_index + 5
 
         # corners of each block
-        car_block_upper_left = WSCell(start_row_index, start_col_index)
-        car_block_upper_right = WSCell(start_row_index, end_col_index)
-        car_block_lower_right = WSCell(end_row_index, end_col_index)
-        car_block_lower_left = WSCell(end_row_index, start_col_index)
-
+        car_block = CarBlock(start_row_index, end_row_index, start_col_index,
+                             end_col_index)
         # add each car in the current day to the day's output list
         for car in day[1]:
 
-            # one extra row for the heading, one for the driver
-            block_length = car.seats + 2
+            car_block.update_block_length(car.seats)
 
-            car_block_lower_right.inc_row(block_length)
-            car_block_lower_left.inc_row(block_length)
-
-            car_block_a1_range = WSRange(car_block_upper_left,
-                                         car_block_lower_right).getA1()
-
-            heading_a1_range = WSRange(car_block_upper_left,
-                                       car_block_upper_right).getA1()
-
-            roles_a1_range = WSRange(car_block_upper_left,
-                                     car_block_lower_left).getA1()
+            car_block_a1_range = car_block.get_car_block_a1_range()
+            heading_a1_range = car_block.get_car_heading_a1_range()
+            roles_a1_range = car_block.get_car_roles_a1_range()
 
             red, green, blue, alpha = get_car_block_colors()
 
@@ -680,12 +672,7 @@ def write_schedule(schedule: list,
             day_output.append(get_car_output(car, car_block_a1_range, day))
 
             # move to next writing location
-            car_block_upper_left.inc_row(car_block_spacing + block_length)
-            car_block_upper_right.inc_row(car_block_spacing + block_length)
-
-            # update in the beginning of the loop when block size is calculated
-            car_block_lower_right.inc_row(car_block_spacing)
-            car_block_lower_left.inc_row(car_block_spacing)
+            car_block.move_to_next()
 
         # batch update minimizes API calls
         ws.batch_update(day_output)
