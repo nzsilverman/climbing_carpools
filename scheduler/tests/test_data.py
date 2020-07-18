@@ -177,7 +177,7 @@ class GenerateRidesTestData:
                 }]
             },
             "MONDAY",
-            0,
+            4,
         ),
         (
             {
@@ -193,7 +193,7 @@ class GenerateRidesTestData:
                 }]
             },
             "TUESDAY",
-            4,
+            -1,
         ),
         (
             {
@@ -209,7 +209,7 @@ class GenerateRidesTestData:
                 }]
             },
             "MONDAY",
-            1.5,
+            -1,
         ),
     ]
 
@@ -219,7 +219,7 @@ class GenerateRidesTestData:
                 "name":
                     "r",
                 "days": [{
-                    "day": "MONDAY",
+                    "day": "TUESDAY",
                     "locations": ["NORTH"],
                     "departure_times": [1, 2, 3],
                 }],
@@ -273,13 +273,13 @@ class GenerateRidesTestData:
                         4,
                     "days": [{
                         "day": "TUESDAY",
-                        "locations": ["CENTRAL"],
+                        "locations": ["NORTH"],
                         "departure_times": [2],
                     }],
                 },
             ],
-            "MONDAY",
-            "a",
+            "TUESDAY",
+            "d",
         ),
     ]
 
