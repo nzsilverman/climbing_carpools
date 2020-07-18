@@ -418,9 +418,45 @@ def get_car_block_colors() -> (float, float, float, float):
     return r, g, b, config["color_alpha"]
 
 
+def format_column_widths(ws: gspread.models.Worksheet, column_widths: list) -> None:
+    """Sets the first n column widths for the provided worksheet where n is the
+    number of provided column widths. The columns (column index > n) will be
+    set using the width of column n.
+        
+        Args:
+            ws:
+                The worksheet for which to set the column widths
+            column_widths:
+                A list of column widths in pixels (int)
+
+        Returns:
+            None
+
+    """
+    widths_list = list()
+
+    # zips a column index (1...n) to the corresponding column width defined
+    # in the settings
+    for (j, w) in zip(range(1, len(column_widths) + 1), column_widths):
+        col_letter = WSCell(1, j).get_column()
+
+        # we want to format the remaining columns in the sheet using
+        # the width of the last sheet
+        #
+        # when formatting, a column with the ":" suffix represents
+        # all columns to the right
+        #
+        # Example: The pattern "G:" matches G and all columns to the right
+        # of G
+        if j == len(column_widths):
+            col_letter = col_letter + ":"
+            
+        widths_list.append((col_letter, w))
+
+    set_column_widths(ws, widths_list)
+
 # TODO -> This function is a monster! I appreciate that it works well, but I think for maintainability it should
 # be broken up into smaller functions, and needs to be more clearly labeled and commented and documented
-
 
 def write_schedule(schedule: list,
                    spreadsheet: gspread.models.Spreadsheet) -> None:
@@ -457,8 +493,13 @@ def write_schedule(schedule: list,
     for (i, day) in zip(range(0, len(schedule)), schedule):
         ws = spreadsheet.get_worksheet(i)
 
-        # TODO -> would like more of an explanation of this if statement
-        # deletes default Sheet1 and creates a sheet for the current day
+        # if the ith worksheet doesn't exist, we need to create it.
+        # if it already exists, then we duplicate the existing sheet
+        # and use a different name that matches the current scheme
+        # and then delete the old sheet
+        #
+        # used when we need to delete the default sheet1
+        # and create a sheet for the current day
         if not ws:
             ws = spreadsheet.add_worksheet(Day.to_str(day[0]), 100, 100)
         else:
@@ -470,18 +511,8 @@ def write_schedule(schedule: list,
 
         day_output = list()
         days_format = list()
-        widths_list = list()
 
-        # TODO -> needs more of a comment for what this is acheiving
-        for j, w in zip(range(1, len(column_widths) + 1), column_widths):
-            col_lettr = WSCell(1, j).get_column()
-
-            if i == len(column_widths):
-                col_lettr = col_lettr + ":"
-
-            widths_list.append((col_lettr, w))
-
-        set_column_widths(ws, widths_list)
+        format_column_widths(ws, column_widths)
 
         # TODO -> more comments please
         # sheet titles
