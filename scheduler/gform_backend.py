@@ -620,9 +620,6 @@ def write_schedule(schedule: list,
             day_output.append(outputs)
             day_format.append(formats)
 
-        # TODO -> comments/ explanations of what this is doing, like why we track cell indicies and where
-        # the magic numbers come from
-
         # track cell indicies for sheet writing ranges
         if use_sheet_titles:
             # if we have a title, start 1 row down
@@ -638,8 +635,10 @@ def write_schedule(schedule: list,
 
         end_row_index = row_buffer_top
         if output_config["notes_column"]:
+            # + 6 for number of columns with a notes column
             end_col_index = start_col_index + 6
         else:
+            # + 5 for number of columns without a notes column
             end_col_index = start_col_index + 5
 
         # corners of each block
