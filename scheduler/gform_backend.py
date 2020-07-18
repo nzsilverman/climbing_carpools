@@ -563,6 +563,47 @@ def get_car_output(car: Car, a1_range: str, day: Day) -> dict:
     return car_output
 
 
+def get_starting_row_index() -> int:
+    """
+
+    """
+    output_config = Configuration.config("gform_backend.output")
+
+    # track cell indicies for sheet writing ranges
+    if output_config["use_sheet_titles"]:
+        # if we have a title, start 1 row down
+        start_row_index = 1
+    else:
+        # if no title, start at row 0
+        start_row_index = 0
+
+    return start_row_index + output_config["row_buffer_top"]
+
+
+def get_end_col_index(start_col_index: int) -> int:
+    output_config = Configuration.config("gform_backend.output")
+
+    if output_config["notes_column"]:
+        # + 6 for number of columns with a notes column
+        return start_col_index + 6
+    else:
+        # + 5 for number of columns without a notes column
+        return start_col_index + 5
+
+
+def get_initial_indicies() -> (int, int, int, int):
+    output_config = Configuration.config("gform_backend.output")
+
+    start_row_index = get_starting_row_index()
+    end_row_index = output_config["row_buffer_top"]
+
+    # + 1 spreadsheet columns start at index 1
+    start_col_index = 1 + output_config["column_buffer_left"]
+    end_col_index = get_end_col_index(start_col_index)
+
+    return start_row_index, end_row_index, start_col_index, end_col_index
+
+
 # TODO -> This function is a monster! I appreciate that it works well, but I think for maintainability it should
 # be broken up into smaller functions, and needs to be more clearly labeled and commented and documented
 
@@ -581,17 +622,12 @@ def write_schedule(schedule: list,
     # Get settings for sheet writing from configuration file
     output_config = Configuration.config("gform_backend.output")
 
-    car_block_spacing = output_config["car_block_spacing"]
-    column_buffer_left = output_config["column_buffer_left"]
-    row_buffer_top = output_config["row_buffer_top"]
     bold_header = output_config["bold_header"]
     bold_roles = output_config["bold_roles"]
-    name_suffix_list = output_config["name_suffixes"]
     use_sheet_titles = output_config["use_sheet_titles"]
 
     general_font_size = output_config["general_font_size"]
     column_widths = output_config["column_widths"]
-    defualt_width = output_config["default_width"]
 
     # each day is a worksheet (i.e. a tab)
     for (i, day) in zip(range(0, len(schedule)), schedule):
@@ -624,29 +660,8 @@ def write_schedule(schedule: list,
             day_output.append(outputs)
             day_format.append(formats)
 
-        # track cell indicies for sheet writing ranges
-        if use_sheet_titles:
-            # if we have a title, start 1 row down
-            start_row_index = 1
-        else:
-            # if no title, start at row 0
-            start_row_index = 0
-
-        start_row_index += row_buffer_top
-
-        # + 1 spreadsheet columns start at index 1
-        start_col_index = 1 + column_buffer_left
-
-        end_row_index = row_buffer_top
-        if output_config["notes_column"]:
-            # + 6 for number of columns with a notes column
-            end_col_index = start_col_index + 6
-        else:
-            # + 5 for number of columns without a notes column
-            end_col_index = start_col_index + 5
-
-        car_block = CarBlock(start_row_index, end_row_index, start_col_index,
-                             end_col_index)
+        start_row, end_row, start_col, end_col = get_initial_indicies()
+        car_block = CarBlock(start_row, end_row, start_col, end_col)
 
         # add each car in the current day to the day's output list
         for car in day[1]:
