@@ -14,7 +14,7 @@ import gspread
 from gspread_formatting import *
 import json
 import sys
-import datetime
+from datetime import datetime
 from random import uniform
 
 import scheduler.util as util
@@ -89,14 +89,21 @@ def parse_times(time: str) -> float:
 
         Args:
             time:
-                time, as a string in hh:mm time
+                time, as a string in hh:mm <AM|PM> time
         
         Returns
             float that is the time converted to hh.(mm/60) time
     """
+    time = time.split()
 
-    time = time.split(":")
-    return float(time[0]) + (float(time[1]) / 60)
+    # conversion from 12-hr with AM/PM time to 24-hr time
+    if time[1] == "PM":
+        conversion_scalar = 12
+    else:
+        conversion_scalar = 0
+
+    time = time[0].split(":")
+    return float(time[0]) + (float(time[1]) / 60) + conversion_scalar
 
 
 def get_days_and_locations(start_col: int, response: int,
@@ -362,7 +369,7 @@ def unpack_locations(member: Member, day: Day.DayName) -> str:
 
 
 def unpack_time(driver: Driver, day: Day.DayName) -> str:
-    """Converts time from decimal time (hh.(mm/60)) to hh:mm format
+    """Converts time from decimal time (hh.(mm/60)) to hh:mm <AM|PM> format
 
         Args:
             driver:
@@ -371,13 +378,15 @@ def unpack_time(driver: Driver, day: Day.DayName) -> str:
                 Day.DayName enum for which to get the time
         
         Returns:
-            Returns the unpacked time as a string, converted from (hh.(mm/60)) to (hh:mm) format
+            Returns the unpacked time as a string, converted from (hh.(mm/60)) to (hh:mm) <AM|PM> format
     """
 
-    time = driver.get_times(day)
+    time = driver.get_times(day)[0]
+    dt = datetime.strptime("{0:02.0f}:{1:02.0f}".format(*divmod(time * 60, 60)),
+                           "%H:%M")
 
     # there should only be one time for the driver
-    return "{0:02.0f}:{1:02.0f}".format(*divmod(time[0] * 60, 60))
+    return dt.strftime("%I:%M %p")
 
 
 def get_car_block_colors() -> (float, float, float, float):
