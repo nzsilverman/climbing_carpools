@@ -110,7 +110,8 @@ def time_compatibility(rider: Rider, driver: Driver, day: Day.DayName) -> float:
 
     rider_times.sort()
 
-    # there should only be one time here
+    # there should only be one time here, so maybe remove
+    # maybe keep this in case there are more than 1 to keep things deterministic
     driver_times.sort()
 
     if len(driver_times) != 1:
@@ -119,14 +120,17 @@ def time_compatibility(rider: Rider, driver: Driver, day: Day.DayName) -> float:
 
     driver_time = driver_times[0]
 
+    #
     result = sys.maxsize
 
-    # finds minimum difference between rider departure times and driver time
+    # finds earliest matching time, rider times are sorted
     for time in rider_times:
-        if abs(time - driver_time) < result:
-            result = abs(time - driver_time)
+        if time == driver_time:
+            logger.debug("rider %s time compatible with %s", rider.name,
+                         driver.name)
+            result = time
+            break
 
-    logger.debug("min time difference: %i", result)
     return result
 
 
@@ -156,8 +160,8 @@ def find_best_match(rider: Rider, drivers: list,
     """
 
     # this probably needs to be rewritten with some kind of proper algorithm.
-    # right now, we're choosing the driver that is leaving closest to the requested time
-    # given day and location compatibility.
+    # right now, we're choosing the driver that matches the earliest of the
+    # rider's desired times
     #
     # this algorithm is a good choice if we truly want to give everyone an ~equal~ chance
     # in getting a car but we disregard how well they fit in it relative to others.
@@ -180,7 +184,7 @@ def find_best_match(rider: Rider, drivers: list,
     # [0] -> Driver object
     # [1] -> float that is the timne delta between when this specific driver and a rider want to leave
 
-    # Sort the compatible drivers list based on the time delta between drivers and riders
+    # Sort the compatible drivers list to find the compatible driver leaving earliest
     # Store the smallest driver dictionary value into the best match variable
     best_match = sorted(compatible_drivers, key=lambda lst: lst[1])[0][0]
 
