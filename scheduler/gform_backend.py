@@ -418,7 +418,8 @@ def get_car_block_colors() -> (float, float, float, float):
     return r, g, b, config["color_alpha"]
 
 
-def format_column_widths(ws: gspread.models.Worksheet, column_widths: list) -> None:
+def format_column_widths(ws: gspread.models.Worksheet,
+                         column_widths: list) -> None:
     """Sets the first n column widths for the provided worksheet where n is the
     number of provided column widths. The columns (column index > n) will be
     set using the width of column n.
@@ -450,13 +451,57 @@ def format_column_widths(ws: gspread.models.Worksheet, column_widths: list) -> N
         # of G
         if j == len(column_widths):
             col_letter = col_letter + ":"
-            
+
         widths_list.append((col_letter, w))
 
     set_column_widths(ws, widths_list)
 
+
+def configure_sheet_title(ws: gspread.models.Worksheet, day: Day.DayName) -> (list, list):
+    """Returns the output and corresponding format for the provided sheet's title
+
+        Args:
+            ws:
+                The worksheet for which to set the title
+            day:
+                The day which appears as a suffic to the sheet_name_base
+    
+        Returns:
+            heading text:
+                The text to use as the heading for the sheet
+            (cell_A1A1, title_fmt):
+                The range and format to use on the sheet title cell
+
+    """
+    output_config = Configuration.config("gform_backend.output")
+    
+    # title cell range
+    title_range_a1 = WSRange(WSCell(1, 1),
+                             WSCell(1, output_config["title_cell_merge_count"])).getA1()
+
+    cell_A1A1 = WSRange(WSCell(1, 1), WSCell(1, 1)).getA1()
+
+    title = output_config["name"] + " — " + Day.to_str(day)
+
+    # text for the title
+    heading_text = {
+        "range": cell_A1A1,
+        "values": [[title]],
+    }
+
+    # format for the title
+    title_fmt = cellFormat(
+        textFormat=textFormat(bold=output_config["bold_title"], fontSize=output_config["title_font_size"]))
+
+    # merge the cells to make the sheet look nicer
+    ws.merge_cells(title_range_a1)
+
+    return heading_text, (cell_A1A1, title_fmt)
+
+
 # TODO -> This function is a monster! I appreciate that it works well, but I think for maintainability it should
 # be broken up into smaller functions, and needs to be more clearly labeled and commented and documented
+
 
 def write_schedule(schedule: list,
                    spreadsheet: gspread.models.Spreadsheet) -> None:
@@ -478,12 +523,8 @@ def write_schedule(schedule: list,
     row_buffer_top = output_config["row_buffer_top"]
     bold_header = output_config["bold_header"]
     bold_roles = output_config["bold_roles"]
-    sheet_name_base = output_config["name"]
     name_suffix_list = output_config["name_suffixes"]
     use_sheet_titles = output_config["use_sheet_titles"]
-    bold_title = output_config["bold_title"]
-    title_font_size = output_config["title_font_size"]
-    title_cell_merge_count = output_config["title_cell_merge_count"]
 
     general_font_size = output_config["general_font_size"]
     column_widths = output_config["column_widths"]
@@ -510,30 +551,16 @@ def write_schedule(schedule: list,
             ws = ws_new
 
         day_output = list()
-        days_format = list()
+        day_format = list()
 
         format_column_widths(ws, column_widths)
 
         # TODO -> more comments please
         # sheet titles
         if use_sheet_titles:
-            title_range_a1 = WSRange(WSCell(1, 1),
-                                     WSCell(1, title_cell_merge_count)).getA1()
-
-            cell_A1A1 = WSRange(WSCell(1, 1), WSCell(1, 1)).getA1()
-
-            title = sheet_name_base + name_suffix_list[i]
-            heading_text = {
-                "range": cell_A1A1,
-                "values": [[title]],
-            }
-
-            title_fmt = cellFormat(textFormat=textFormat(
-                bold=bold_title, fontSize=title_font_size))
-
-            day_output.append(heading_text)
-            days_format.append((cell_A1A1, title_fmt))
-            ws.merge_cells(title_range_a1)
+            outputs, formats = configure_sheet_title(ws, day[0])
+            day_output.append(outputs)
+            day_format.append(formats)
 
         # TODO -> comments/ explanations of what this is doing, like why we track cell indicies and where
         # the magic numbers come from
@@ -588,9 +615,9 @@ def write_schedule(schedule: list,
 
             header_row_fmt = cellFormat(textFormat=textFormat(bold=bold_header))
 
-            days_format.append((car_block_a1_range, car_block_fmt))
-            days_format.append((heading_a1_range, header_row_fmt))
-            days_format.append((roles_a1_range, roles_col_fmt))
+            day_format.append((car_block_a1_range, car_block_fmt))
+            day_format.append((heading_a1_range, header_row_fmt))
+            day_format.append((roles_a1_range, roles_col_fmt))
 
             # add headings and driver
             car_output = {
@@ -648,7 +675,7 @@ def write_schedule(schedule: list,
 
         # batch update minimizes API calls
         ws.batch_update(day_output)
-        format_cell_ranges(ws, days_format)
+        format_cell_ranges(ws, day_format)
 
 
 def sort_schedule_for_output(schedule: list) -> list:
