@@ -101,8 +101,7 @@ def time_compatibility(rider: Rider, driver: Driver, day: Day.DayName) -> float:
             Day.DayName enum of day for which to check time compatability
 
     Returns:
-        Float that is the minimum time difference between when a specific driver and rider would
-        like to leave
+        Float of the earliest matching departure time in the rider and driver
     """
 
     rider_times = rider.get_times(day)
@@ -120,8 +119,7 @@ def time_compatibility(rider: Rider, driver: Driver, day: Day.DayName) -> float:
 
     driver_time = driver_times[0]
 
-    #
-    result = sys.maxsize
+    result = -1
 
     # finds earliest matching time, rider times are sorted
     for time in rider_times:
@@ -172,8 +170,11 @@ def find_best_match(rider: Rider, drivers: list,
     for driver in drivers:
         if driver.seats_remaining and are_location_compatible(
                 rider, driver, day):
-            compatible_drivers.append(
-                [driver, time_compatibility(rider, driver, day)])
+            departure_time = time_compatibility(rider, driver, day)
+
+            # departure time will be -1 if rider and driver are not time compatible
+            if departure_time > 0:
+                compatible_drivers.append([driver, departure_time])
 
     if not compatible_drivers:
         logger.warn("no compatible drivers for %s", rider.name)
