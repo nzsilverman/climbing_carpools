@@ -512,6 +512,10 @@ def get_car_output(car: Car, a1_range: str, day: Day) -> dict:
                 The range of the car's output block
             day:
                 The current day
+
+        Returns:
+            dict:
+                dictionary of a range and values to provide to batch_update
     """
 
     output_config = Configuration.config("gform_backend.output")
@@ -564,8 +568,10 @@ def get_car_output(car: Car, a1_range: str, day: Day) -> dict:
 
 
 def get_starting_row_index() -> int:
-    """
+    """Get the initial row index
 
+        Returns:
+            Starting row index
     """
     output_config = Configuration.config("gform_backend.output")
 
@@ -581,6 +587,15 @@ def get_starting_row_index() -> int:
 
 
 def get_end_col_index(start_col_index: int) -> int:
+    """Get the intial ending column index
+
+        Args:
+            start_col_index:
+                The starting column index
+        
+        Returns:
+            The initial ending column index
+    """
     output_config = Configuration.config("gform_backend.output")
 
     if output_config["notes_column"]:
@@ -592,6 +607,17 @@ def get_end_col_index(start_col_index: int) -> int:
 
 
 def get_initial_indicies() -> (int, int, int, int):
+    """Get the four initial indicies:
+        starting row
+        starting column
+        ending row
+        ending column
+
+        Returns:
+            tuple
+                starting row, ending row, starting column, ending column
+
+    """
     output_config = Configuration.config("gform_backend.output")
 
     start_row_index = get_starting_row_index()
@@ -668,21 +694,22 @@ def write_schedule(schedule: list,
 
             car_block.update_block_length(car.seats)
 
+            # get the ranges for this car
             car_block_a1_range = car_block.get_car_block_a1_range()
             heading_a1_range = car_block.get_car_heading_a1_range()
             roles_a1_range = car_block.get_car_roles_a1_range()
 
             red, green, blue, alpha = get_car_block_colors()
 
+            # prepare all formatting
             car_block_fmt = cellFormat(
                 backgroundColor=color(red, green, blue, alpha),
                 textFormat=textFormat(fontSize=general_font_size),
             )
-
             roles_col_fmt = cellFormat(textFormat=textFormat(bold=bold_roles))
-
             header_row_fmt = cellFormat(textFormat=textFormat(bold=bold_header))
 
+            # add formatting to update list
             day_format.append((car_block_a1_range, car_block_fmt))
             day_format.append((heading_a1_range, header_row_fmt))
             day_format.append((roles_a1_range, roles_col_fmt))
