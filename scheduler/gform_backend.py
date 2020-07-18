@@ -20,6 +20,7 @@ from random import uniform
 import scheduler.util as util
 from scheduler.classes.AuthorizedClient import AuthorizedClient
 from scheduler.classes.Driver import Driver
+from scheduler.classes.Car import Car
 from scheduler.classes.Member import Member
 from scheduler.classes.Rider import Rider
 import scheduler.classes.Day as Day
@@ -453,7 +454,8 @@ def format_column_widths(ws: gspread.models.Worksheet,
     set_column_widths(ws, widths_list)
 
 
-def configure_sheet_title(ws: gspread.models.Worksheet, day: Day.DayName) -> (list, list):
+def configure_sheet_title(ws: gspread.models.Worksheet,
+                          day: Day.DayName) -> (str, tuple):
     """Returns the output and corresponding format for the provided sheet's title
 
         Args:
@@ -470,10 +472,10 @@ def configure_sheet_title(ws: gspread.models.Worksheet, day: Day.DayName) -> (li
 
     """
     output_config = Configuration.config("gform_backend.output")
-    
+
     # title cell range
-    title_range_a1 = WSRange(WSCell(1, 1),
-                             WSCell(1, output_config["title_cell_merge_count"])).getA1()
+    title_range_a1 = WSRange(WSCell(
+        1, 1), WSCell(1, output_config["title_cell_merge_count"])).getA1()
 
     cell_A1A1 = WSRange(WSCell(1, 1), WSCell(1, 1)).getA1()
 
@@ -487,12 +489,74 @@ def configure_sheet_title(ws: gspread.models.Worksheet, day: Day.DayName) -> (li
 
     # format for the title
     title_fmt = cellFormat(
-        textFormat=textFormat(bold=output_config["bold_title"], fontSize=output_config["title_font_size"]))
+        textFormat=textFormat(bold=output_config["bold_title"],
+                              fontSize=output_config["title_font_size"]))
 
     # merge the cells to make the sheet look nicer
     ws.merge_cells(title_range_a1)
 
     return heading_text, (cell_A1A1, title_fmt)
+
+
+def get_car_output(car: Car, a1_range: str, day: Day) -> dict:
+    """Returns the output for the provided car on the provided day
+
+        Args:
+            car:
+                The car from which to extract content and write to the output sheet
+            a1_range:
+                The range of the car's output block
+            day:
+                The current day
+    """
+
+    output_config = Configuration.config("gform_backend.output")
+
+    # add headings and driver
+    car_output = {
+        "range":
+            a1_range,
+        "values": [
+            [
+                "",
+                "Name",
+                "Car type",
+                "Phone Number",
+                "Departure Time",
+                "Locations",
+            ],
+            [
+                "Driver",
+                car.driver.name,
+                car.car_type,
+                car.driver.phone,
+                unpack_time(car.driver, day[0]),
+                unpack_locations(car.driver, day[0]),
+            ],
+        ],
+    }
+
+    if output_config["notes_column"]:
+        car_output["values"][0].append("Notes")
+        car_output["values"][1].append("")
+
+    # add rider info
+    for r in car.riders:
+        row = [
+            "Rider",
+            r.name,
+            "",
+            r.phone,
+            "",
+            unpack_locations(r, day[0]),
+        ]
+
+        if output_config["notes_column"]:
+            row.append("")
+
+        car_output["values"].append(row)
+
+    return car_output
 
 
 # TODO -> This function is a monster! I appreciate that it works well, but I think for maintainability it should
@@ -513,7 +577,6 @@ def write_schedule(schedule: list,
     # Get settings for sheet writing from configuration file
     output_config = Configuration.config("gform_backend.output")
 
-    notes_enabled = output_config["notes_column"]
     car_block_spacing = output_config["car_block_spacing"]
     column_buffer_left = output_config["column_buffer_left"]
     row_buffer_top = output_config["row_buffer_top"]
@@ -551,7 +614,6 @@ def write_schedule(schedule: list,
 
         format_column_widths(ws, column_widths)
 
-        # TODO -> more comments please
         # sheet titles
         if use_sheet_titles:
             outputs, formats = configure_sheet_title(ws, day[0])
@@ -571,7 +633,7 @@ def write_schedule(schedule: list,
         start_col_index = 1 + column_buffer_left
 
         end_row_index = row_buffer_top
-        if notes_enabled:
+        if output_config["notes_column"]:
             end_col_index = start_col_index + 6
         else:
             end_col_index = start_col_index + 5
@@ -615,51 +677,7 @@ def write_schedule(schedule: list,
             day_format.append((heading_a1_range, header_row_fmt))
             day_format.append((roles_a1_range, roles_col_fmt))
 
-            # add headings and driver
-            car_output = {
-                "range":
-                    car_block_a1_range,
-                "values": [
-                    [
-                        "",
-                        "Name",
-                        "Car type",
-                        "Phone Number",
-                        "Departure Time",
-                        "Locations",
-                    ],
-                    [
-                        "Driver",
-                        car.driver.name,
-                        car.car_type,
-                        car.driver.phone,
-                        unpack_time(car.driver, day[0]),
-                        unpack_locations(car.driver, day[0]),
-                    ],
-                ],
-            }
-
-            if notes_enabled:
-                car_output["values"][0].append("Notes")
-                car_output["values"][1].append("")
-
-            # add rider info
-            for r in car.riders:
-                row = [
-                    "Rider",
-                    r.name,
-                    "",
-                    r.phone,
-                    "",
-                    unpack_locations(r, day[0]),
-                ]
-
-                if notes_enabled:
-                    row.append("")
-
-                car_output["values"].append(row)
-
-            day_output.append(car_output)
+            day_output.append(get_car_output(car, car_block_a1_range, day))
 
             # move to next writing location
             car_block_upper_left.inc_row(car_block_spacing + block_length)

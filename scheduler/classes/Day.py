@@ -30,7 +30,7 @@ def from_str(day_name_str: str) -> DayName:
         return DayName.SATURDAY
     if day_name_str == "SUNDAY":
         return DayName.SUNDAY
-    
+
     # TODO: defualt return
 
 
