@@ -2,12 +2,12 @@ import enum
 
 
 class DayName(enum.Enum):
-    MONDAY = 0,
-    TUESDAY = 1,
-    WEDNESDAY = 2,
-    THURSDAY = 3,
-    FRIDAY = 4,
-    SATURDAY = 5,
+    MONDAY = 0
+    TUESDAY = 1
+    WEDNESDAY = 2
+    THURSDAY = 3
+    FRIDAY = 4
+    SATURDAY = 5
     SUNDAY = 6
 
 
@@ -77,3 +77,7 @@ class DayInfo:
         self.day: DayName = day
         self.times: list = times
         self.locations: list = locations
+
+    def __repr__(self):
+        """ Return the representation of the object. """
+        return 'DayInfo(%r, %r, %r)' % (self.day, self.times, self.locations)
