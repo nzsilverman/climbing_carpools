@@ -22,8 +22,7 @@ class AuthorizedClient:
 
     _instance = None
 
-    @staticmethod
-    def _authorize() -> None:
+    def _authorize(self) -> (gspread.client.Client, ServiceAccountCredentials):
         """
         Authorizes this client
         """
@@ -43,7 +42,7 @@ class AuthorizedClient:
         if AuthorizedClient._instance is not None:
             raise Exception("Authorized client error")
         else:
-            self.client, self.credentials = AuthorizedClient._authorize()
+            self.client, self.credentials = AuthorizedClient._authorize(self)
             AuthorizedClient._instance = self
 
     @classmethod
