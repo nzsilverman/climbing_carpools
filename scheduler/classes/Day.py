@@ -76,4 +76,4 @@ class DayInfo:
 
     def __repr__(self):
         """ Return the representation of the object. """
-        return 'DayInfo(%r,%r, %r)' % (self.day, self.times, self.locations)
+        return 'DayInfo(%r, %r, %r)' % (self.day, self.times, self.locations)
