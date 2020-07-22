@@ -21,6 +21,7 @@ import scheduler.util as util
 from scheduler.classes.AuthorizedClient import AuthorizedClient
 from scheduler.classes.Driver import Driver
 from scheduler.classes.Member import Member
+import scheduler.classes.MeetingLocation as MeetingLocation
 from scheduler.classes.Rider import Rider
 import scheduler.classes.Day as Day
 from scheduler.classes.WSCell import WSCell
@@ -78,9 +79,9 @@ def parse_location(location: str) -> str:
     """
 
     if location == "North Campus (Pierpont Commons)":
-        return "NORTH"
+        return MeetingLocation.MeetingLocation.NORTH
     elif location == "Central Campus (The Cube)":
-        return "CENTRAL"
+        return MeetingLocation.MeetingLocation.CENTRAL
 
 
 def parse_times(time: str) -> float:
@@ -236,6 +237,9 @@ def get_riders_and_drivers(
                             car_type=row[car_type_column],
                             seats=int(row[seats_column]))
 
+            for d in driver.days:
+                logger.debug("%s: %s", driver.name, d)
+
             drivers.append(driver)
 
         if is_rider:
@@ -359,7 +363,7 @@ def unpack_locations(member: Member, day: Day.DayName) -> str:
     location_str = ""
 
     for l in locations:
-        location_str = location_str + l + " "
+        location_str = location_str + MeetingLocation.to_str(l) + " "
 
     return location_str
 
