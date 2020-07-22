@@ -75,13 +75,5 @@ class DayInfo:
         self.locations: list = locations
 
     def __repr__(self):
-
-        l_str = str()
-        for l in self.locations:
-            l_str = l_str + str(l) + " "
-
-        t_str = str()
-        for t in self.times:
-            t_str = t_str + str(t) + " "
-
-        return str(self.day) + " from " + l_str + " at " + t_str
+        """ Return the representation of the object. """
+        return 'DayInfo(%r,%r, %r)' % (self.day, self.times, self.locations)
