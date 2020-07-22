@@ -25,14 +25,46 @@ class WSRange:
 
 
 class CarBlock:
-    """Spreadsheet ranges corresponding to a car's output block
+    """Spreadsheet ranges corresponding to a car's output block.
+    A single CarBlock object is created and then moved moved to
+    the next car location every loop.
+
+    The block_length must be set before using any of the ranges
+    provided by the CarBlock.
 
         Attributes:
             upper_left:
+                WSCell object representing the upper left cell of a car block
             upper_right:
+                WSCell object representing the upper right cell of a car block
             lower_right:
+                WSCell object representing the lower right cell of a car block
+                Initially not set until block_length is updated for the current
+                car
             lower_left:
+                WSCell object representing the lower left cell of a car block
+                Initially not set until block_length is updated for the current
+                car
             block_length:
+                The length of the car block, changes car-to-car based on
+                the number seats in the car. Since this changes car-to-car
+                and is used to compute the A1 ranges, it needs to be set in the
+                beginning of every loop. We don't know the number of seats in a 
+                car until we start iterating so it must be set in the beginning
+                of each loop.
+
+        Typical Usage:
+
+            block = CarBlock(0, 0, 5, 5)
+
+            for car in day:
+                block.update_block_length(car.seats)
+                .
+                .
+                # use getters to select ranges in the car block
+                .
+                .
+                block.move_to_next()
     """
 
     def __init__(self, start_row: int, end_row: int, start_col: int,
@@ -50,19 +82,6 @@ class CarBlock:
                     The starting column index
                 end_col:
                     The ending column index
-
-        Typical Usage:
-
-            block = CarBlock(0, 0, 5, 5)
-
-            for car in day:
-                block.update_block_length(car.seats)
-                .
-                .
-                # use getters to select ranges in the car block
-                .
-                .
-                block.move_to_next()
 
         """
         self.upper_left = WSCell(start_row, start_col)
