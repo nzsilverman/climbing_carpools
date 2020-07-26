@@ -171,10 +171,13 @@ def get_days_and_locations(start_col: int, response: int,
 
         # if driving this day
         if response[i]:
+
+            times_strs = response[i + len(days_enabled)].split(",")
+
             day = Day.DayInfo(
                 day=Day.from_str(d),
                 times=[
-                    parse_times(response[i + len(days_enabled)].split(",")[0])
+                    parse_times(times_strs[i]) for  i in range(0, len(times_strs))
                 ],
                 locations=list())
 
@@ -239,7 +242,7 @@ def get_riders_and_drivers(
                             seats=int(row[seats_column]))
 
             for d in driver.days:
-                logger.debug("%s: %s", driver.name, d)
+                logger.debug("[Driver] %s: %s", driver.name, d)
 
             drivers.append(driver)
 
@@ -252,6 +255,9 @@ def get_riders_and_drivers(
                               row[email_column], dues_payers),
                           days=get_days_and_locations(days_info_start_column,
                                                       row, days_enabled))
+
+            for d in rider.days:
+                logger.debug("[Rider] %s: %s", rider.name, d)
 
             riders.append(rider)
 
