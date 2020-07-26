@@ -2,12 +2,12 @@ import enum
 
 
 class DayName(enum.Enum):
-    MONDAY = 0,
-    TUESDAY = 1,
-    WEDNESDAY = 2,
-    THURSDAY = 3,
-    FRIDAY = 4,
-    SATURDAY = 5,
+    MONDAY = 0
+    TUESDAY = 1
+    WEDNESDAY = 2
+    THURSDAY = 3
+    FRIDAY = 4
+    SATURDAY = 5
     SUNDAY = 6
 
 
@@ -31,6 +31,8 @@ def from_str(day_name_str: str) -> DayName:
     if day_name_str == "SUNDAY":
         return DayName.SUNDAY
 
+    # TODO: defualt return
+
 
 def to_str(day_name: DayName) -> str:
     """Returns corresponding DayName enum to a day name provided by string
@@ -51,6 +53,8 @@ def to_str(day_name: DayName) -> str:
         return "SATURDAY"
     if day_name == DayName.SUNDAY:
         return "SUNDAY"
+
+    # TODO: defualt return
 
 
 class DayInfo:
@@ -73,3 +77,7 @@ class DayInfo:
         self.day: DayName = day
         self.times: list = times
         self.locations: list = locations
+
+    def __repr__(self):
+        """ Return the representation of the object. """
+        return 'DayInfo(%r, %r, %r)' % (self.day, self.times, self.locations)

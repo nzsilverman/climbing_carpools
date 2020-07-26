@@ -20,11 +20,13 @@ from random import uniform
 import scheduler.util as util
 from scheduler.classes.AuthorizedClient import AuthorizedClient
 from scheduler.classes.Driver import Driver
+from scheduler.classes.Car import Car
 from scheduler.classes.Member import Member
+import scheduler.classes.MeetingLocation as MeetingLocation
 from scheduler.classes.Rider import Rider
 import scheduler.classes.Day as Day
 from scheduler.classes.WSCell import WSCell
-from scheduler.classes.WSRange import WSRange
+from scheduler.classes.WSRange import WSRange, CarBlock
 from scheduler.classes.Configuration import Configuration
 
 logger = logging.getLogger(__name__)
@@ -78,9 +80,9 @@ def parse_location(location: str) -> str:
     """
 
     if location == "North Campus (Pierpont Commons)":
-        return "NORTH"
+        return MeetingLocation.MeetingLocation.NORTH
     elif location == "Central Campus (The Cube)":
-        return "CENTRAL"
+        return MeetingLocation.MeetingLocation.CENTRAL
 
 
 def parse_times(time: str) -> float:
@@ -236,6 +238,9 @@ def get_riders_and_drivers(
                             car_type=row[car_type_column],
                             seats=int(row[seats_column]))
 
+            for d in driver.days:
+                logger.debug("%s: %s", driver.name, d)
+
             drivers.append(driver)
 
         if is_rider:
@@ -359,7 +364,7 @@ def unpack_locations(member: Member, day: Day.DayName) -> str:
     location_str = ""
 
     for l in locations:
-        location_str = location_str + l + " "
+        location_str = location_str + MeetingLocation.to_str(l) + " "
 
     return location_str
 
@@ -414,6 +419,217 @@ def get_car_block_colors() -> (float, float, float, float):
     return r, g, b, config["color_alpha"]
 
 
+def format_column_widths(ws: gspread.models.Worksheet,
+                         column_widths: list) -> None:
+    """Sets the first n column widths for the provided worksheet where n is the
+    number of provided column widths. The columns (column index > n) will be
+    set using the width of column n.
+        
+        Args:
+            ws:
+                The worksheet for which to set the column widths
+            column_widths:
+                A list of column widths in pixels (int)
+
+        Returns:
+            None
+
+    """
+    widths_list = list()
+
+    # zips a column index (1...n) to the corresponding column width defined
+    # in the settings
+    for (j, w) in zip(range(1, len(column_widths) + 1), column_widths):
+        col_letter = WSCell(1, j).get_column()
+
+        # we want to format the remaining columns in the sheet using
+        # the width of the last sheet
+        #
+        # when formatting, a column with the ":" suffix represents
+        # all columns to the right
+        #
+        # Example: The pattern "G:" matches G and all columns to the right
+        # of G
+        if j == len(column_widths):
+            col_letter = col_letter + ":"
+
+        widths_list.append((col_letter, w))
+
+    set_column_widths(ws, widths_list)
+
+
+def configure_sheet_title(ws: gspread.models.Worksheet,
+                          day: Day.DayName) -> (str, tuple):
+    """Returns the output and corresponding format for the provided sheet's title
+
+        Args:
+            ws:
+                The worksheet for which to set the title
+            day:
+                The day which appears as a suffic to the sheet_name_base
+    
+        Returns:
+            heading text:
+                The text to use as the heading for the sheet
+            (cell_A1A1, title_fmt):
+                The range and format to use on the sheet title cell
+
+    """
+    output_config = Configuration.config("gform_backend.output")
+
+    # title cell range
+    title_range_a1 = WSRange(WSCell(
+        1, 1), WSCell(1, output_config["title_cell_merge_count"])).getA1()
+
+    cell_A1A1 = WSRange(WSCell(1, 1), WSCell(1, 1)).getA1()
+
+    title = output_config["name"] + " — " + Day.to_str(day)
+
+    # text for the title
+    heading_text = {
+        "range": cell_A1A1,
+        "values": [[title]],
+    }
+
+    # format for the title
+    title_fmt = cellFormat(
+        textFormat=textFormat(bold=output_config["bold_title"],
+                              fontSize=output_config["title_font_size"]))
+
+    # merge the cells to make the sheet look nicer
+    ws.merge_cells(title_range_a1)
+
+    return heading_text, (cell_A1A1, title_fmt)
+
+
+def get_car_output(car: Car, a1_range: str, day: Day) -> dict:
+    """Returns the output for the provided car on the provided day
+
+        Args:
+            car:
+                The car from which to extract content and write to the output sheet
+            a1_range:
+                The range of the car's output block
+            day:
+                The current day
+
+        Returns:
+            dict:
+                dictionary of a range and values to provide to batch_update
+    """
+
+    output_config = Configuration.config("gform_backend.output")
+
+    # add headings and driver
+    car_output = {
+        "range":
+            a1_range,
+        "values": [
+            [
+                "",
+                "Name",
+                "Car type",
+                "Phone Number",
+                "Departure Time",
+                "Locations",
+            ],
+            [
+                "Driver",
+                car.driver.name,
+                car.car_type,
+                car.driver.phone,
+                unpack_time(car.driver, day[0]),
+                unpack_locations(car.driver, day[0]),
+            ],
+        ],
+    }
+
+    if output_config["notes_column"]:
+        car_output["values"][0].append("Notes")
+        car_output["values"][1].append("")
+
+    # add rider info
+    for r in car.riders:
+        row = [
+            "Rider",
+            r.name,
+            "",
+            r.phone,
+            "",
+            unpack_locations(r, day[0]),
+        ]
+
+        if output_config["notes_column"]:
+            row.append("")
+
+        car_output["values"].append(row)
+
+    return car_output
+
+
+def get_starting_row_index() -> int:
+    """Get the initial row index
+
+        Returns:
+            Starting row index
+    """
+    output_config = Configuration.config("gform_backend.output")
+
+    # track cell indicies for sheet writing ranges
+    if output_config["use_sheet_titles"]:
+        # if we have a title, start 1 row down
+        start_row_index = 1
+    else:
+        # if no title, start at row 0
+        start_row_index = 0
+
+    return start_row_index + output_config["row_buffer_top"]
+
+
+def get_end_col_index(start_col_index: int) -> int:
+    """Get the intial ending column index
+
+        Args:
+            start_col_index:
+                The starting column index
+        
+        Returns:
+            The initial ending column index
+    """
+    output_config = Configuration.config("gform_backend.output")
+
+    if output_config["notes_column"]:
+        # + 6 for number of columns with a notes column
+        return start_col_index + 6
+    else:
+        # + 5 for number of columns without a notes column
+        return start_col_index + 5
+
+
+def get_initial_indicies() -> (int, int, int, int):
+    """Get the four initial indicies:
+        starting row
+        starting column
+        ending row
+        ending column
+
+        Returns:
+            tuple
+                starting row, ending row, starting column, ending column
+
+    """
+    output_config = Configuration.config("gform_backend.output")
+
+    start_row_index = get_starting_row_index()
+    end_row_index = output_config["row_buffer_top"]
+
+    # + 1 spreadsheet columns start at index 1
+    start_col_index = 1 + output_config["column_buffer_left"]
+    end_col_index = get_end_col_index(start_col_index)
+
+    return start_row_index, end_row_index, start_col_index, end_col_index
+
+
 # TODO -> This function is a monster! I appreciate that it works well, but I think for maintainability it should
 # be broken up into smaller functions, and needs to be more clearly labeled and commented and documented
 
@@ -432,29 +648,24 @@ def write_schedule(schedule: list,
     # Get settings for sheet writing from configuration file
     output_config = Configuration.config("gform_backend.output")
 
-    notes_enabled = output_config["notes_column"]
-    car_block_spacing = output_config["car_block_spacing"]
-    column_buffer_left = output_config["column_buffer_left"]
-    row_buffer_top = output_config["row_buffer_top"]
     bold_header = output_config["bold_header"]
     bold_roles = output_config["bold_roles"]
-    sheet_name_base = output_config["name"]
-    name_suffix_list = output_config["name_suffixes"]
     use_sheet_titles = output_config["use_sheet_titles"]
-    bold_title = output_config["bold_title"]
-    title_font_size = output_config["title_font_size"]
-    title_cell_merge_count = output_config["title_cell_merge_count"]
 
     general_font_size = output_config["general_font_size"]
     column_widths = output_config["column_widths"]
-    defualt_width = output_config["default_width"]
 
     # each day is a worksheet (i.e. a tab)
     for (i, day) in zip(range(0, len(schedule)), schedule):
         ws = spreadsheet.get_worksheet(i)
 
-        # TODO -> would like more of an explanation of this if statement
-        # deletes default Sheet1 and creates a sheet for the current day
+        # if the ith worksheet doesn't exist, we need to create it.
+        # if it already exists, then we duplicate the existing sheet
+        # and use a different name that matches the current scheme
+        # and then delete the old sheet
+        #
+        # used when we need to delete the default sheet1
+        # and create a sheet for the current day
         if not ws:
             ws = spreadsheet.add_worksheet(Day.to_str(day[0]), 100, 100)
         else:
@@ -465,155 +676,91 @@ def write_schedule(schedule: list,
             ws = ws_new
 
         day_output = list()
-        days_format = list()
-        widths_list = list()
+        day_format = list()
 
-        # TODO -> needs more of a comment for what this is acheiving
-        for j, w in zip(range(1, len(column_widths) + 1), column_widths):
-            col_lettr = WSCell(1, j).get_column()
+        format_column_widths(ws, column_widths)
 
-            if i == len(column_widths):
-                col_lettr = col_lettr + ":"
-
-            widths_list.append((col_lettr, w))
-
-        set_column_widths(ws, widths_list)
-
-        # TODO -> more comments please
         # sheet titles
         if use_sheet_titles:
-            title_range_a1 = WSRange(WSCell(1, 1),
-                                     WSCell(1, title_cell_merge_count)).getA1()
+            outputs, formats = configure_sheet_title(ws, day[0])
+            day_output.append(outputs)
+            day_format.append(formats)
 
-            cell_A1A1 = WSRange(WSCell(1, 1), WSCell(1, 1)).getA1()
-
-            title = sheet_name_base + name_suffix_list[i]
-            heading_text = {
-                "range": cell_A1A1,
-                "values": [[title]],
-            }
-
-            title_fmt = cellFormat(textFormat=textFormat(
-                bold=bold_title, fontSize=title_font_size))
-
-            day_output.append(heading_text)
-            days_format.append((cell_A1A1, title_fmt))
-            ws.merge_cells(title_range_a1)
-
-        # TODO -> comments/ explanations of what this is doing, like why we track cell indicies and where
-        # the magic numbers come from
-
-        # track cell indicies for sheet writing ranges
-        if use_sheet_titles:
-            start_row_index = 1
-        else:
-            start_row_index = 0
-
-        start_row_index += row_buffer_top
-        start_col_index = 1 + column_buffer_left
-
-        end_row_index = row_buffer_top
-        if notes_enabled:
-            end_col_index = start_col_index + 6
-        else:
-            end_col_index = start_col_index + 5
-
-        # corners of each block
-        car_block_upper_left = WSCell(start_row_index, start_col_index)
-        car_block_upper_right = WSCell(start_row_index, end_col_index)
-        car_block_lower_right = WSCell(end_row_index, end_col_index)
-        car_block_lower_left = WSCell(end_row_index, start_col_index)
+        start_row, end_row, start_col, end_col = get_initial_indicies()
+        car_block = CarBlock(start_row, end_row, start_col, end_col)
 
         # add each car in the current day to the day's output list
         for car in day[1]:
 
-            # one extra row for the heading, one for the driver
-            block_length = car.seats + 2
+            car_block.update_block_length(car.seats)
 
-            car_block_lower_right.inc_row(block_length)
-            car_block_lower_left.inc_row(block_length)
-
-            car_block_a1_range = WSRange(car_block_upper_left,
-                                         car_block_lower_right).getA1()
-
-            heading_a1_range = WSRange(car_block_upper_left,
-                                       car_block_upper_right).getA1()
-
-            roles_a1_range = WSRange(car_block_upper_left,
-                                     car_block_lower_left).getA1()
+            # get the ranges for this car
+            car_block_a1_range = car_block.get_car_block_a1_range()
+            heading_a1_range = car_block.get_car_heading_a1_range()
+            roles_a1_range = car_block.get_car_roles_a1_range()
 
             red, green, blue, alpha = get_car_block_colors()
 
+            # prepare all formatting
             car_block_fmt = cellFormat(
                 backgroundColor=color(red, green, blue, alpha),
                 textFormat=textFormat(fontSize=general_font_size),
             )
-
             roles_col_fmt = cellFormat(textFormat=textFormat(bold=bold_roles))
-
             header_row_fmt = cellFormat(textFormat=textFormat(bold=bold_header))
 
-            days_format.append((car_block_a1_range, car_block_fmt))
-            days_format.append((heading_a1_range, header_row_fmt))
-            days_format.append((roles_a1_range, roles_col_fmt))
+            # add formatting to update list
+            day_format.append((car_block_a1_range, car_block_fmt))
+            day_format.append((heading_a1_range, header_row_fmt))
+            day_format.append((roles_a1_range, roles_col_fmt))
 
-            # add headings and driver
-            car_output = {
-                "range":
-                    car_block_a1_range,
-                "values": [
-                    [
-                        "",
-                        "Name",
-                        "Car type",
-                        "Phone Number",
-                        "Departure Time",
-                        "Locations",
-                    ],
-                    [
-                        "Driver",
-                        car.driver.name,
-                        car.car_type,
-                        car.driver.phone,
-                        unpack_time(car.driver, day[0]),
-                        unpack_locations(car.driver, day[0]),
-                    ],
-                ],
-            }
-
-            if notes_enabled:
-                car_output["values"][0].append("Notes")
-                car_output["values"][1].append("")
-
-            # add rider info
-            for r in car.riders:
-                row = [
-                    "Rider",
-                    r.name,
-                    "",
-                    r.phone,
-                    "",
-                    unpack_locations(r, day[0]),
-                ]
-
-                if notes_enabled:
-                    row.append("")
-
-                car_output["values"].append(row)
-
-            day_output.append(car_output)
+            day_output.append(get_car_output(car, car_block_a1_range, day))
 
             # move to next writing location
-            car_block_upper_left.inc_row(car_block_spacing + block_length)
-            car_block_upper_right.inc_row(car_block_spacing + block_length)
-
-            # update in the beginning of the loop when block size is calculated
-            car_block_lower_right.inc_row(car_block_spacing)
-            car_block_lower_left.inc_row(car_block_spacing)
+            car_block.move_to_next()
 
         # batch update minimizes API calls
         ws.batch_update(day_output)
-        format_cell_ranges(ws, days_format)
+        format_cell_ranges(ws, day_format)
+
+
+def sort_schedule_for_output(schedule: list) -> list:
+    """Sorts each day's cars in the schedule by departure time
+
+        Args:
+            schedule:
+                a list of days, each day is a list of Car objects
+            
+        Returns:
+            A list of days, each day's list of Car objects is sorted by their departure time
+
+    """
+
+    # we want to sort each day in the schedule
+    for day in schedule:
+
+        # The key parameter in the sort function lets us define the key by which it sorts;
+        # in our case, we need it to be the departure time of the cars.
+        # We need to access the list of departure times for the current day in the list of
+        # the Driver object's days for each car. That's complicated so here's it broken down:
+        #
+        # 1. day in the schedule: (Day.DayName, [Cars]) <- We want to by sort the list at day[1]
+        # 2. Car has a Driver who has a list of Days
+        #       - for each car, we need to get the list of the Driver's days
+        # 3. We need the times corresponding to the current day
+        #       - driver.get_times(Day.DayName) gets us that list (day[0] is a Day.DayName, see 1.)
+        # 4. The driver should only have a single departure time, we get that time
+        #       - get_times(Day.DayName)[0] is the driver's departure time
+        #
+        # Putting that all beack together: the sort function sorts by the key provided
+        # by the lambda function. The lambda function returns the car's departure time
+        # by getting the time from the correct day from the driver
+        #
+        #
+
+        day[1].sort(key=lambda car: car.driver.get_times(day[0])[0])
+
+    return schedule
 
 
 def write_to_sheet(schedule: list) -> None:
@@ -623,4 +770,5 @@ def write_to_sheet(schedule: list) -> None:
     be made in its place.
     """
     spreadsheet = create_spreadsheet()
-    write_schedule(schedule, spreadsheet)
+
+    write_schedule(sort_schedule_for_output(schedule), spreadsheet)

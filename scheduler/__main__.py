@@ -30,11 +30,10 @@ from scheduler.classes.Rider import Rider
 from scheduler.classes.Driver import Driver
 import scheduler.classes.Day as Day
 
-logging.basicConfig(
-    filename="climbing_carpools.log",
-    filemode="w",
-    format="%(name)s - %(levelname)s - %(message)s",
-)
+logging.basicConfig(filename="climbing_carpools.log",
+                    filemode="w",
+                    format="%(name)s - %(levelname)s - %(message)s",
+                    level=logging.DEBUG)
 
 logger = logging.getLogger(__name__)
 
