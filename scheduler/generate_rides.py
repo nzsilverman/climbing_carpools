@@ -102,6 +102,7 @@ def time_compatibility(rider: Rider, driver: Driver, day: Day.DayName) -> float:
 
     Returns:
         Float of the earliest matching departure time in the rider and driver
+        or -1 if no match was found
     """
 
     rider_times = rider.get_times(day)
