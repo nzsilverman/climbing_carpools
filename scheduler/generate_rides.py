@@ -119,7 +119,7 @@ def time_compatibility(rider: Rider, driver: Driver, day: Day.DayName) -> float:
 
     driver_time = driver_times[0]
 
-    result = -1
+    result = float(-1)
 
     # finds earliest matching time, rider times are sorted
     for time in rider_times:
