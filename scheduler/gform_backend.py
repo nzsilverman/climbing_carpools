@@ -174,12 +174,12 @@ def get_days_and_locations(start_col: int, response: int,
 
             times_strs = response[i + len(days_enabled)].split(",")
 
-            day = Day.DayInfo(
-                day=Day.from_str(d),
-                times=[
-                    parse_times(times_strs[i]) for  i in range(0, len(times_strs))
-                ],
-                locations=list())
+            day = Day.DayInfo(day=Day.from_str(d),
+                              times=[
+                                  parse_times(times_strs[i])
+                                  for i in range(0, len(times_strs))
+                              ],
+                              locations=list())
 
             locations = response[i].split(",")
 
