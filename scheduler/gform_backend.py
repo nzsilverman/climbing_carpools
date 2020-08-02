@@ -118,45 +118,45 @@ def get_days_and_locations(start_col: int, response: int,
             days_enabled:
                 a list of days for which the scheduler is scheduling
 
-        Returns
+        Returns:
             a list of DayInfo objects corresponding to the provided carpool form response
     
-
-        Typical Usage:
-            rider = Rider(
-                name=row[name_column],
-                email=row[email_column],
-                phone=row[phone_column],
-                is_dues_paying=validate_dues_payers(row[email_column],
-                                                    dues_payers),
-                days=get_days_and_locations(days_info_start_column, row,
-                                            days_enabled))
-
-
-     assume each day has a locations column and a departure times column
-    
-     n = days_enabled
-
-
-     This diagram is a representation of the Google Form responses sheet showing from which
-     columns data is being extracted. Day 1 Locations Rider is the first column of
-     location data if the member is a rider (column I of the current v2.0.0 responses sheet). 
-
-                 (start rider iter here)  (end rider iter here)  (start driver iter here)                 (end driver iter here)
-                 DAYS_INFO_START                            |    driver_days_start                            |
-                    |                                       |         |                                       |
-                    V                                       V         V                                       V
-             |   | Day 1     |   | Day n     | Day 1 |   | Day n | Day 1     |   | Day n     | Day 1  |   | Day n  | 
-             |   | Locations |...| Locations | Times |...| Times | Locations |...| Locations | Times  |...| Times  |
-             |   | Rider     |   | Rider     | Rider |   | Rider | Driver    |   | Driver    | Driver |   | Driver |
-     --------|...|-----------|---|-----------|-------|---|-------|-----------|---|-----------|--------|---|--------|
-     Member 1|   |           |   |           |       |   |       |           |   |           |        |   |        |
-     Member 2|   |
-     .       |   |
-     .       |   |
-     .       |   |
-     Member n|   |
     """
+    #   TODO: see comment below, include this in docstring. Fix this as well:
+    #         Typical Usage:
+    #               rider = Rider(
+    #                   name=row[name_column],
+    #                   email=row[email_column],
+    #                   phone=row[phone_column],
+    #                   is_dues_paying=validate_dues_payers(row[email_column],
+    #                                     dues_payers),
+    #                   days=get_days_and_locations(days_info_start_column, row,
+    #                             days_enabled))
+
+    #  TODO: this documentation does not play nice with autdoc, find another way to include this somewhere
+    #  assume each day has a locations column and a departure times column
+    
+    #  n = days_enabled
+
+
+    #  This diagram is a representation of the Google Form responses sheet showing from which
+    #  columns data is being extracted. Day 1 Locations Rider is the first column of
+    #  location data if the member is a rider (column I of the current v2.0.0 responses sheet). 
+
+    #              (start rider iter here)  (end rider iter here)  (start driver iter here)                 (end driver iter here)
+    #              DAYS_INFO_START                            |    driver_days_start                            |
+    #                 |                                       |         |                                       |
+    #                 V                                       V         V                                       V
+    #          |   | Day 1     |   | Day n     | Day 1 |   | Day n | Day 1     |   | Day n     | Day 1  |   | Day n  | 
+    #          |   | Locations |...| Locations | Times |...| Times | Locations |...| Locations | Times  |...| Times  |
+    #          |   | Rider     |   | Rider     | Rider |   | Rider | Driver    |   | Driver    | Driver |   | Driver |
+    #  --------|...|-----------|---|-----------|-------|---|-------|-----------|---|-----------|--------|---|--------|
+    #  Member 1|   |           |   |           |       |   |       |           |   |           |        |   |        |
+    #  Member 2|   |
+    #  .       |   |
+    #  .       |   |
+    #  .       |   |
+    #  Member n|   |
 
     # create a dict for each day
 
