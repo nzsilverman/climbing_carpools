@@ -135,19 +135,18 @@ def get_days_and_locations(start_col: int, response: int,
 
     #  TODO: this documentation does not play nice with autdoc, find another way to include this somewhere
     #  assume each day has a locations column and a departure times column
-    
-    #  n = days_enabled
 
+    #  n = days_enabled
 
     #  This diagram is a representation of the Google Form responses sheet showing from which
     #  columns data is being extracted. Day 1 Locations Rider is the first column of
-    #  location data if the member is a rider (column I of the current v2.0.0 responses sheet). 
+    #  location data if the member is a rider (column I of the current v2.0.0 responses sheet).
 
     #              (start rider iter here)  (end rider iter here)  (start driver iter here)                 (end driver iter here)
     #              DAYS_INFO_START                            |    driver_days_start                            |
     #                 |                                       |         |                                       |
     #                 V                                       V         V                                       V
-    #          |   | Day 1     |   | Day n     | Day 1 |   | Day n | Day 1     |   | Day n     | Day 1  |   | Day n  | 
+    #          |   | Day 1     |   | Day n     | Day 1 |   | Day n | Day 1     |   | Day n     | Day 1  |   | Day n  |
     #          |   | Locations |...| Locations | Times |...| Times | Locations |...| Locations | Times  |...| Times  |
     #          |   | Rider     |   | Rider     | Rider |   | Rider | Driver    |   | Driver    | Driver |   | Driver |
     #  --------|...|-----------|---|-----------|-------|---|-------|-----------|---|-----------|--------|---|--------|
