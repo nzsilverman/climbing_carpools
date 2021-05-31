@@ -1,5 +1,5 @@
-from scheduler.classes.WSCell import WSCell
 from scheduler.classes.Configuration import Configuration
+from scheduler.classes.WSCell import WSCell
 
 
 class WSRange:

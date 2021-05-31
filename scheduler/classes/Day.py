@@ -15,7 +15,7 @@ def from_str(day_name_str: str) -> DayName:
     """Returns corresponding DayName enum to a day name provided by string
     """
 
-    #TODO: this can be better, maybe use a dict to pair these up instead?
+    # TODO: this can be better, maybe use a dict to pair these up instead?
     if day_name_str == "MONDAY":
         return DayName.MONDAY
     if day_name_str == "TUESDAY":
@@ -38,7 +38,7 @@ def to_str(day_name: DayName) -> str:
     """Returns corresponding DayName enum to a day name provided by string
     """
 
-    #TODO: this can be better, maybe use a dict to pair these up instead?
+    # TODO: this can be better, maybe use a dict to pair these up instead?
     if day_name == DayName.MONDAY:
         return "MONDAY"
     if day_name == DayName.TUESDAY:

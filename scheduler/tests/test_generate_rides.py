@@ -1,15 +1,11 @@
 from unittest import TestCase
+
 from nose2.tools import params
 
-from util import members_to_class
-from test_data import GenerateRidesTestData as test_data
-
-import scheduler.generate_rides as generate_rides
-
-from scheduler.classes.Driver import Driver
-from scheduler.classes.Member import Member
-from scheduler.classes.Rider import Rider
 import scheduler.classes.Day as Day
+import scheduler.generate_rides as generate_rides
+from test_data import GenerateRidesTestData as test_data
+from util import members_to_class
 
 
 class GenerateRidesTest(TestCase):

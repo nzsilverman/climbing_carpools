@@ -4,18 +4,16 @@ Typical Usage:
     import generate_rides
     <call one of the functions in this file>
 """
-import random
 import logging
-import sys
+import random
 from copy import deepcopy
 
+import scheduler.classes.Day as Day
 from scheduler.classes.Car import Car
-from scheduler.classes.MeetingLocation import MeetingLocation
 from scheduler.classes.Configuration import Configuration
 from scheduler.classes.Driver import Driver
 from scheduler.classes.Member import Member
 from scheduler.classes.Rider import Rider
-import scheduler.classes.Day as Day
 
 logger = logging.getLogger(__name__)
 

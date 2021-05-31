@@ -12,23 +12,20 @@ written to a google sheet.
         scheduler -m
  """
 
+import getopt
 import logging
-import os
-import sys, getopt
+import sys
 
+import scheduler.classes.Day as Day
 from scheduler.classes.Configuration import Configuration
+from scheduler.generate_rides import generate_rides
 from scheduler.gform_backend import (
     members_from_sheet,
     write_to_sheet,
     delete_spreadsheet,
     list_spreadsheets,
 )
-from scheduler.generate_rides import generate_rides
 from scheduler.util import get_version
-
-from scheduler.classes.Rider import Rider
-from scheduler.classes.Driver import Driver
-import scheduler.classes.Day as Day
 
 logging.basicConfig(filename="climbing_carpools.log",
                     filemode="w",

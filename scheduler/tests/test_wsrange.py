@@ -1,9 +1,9 @@
 from unittest import TestCase
+
 from nose2.tools import params
 
 from scheduler.classes.WSCell import WSCell
 from scheduler.classes.WSRange import WSRange
-
 from test_data import WSRangeTestData, WSCellTestData
 
 

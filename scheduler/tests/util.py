@@ -1,10 +1,10 @@
 """
 Test utilities
 """
-from scheduler.classes.Member import Member
-from scheduler.classes.Driver import Driver
-from scheduler.classes.Rider import Rider
 import scheduler.classes.Day as Day
+from scheduler.classes.Driver import Driver
+from scheduler.classes.Member import Member
+from scheduler.classes.Rider import Rider
 
 
 def convert_days(days: list) -> list:
@@ -83,7 +83,7 @@ def members_to_class(member: Member = None,
 
     """
 
-    #TODO: this is hacky
+    # TODO: this is hacky
     member_objects = list()
 
     # TODO: this is pretty hacky too I think

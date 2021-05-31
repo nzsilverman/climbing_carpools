@@ -10,24 +10,22 @@ Typical usage:
 """
 
 import logging
-import gspread
-from gspread_formatting import *
-import json
-import sys
 from datetime import datetime
 from random import uniform
 
-import scheduler.util as util
-from scheduler.classes.AuthorizedClient import AuthorizedClient
-from scheduler.classes.Driver import Driver
-from scheduler.classes.Car import Car
-from scheduler.classes.Member import Member
-import scheduler.classes.MeetingLocation as MeetingLocation
-from scheduler.classes.Rider import Rider
+import gspread
+from gspread_formatting import *
+
 import scheduler.classes.Day as Day
+import scheduler.classes.MeetingLocation as MeetingLocation
+from scheduler.classes.AuthorizedClient import AuthorizedClient
+from scheduler.classes.Car import Car
+from scheduler.classes.Configuration import Configuration
+from scheduler.classes.Driver import Driver
+from scheduler.classes.Member import Member
+from scheduler.classes.Rider import Rider
 from scheduler.classes.WSCell import WSCell
 from scheduler.classes.WSRange import WSRange, CarBlock
-from scheduler.classes.Configuration import Configuration
 
 logger = logging.getLogger(__name__)
 
@@ -697,7 +695,6 @@ def write_schedule(schedule: list,
 
         # add each car in the current day to the day's output list
         for car in day[1]:
-
             car_block.update_block_length(car.seats)
 
             # get the ranges for this car
@@ -744,7 +741,6 @@ def sort_schedule_for_output(schedule: list) -> list:
 
     # we want to sort each day in the schedule
     for day in schedule:
-
         # The key parameter in the sort function lets us define the key by which it sorts;
         # in our case, we need it to be the departure time of the cars.
         # We need to access the list of departure times for the current day in the list of

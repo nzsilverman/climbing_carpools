@@ -1,5 +1,6 @@
-import toml
 import logging
+
+import toml
 
 logger = logging.getLogger(__name__)
 
