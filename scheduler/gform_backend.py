@@ -330,7 +330,7 @@ def create_spreadsheet() -> gspread.models.Spreadsheet:
 
     logger.info("Creating sheet")
     spreadsheet = client.create(config["output_sheet"],
-                                folder_id=config["output_folder_id"])
+                                folder_id=config["working_folder_id"])
     spreadsheet.share("rkalnins@umich.edu",
                       notify=False,
                       perm_type="user",

@@ -48,10 +48,10 @@ days_enabled = ["TUESDAY", "THURSDAY", "SUNDAY"]
     timestamp = 0
 
     [gform_backend.files]
-    responses_sheet = "Carpool Form v2.0.1 (Responses)"
-    dues_sheet = "dues-testing-v2.0.1"
-    output_sheet = "Carpool test output (test-1)"
-    output_folder_id = "1TEK_wXuJZBnjjw6peb1vK7h_HZvJSzbn"
+    responses_sheet = "Carpool (8/31-9/6) (Responses)"
+    dues_sheet = "Dues_paying_members (8/31-9/6)"
+    output_sheet = "Carpool (8/31-9/6) (Output) [bug-fix]"
+    working_folder_id = "19d5sP1yQZIGhle8X2JOnSjxPgr2XyAQL"
 
     [gform_backend.output]
 
