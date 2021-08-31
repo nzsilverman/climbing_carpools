@@ -280,9 +280,9 @@ def members_from_sheet() -> (list, list):
         logger.debug("%s", sheet.title)
 
     # get responses and dues payers sheets
-    responses_sheet = client.open(
+    responses_sheet = client.open_by_key(
         gform_backend_config["responses_sheet"]).sheet1
-    dues_payers_sheet = client.open(gform_backend_config["dues_sheet"]).sheet1
+    dues_payers_sheet = client.open_by_key(gform_backend_config["dues_sheet"]).sheet1
 
     all_responses = responses_sheet.get_all_values()
 

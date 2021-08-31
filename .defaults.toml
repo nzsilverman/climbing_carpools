@@ -48,9 +48,9 @@ days_enabled = ["TUESDAY", "THURSDAY", "SUNDAY"]
     timestamp = 0
 
     [gform_backend.files]
-    responses_sheet = "Carpool (8/31-9/6) (Responses)"
-    dues_sheet = "Dues_paying_members (8/31-9/6)"
-    output_sheet = "Carpool (8/31-9/6) (Output) [bug-fix]"
+    responses_sheet = "1v2Bvs1dzG_83Zv-jJ7shifnTk4WVlzbuSBKrmqb9Q0U"
+    dues_sheet = "1X6P0J7Gwtav63K36ZH_u-vT0GT5-YvPNrjBgkwMfPOY"
+    output_sheet = "Carpool (8/31-9/6) (Output) [bug-fix-1]"
     working_folder_id = "19d5sP1yQZIGhle8X2JOnSjxPgr2XyAQL"
 
     [gform_backend.output]
