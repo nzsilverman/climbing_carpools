@@ -28,7 +28,7 @@ class Configuration:
 
     """
 
-    _instance = None
+    instance = None
     _defaults_filename: str = ".defaults.toml"
     _override_filename: str = "user-config.toml"
     _config: dict = None
@@ -52,7 +52,7 @@ class Configuration:
 
     def __init__(self, config_file=None):
         # print("test", __name__)
-        if Configuration._instance is not None:
+        if Configuration.instance is not None:
             raise Exception("Configuration error")
         else:
             if config_file is not None and config_file != "":
@@ -63,7 +63,7 @@ class Configuration:
                     "No override configuration provided. Using defaults")
                 self._set_config()
 
-            Configuration._instance = self
+            Configuration.instance = self
 
     @classmethod
     def config(cls, path=None, filename=None) -> dict:
@@ -72,17 +72,17 @@ class Configuration:
         path: dot separated path to simplify access to nested tables
         """
 
-        if cls._instance is None:
+        if cls.instance is None:
             Configuration(filename)
 
         # get nested table dictionaries
         if path is not None:
             path = path.split(".")
-            data = cls._instance._config
+            data = cls.instance._config
 
             for p in path:
                 data = data[p]
 
             return data
 
-        return cls._instance._config
+        return cls.instance._config

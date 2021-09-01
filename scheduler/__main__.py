@@ -19,12 +19,12 @@ import sys
 import scheduler.classes.Day as Day
 from scheduler.classes.Configuration import Configuration
 from scheduler.generate_rides import generate_rides
-from scheduler.gform_backend import (
-    members_from_sheet,
+from scheduler.output_writer import (
     write_to_sheet,
     delete_spreadsheet,
     list_spreadsheets,
 )
+from scheduler.response_reader import members_from_sheet
 from scheduler.util import get_version
 
 logging.basicConfig(filename="climbing_carpools.log",

@@ -1,7 +1,7 @@
-from enum import Enum as enum
+from enum import Enum
 
 
-class MeetingLocation(enum):
+class MeetingLocation(Enum):
     """Meeting Location.
 
     Either "NORTH" or "CENTRAL"
