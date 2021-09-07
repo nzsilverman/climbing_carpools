@@ -50,7 +50,7 @@ days_enabled = ["TUESDAY", "THURSDAY", "SUNDAY"]
     [gform_backend.files]
     responses_sheet = "1M83I3w_2PG3vh3OdPm_ZxN6E1OikksjOvJBUiRKyK58"
     dues_sheet = "1j_tnYKvkNucvRV8oHxrezB1n20ZKBWRL3owRF19NV3g"
-    output_sheet = "Carpool (Output) [test-1]"
+    output_sheet = "Carpool (Output) [test-3]"
     working_folder_id = "1RzAWOrkuGRxS0sLi9IPPi3mwxI310g2s"
 
     [gform_backend.output]

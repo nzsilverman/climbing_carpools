@@ -397,7 +397,17 @@ def write_schedule(schedule: list,
 
     # each day is a worksheet (i.e. a tab)
     for (i, day) in zip(range(0, len(schedule)), schedule):
-        ws = spreadsheet.get_worksheet(i)
+
+        try:
+            ws = spreadsheet.get_worksheet(i)
+
+            ws_new = spreadsheet.duplicate_sheet(ws.id,
+                                                 new_sheet_name=Day.to_str(
+                                                     day[0]))
+            spreadsheet.del_worksheet(ws)
+            ws = ws_new
+        except Exception:
+            ws = spreadsheet.add_worksheet(Day.to_str(day[0]), 100, 100)
 
         # if the ith worksheet doesn't exist, we need to create it.
         # if it already exists, then we duplicate the existing sheet
@@ -406,14 +416,6 @@ def write_schedule(schedule: list,
         #
         # used when we need to delete the default sheet1
         # and create a sheet for the current day
-        if not ws:
-            ws = spreadsheet.add_worksheet(Day.to_str(day[0]), 100, 100)
-        else:
-            ws_new = spreadsheet.duplicate_sheet(ws.id,
-                                                 new_sheet_name=Day.to_str(
-                                                     day[0]))
-            spreadsheet.del_worksheet(ws)
-            ws = ws_new
 
         day_output = list()
         day_format = list()

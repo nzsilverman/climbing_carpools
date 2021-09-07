@@ -94,15 +94,15 @@ class GenerateRidesTestData:
 
     check_in_days_test_data = [
         ({
-             "days": [{
-                 "day": "MONDAY"
-             }]
-         }, "MONDAY", True),
+            "days": [{
+                "day": "MONDAY"
+            }]
+        }, "MONDAY", True),
         ({
-             "days": [{
-                 "day": "MONDAY"
-             }]
-         }, "TUESDAY", False),
+            "days": [{
+                "day": "MONDAY"
+            }]
+        }, "TUESDAY", False),
     ]
 
     are_location_compatible_test_data = [
