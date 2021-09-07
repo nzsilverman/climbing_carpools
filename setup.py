@@ -13,8 +13,8 @@ version = get_version()
 setup(
     name="scheduler",
     version=version,
-    author="Nathan Silverman",
-    author_email="nzsilverman@gmail.com",
+    author="Roberts Kalnins, Nathan Silverman",
+    author_email="rkalnins@umich.com",
     description="Climbing Club Carpool Scheduling Software",
     packages=find_packages(),
     install_requires=[

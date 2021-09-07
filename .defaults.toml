@@ -48,10 +48,10 @@ days_enabled = ["TUESDAY", "THURSDAY", "SUNDAY"]
     timestamp = 0
 
     [gform_backend.files]
-    responses_sheet = "1v2Bvs1dzG_83Zv-jJ7shifnTk4WVlzbuSBKrmqb9Q0U"
-    dues_sheet = "1X6P0J7Gwtav63K36ZH_u-vT0GT5-YvPNrjBgkwMfPOY"
-    output_sheet = "Carpool (8/31-9/6) (Output) [bug-fix-2]"
-    working_folder_id = "19d5sP1yQZIGhle8X2JOnSjxPgr2XyAQL"
+    responses_sheet = "1M83I3w_2PG3vh3OdPm_ZxN6E1OikksjOvJBUiRKyK58"
+    dues_sheet = "1j_tnYKvkNucvRV8oHxrezB1n20ZKBWRL3owRF19NV3g"
+    output_sheet = "Carpool (Output) [test-1]"
+    working_folder_id = "1RzAWOrkuGRxS0sLi9IPPi3mwxI310g2s"
 
     [gform_backend.output]
 
